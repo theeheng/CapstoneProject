@@ -5,12 +5,60 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import walmart.webapi.android.ItemList;
+import walmart.webapi.android.WalmartApi;
+import walmart.webapi.android.WalmartService;
+
 public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        WalmartApi testApi = new WalmartApi();
+
+        WalmartService testService = testApi.getService();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        params.put("apiKey","fdzf42nwrkg8cwu3uzvx7mrs");
+        params.put("upc", "038000786129");
+
+        testService.getProduct(params, new retrofit.Callback<ItemList>() {
+            @Override
+            public void success(final ItemList result, Response response) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                       // if(result != null && result.items != null && result.items.items != null && result.items.items.size() > 0) {
+                            String prodName = result.items.get(0).name;
+                        String xxx = result.items.get(0).thumbnailImage;
+                      //  }
+
+                    }
+                });
+            }
+
+            @Override
+            public void failure(final RetrofitError error) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        String msg = error.getMessage();
+
+                    }
+                });
+            }
+        });
+
     }
 
     @Override

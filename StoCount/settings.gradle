@@ -1,1 +1,1 @@
-include ':app', ':tesco-web-api-android'
+include ':app', ':tesco-web-api-android', ':walmart-web-api-android'

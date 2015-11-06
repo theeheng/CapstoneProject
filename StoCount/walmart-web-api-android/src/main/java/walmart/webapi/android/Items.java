@@ -2,6 +2,7 @@ package walmart.webapi.android;
 
 public class Items
 {
+    public int itemId;
     public String name;
     public String upc;
     public String thumbnailImage;

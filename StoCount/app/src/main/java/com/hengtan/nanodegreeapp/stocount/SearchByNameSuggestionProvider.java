@@ -4,14 +4,28 @@ import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.widget.Toast;
+
+import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import walmart.webapi.android.ItemList;
+import walmart.webapi.android.Items;
+import walmart.webapi.android.WalmartApi;
+import walmart.webapi.android.WalmartService;
 
 /**
  * Created by htan on 06/11/2015.
@@ -23,6 +37,8 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
     private static final int SEARCH_SUGGEST = 0;
     private static final int SHORTCUT_REFRESH = 1;
     private static final UriMatcher sURIMatcher = buildUriMatcher();
+
+    List<SearchSuggestion> searchResult = null;
 
     private static final String[] COLUMNS = {
             "_id",  // must include this column
@@ -98,15 +114,16 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         else
         {
             //result = getSuggestedItemNameFromDB(query);
-            result.add("Orange juice");
-            result.add("Apple juice");
-            result.add("Mango juice");
+            getSuggestedItemNameFromAPI(query);
+            //result.add("Orange juice");
+            //result.add("Apple juice");
+            //result.add("Mango juice");
         }
 
         MatrixCursor cursor = new MatrixCursor(COLUMNS);
 
         if(result != null) {
-            for(String s : result) {
+            for(SearchSuggestion s : searchResult) {
                 cursor.addRow(createRow(s));
             }
         }
@@ -114,13 +131,13 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
 
         return cursor;
     }
-    private Object[] createRow(String suggestion)
+    private Object[] createRow(SearchSuggestion suggestion)
     {
-        return columnValuesOfQuery(123456, //suggestion.SiteItemId,
+        return columnValuesOfQuery(suggestion.id, //suggestion.SiteItemId,
                 "android.intent.action.VIEW",
-                "http://com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider/" +123456, //suggestion.SiteItemId,
-                suggestion,
-                "Drinks");
+                "http://com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider/" +suggestion.id, //suggestion.SiteItemId,
+                suggestion.name,
+                suggestion.category);
     }
 
     private Object[] columnValuesOfQuery(int siteItemId,
@@ -174,31 +191,59 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    /*private List<StockCountItemSearchSuggestion> getSuggestedItemNameFromDB(String query)
+    private void getSuggestedItemNameFromAPI(String query)
     {
-        // copy assets DB to app DB.
-        try {
-            db.create();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
+        WalmartApi testApi = new WalmartApi();
 
-        try {
-            // get all locations
-            if (db.open()) {
+        WalmartService testService = testApi.getService();
 
-                List<StockCountItemSearchSuggestion> suggestions = db.getStockCountItemNameSuggestionByItemName(query);
+        Map<String, Object> params = new HashMap<String, Object>();
 
-                return suggestions;
+        //Resources res = getResources();
 
-            } else {
-                // error opening DB.
+        //params.put("apiKey",res.getString(R.string.apiKey));
+        params.put("apiKey","");
+        params.put("format", "json");
+        params.put("query", query);
+
+        testService.searchProduct(params, new retrofit.Callback<ItemList>() {
+            @Override
+            public void success(final ItemList result, Response response) {
+
+                if (result != null && result.items != null && result.items.size() > 0) {
+
+                    searchResult = new ArrayList<SearchSuggestion>();
+
+                    for (Items s : result.items) {
+
+                        SearchSuggestion ss = new SearchSuggestion();
+                        ss.id = s.itemId;
+                        ss.name = s.name;
+                        ss.category = s.categoryPath;
+
+                        searchResult.add(ss);
+                    }
+
+                } else {
+                    //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
+                }
+
             }
-        }
-        catch(Exception ex) {
 
-        }
+            @Override
+            public void failure(final RetrofitError error) {
 
-        return null;
-    }*/
+                String msg = error.getMessage();
+
+            }
+        });
+
+    }
+}
+
+class SearchSuggestion
+{
+    String name;
+    String category;
+    int id;
 }

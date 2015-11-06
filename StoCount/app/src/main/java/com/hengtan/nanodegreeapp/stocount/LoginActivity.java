@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,7 @@ import butterknife.OnClick;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import walmart.webapi.android.ItemList;
+import walmart.webapi.android.Items;
 import walmart.webapi.android.WalmartApi;
 import walmart.webapi.android.WalmartService;
 

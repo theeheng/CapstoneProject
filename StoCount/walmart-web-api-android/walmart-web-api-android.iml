@@ -31,5 +31,6 @@
     <orderEntry type="library" exported="" name="okhttp-2.2.0" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="okio-1.2.0" level="project" />
+    <orderEntry type="library" exported="" name="walmart-web-api-android.walmart-web-api-android" level="project" />
   </component>
 </module>

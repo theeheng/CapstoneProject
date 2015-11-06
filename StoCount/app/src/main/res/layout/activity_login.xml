@@ -17,4 +17,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/helloWorldTextView"/>
+
+
+    <Button
+        android:id="@+id/searchButton"
+        android:text="Search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/scanButton"/>
 </RelativeLayout>

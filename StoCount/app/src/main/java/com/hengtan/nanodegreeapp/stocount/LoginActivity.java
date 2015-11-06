@@ -1,5 +1,6 @@
 package com.hengtan.nanodegreeapp.stocount;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import walmart.webapi.android.ItemList;
@@ -40,34 +42,38 @@ public class LoginActivity extends AppCompatActivity {
     @InjectView(R.id.scanButton)
     protected Button btnScan;
 
+    @InjectView(R.id.searchButton)
+    protected Button btnSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         ButterKnife.inject(this);
 
-        btnScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // This is the callback method that the system will invoke when your button is
-                // clicked. You might do this by launching another app or by including the
-                //functionality directly in this app.
-                // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
-                // are using an external app.
-                //when you're done, remove the toast below.
-                try {
-                    IntentIntegrator intentIntegrator = new IntentIntegrator(LoginActivity.this);
-                    //intentIntegrator.setOrientationLocked(false);
-                    intentIntegrator.initiateScan();
-                } catch (Exception ex) {
-                    Log.e(TAG, "Error loading barcode scanning :" + ex.getMessage());
-                }
-            }
-        });
+        final Intent queryIntent = getIntent();
+        final String queryAction = queryIntent.getAction();
 
-
+        if (Intent.ACTION_SEARCH.equals(queryAction))
+        {
+           /* CallSearchStockCountItem searchItemAsync = new CallSearchStockCountItem(this);
+            String searchType = HomeActivity.SearchType.SearchByName.toString();
+            searchItemAsync.execute(searchType, queryIntent.getStringExtra(SearchManager.QUERY), null, Boolean.toString(false));
+            finish();
+            */
+        }
+        else if(Intent.ACTION_VIEW.equals(queryAction))
+        {
+            /*
+            CallSearchStockCountItem searchItemAsync = new CallSearchStockCountItem(this);
+            String searchType = SearchType.SearchBySiteItemId.toString();
+            searchItemAsync.execute(searchType, queryIntent.getData().getLastPathSegment());
+            finish();
+            */
+        }
+        else {
+            Log.d(TAG,"Create intent NOT from search");
+        }
 
     }
 
@@ -91,6 +97,28 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.scanButton)
+    public void onScanBtnClick(View v) {
+        // This is the callback method that the system will invoke when your button is
+        // clicked. You might do this by launching another app or by including the
+        //functionality directly in this app.
+        // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
+        // are using an external app.
+        //when you're done, remove the toast below.
+        try {
+            IntentIntegrator intentIntegrator = new IntentIntegrator(LoginActivity.this);
+            //intentIntegrator.setOrientationLocked(false);
+            intentIntegrator.initiateScan();
+        } catch (Exception ex) {
+            Log.e(TAG, "Error loading barcode scanning :" + ex.getMessage());
+        }
+    }
+
+    @OnClick(R.id.searchButton)
+    public void onSearchBtnClick(View v) {
+        super.onSearchRequested();
     }
 
     @Override

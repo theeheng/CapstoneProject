@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/hengtan/nanodegreeapp/stocount/data/DbHelper.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/hengtan/nanodegreeapp/stocount/data/StoCountContract.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/hengtan/nanodegreeapp/stocount/data/StoCountProvider.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/xml/searchable.xml" charset="windows-1252" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

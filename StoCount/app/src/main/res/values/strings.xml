@@ -5,4 +5,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="apiKey"></string>
+    <string name="search_hint">search by stock item name</string>
+    <string name="search_setting_description">Stock Item Name</string>
 </resources>

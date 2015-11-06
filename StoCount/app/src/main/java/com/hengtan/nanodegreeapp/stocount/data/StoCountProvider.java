@@ -12,19 +12,22 @@ import android.net.Uri;
 /**
  * Created by saj on 24/12/14.
  */
-public class ProductProvider extends ContentProvider {
+public class StoCountProvider extends ContentProvider {
 
-    private static final int BOOK_ID = 100;
-    private static final int BOOK = 101;
+    private static final int USER_ID = 100;
+    private static final int USER = 101;
 
-    private static final int AUTHOR_ID = 200;
-    private static final int AUTHOR = 201;
+    private static final int PRODUCT_ID = 200;
+    private static final int PRODUCT = 201;
 
-    private static final int CATEGORY_ID = 300;
-    private static final int CATEGORY = 301;
+    private static final int STOCK_PERIOD_ID = 300;
+    private static final int STOCK_PERIOD = 301;
 
-    private static final int BOOK_FULL = 500;
-    private static final int BOOK_FULLDETAIL = 501;
+    private static final int PRODUCT_COUNT_ID = 400;
+    private static final int PRODUCT_COUNT = 401;
+
+    //private static final int BOOK_FULL = 500;
+    //private static final int BOOK_FULLDETAIL = 501;
 
     private static final UriMatcher uriMatcher = buildUriMatcher();
 
@@ -34,10 +37,10 @@ public class ProductProvider extends ContentProvider {
 
     static{
         bookFull = new SQLiteQueryBuilder();
-        bookFull.setTables(
-                StoCountContract.BookEntry.TABLE_NAME + " LEFT OUTER JOIN " +
-                StoCountContract.AuthorEntry.TABLE_NAME + " USING (" + StoCountContract.BookEntry._ID + ")" +
-                " LEFT OUTER JOIN " +  StoCountContract.CategoryEntry.TABLE_NAME + " USING (" + StoCountContract.BookEntry._ID + ")");
+        //bookFull.setTables(
+        //        StoCountContract.BookEntry.TABLE_NAME + " LEFT OUTER JOIN " +
+        //        StoCountContract.AuthorEntry.TABLE_NAME + " USING (" + StoCountContract.BookEntry._ID + ")" +
+        //        " LEFT OUTER JOIN " +  StoCountContract.CategoryEntry.TABLE_NAME + " USING (" + StoCountContract.BookEntry._ID + ")");
     }
 
 
@@ -46,16 +49,18 @@ public class ProductProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = StoCountContract.CONTENT_AUTHORITY;
 
-        matcher.addURI(authority, StoCountContract.PATH_BOOKS+"/#", BOOK_ID);
-        matcher.addURI(authority, StoCountContract.PATH_AUTHORS+"/#", AUTHOR_ID);
-        matcher.addURI(authority, StoCountContract.PATH_CATEGORIES+"/#", CATEGORY_ID);
+        matcher.addURI(authority, StoCountContract.PATH_USERS+"/#", USER_ID);
+        matcher.addURI(authority, StoCountContract.PATH_PRODUCTS+"/#", PRODUCT_ID);
+        matcher.addURI(authority, StoCountContract.PATH_STOCK_PERIODS+"/#", STOCK_PERIOD_ID);
+        matcher.addURI(authority, StoCountContract.PATH_PRODUCT_COUNTS+"/#", PRODUCT_COUNT_ID);
 
-        matcher.addURI(authority, StoCountContract.PATH_BOOKS, BOOK);
-        matcher.addURI(authority, StoCountContract.PATH_AUTHORS, AUTHOR);
-        matcher.addURI(authority, StoCountContract.PATH_CATEGORIES, CATEGORY);
+        matcher.addURI(authority, StoCountContract.PATH_USERS, USER);
+        matcher.addURI(authority, StoCountContract.PATH_PRODUCTS, PRODUCT);
+        matcher.addURI(authority, StoCountContract.PATH_STOCK_PERIODS, STOCK_PERIOD);
+        matcher.addURI(authority, StoCountContract.PATH_PRODUCT_COUNTS, PRODUCT_COUNT);
 
-        matcher.addURI(authority, StoCountContract.PATH_FULLBOOK +"/#", BOOK_FULLDETAIL);
-        matcher.addURI(authority, StoCountContract.PATH_FULLBOOK, BOOK_FULL);
+        //matcher.addURI(authority, StoCountContract.PATH_FULLBOOK +"/#", BOOK_FULLDETAIL);
+        //matcher.addURI(authority, StoCountContract.PATH_FULLBOOK, BOOK_FULL);
 
         return matcher;
     }
@@ -71,9 +76,9 @@ public class ProductProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor retCursor;
         switch (uriMatcher.match(uri)) {
-            case BOOK:
+            case USER:
                 retCursor=dbHelper.getReadableDatabase().query(
-                        StoCountContract.BookEntry.TABLE_NAME,
+                        StoCountContract.UserEntry.TABLE_NAME,
                         projection,
                         selection,
                         selection==null? null : selectionArgs,
@@ -82,9 +87,9 @@ public class ProductProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
-            case AUTHOR:
+            case PRODUCT:
                 retCursor=dbHelper.getReadableDatabase().query(
-                        StoCountContract.AuthorEntry.TABLE_NAME,
+                        StoCountContract.ProductEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -93,9 +98,9 @@ public class ProductProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
-            case CATEGORY:
+            case STOCK_PERIOD:
                 retCursor=dbHelper.getReadableDatabase().query(
-                        StoCountContract.CategoryEntry.TABLE_NAME,
+                        StoCountContract.StockPeriodEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -104,40 +109,62 @@ public class ProductProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
-            case BOOK_ID:
+            case PRODUCT_COUNT:
                 retCursor=dbHelper.getReadableDatabase().query(
-                        StoCountContract.BookEntry.TABLE_NAME,
+                        StoCountContract.ProductCountEntry.TABLE_NAME,
                         projection,
-                        StoCountContract.BookEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
+                        selection,
                         selectionArgs,
                         null,
                         null,
                         sortOrder
                 );
                 break;
-            case AUTHOR_ID:
+            case USER_ID:
                 retCursor=dbHelper.getReadableDatabase().query(
-                        StoCountContract.AuthorEntry.TABLE_NAME,
+                        StoCountContract.UserEntry.TABLE_NAME,
                         projection,
-                        StoCountContract.AuthorEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
+                        StoCountContract.UserEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
                         selectionArgs,
                         null,
                         null,
                         sortOrder
                 );
                 break;
-            case CATEGORY_ID:
+            case PRODUCT_ID:
                 retCursor=dbHelper.getReadableDatabase().query(
-                        StoCountContract.CategoryEntry.TABLE_NAME,
+                        StoCountContract.ProductEntry.TABLE_NAME,
                         projection,
-                        StoCountContract.CategoryEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
+                        StoCountContract.ProductEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
                         selectionArgs,
                         null,
                         null,
                         sortOrder
                 );
                 break;
-            case BOOK_FULLDETAIL:
+            case STOCK_PERIOD_ID:
+                retCursor=dbHelper.getReadableDatabase().query(
+                        StoCountContract.StockPeriodEntry.TABLE_NAME,
+                        projection,
+                        StoCountContract.StockPeriodEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case PRODUCT_COUNT_ID:
+                retCursor=dbHelper.getReadableDatabase().query(
+                        StoCountContract.ProductCountEntry.TABLE_NAME,
+                        projection,
+                        StoCountContract.ProductCountEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            /*case BOOK_FULLDETAIL:
                 String[] bfd_projection ={
                     StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry.TITLE,
                     StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry.SUBTITLE,
@@ -169,6 +196,7 @@ public class ProductProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
+                */
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -185,20 +213,24 @@ public class ProductProvider extends ContentProvider {
         final int match = uriMatcher.match(uri);
 
         switch (match) {
-            case BOOK_FULLDETAIL:
-                return StoCountContract.BookEntry.CONTENT_ITEM_TYPE;
-            case BOOK_ID:
-                return StoCountContract.BookEntry.CONTENT_ITEM_TYPE;
-            case AUTHOR_ID:
-                return StoCountContract.AuthorEntry.CONTENT_ITEM_TYPE;
-            case CATEGORY_ID:
-                return StoCountContract.CategoryEntry.CONTENT_ITEM_TYPE;
-            case BOOK:
-                return StoCountContract.BookEntry.CONTENT_TYPE;
-            case AUTHOR:
-                return StoCountContract.AuthorEntry.CONTENT_TYPE;
-            case CATEGORY:
-                return StoCountContract.CategoryEntry.CONTENT_TYPE;
+            //case BOOK_FULLDETAIL:
+            //    return StoCountContract.BookEntry.CONTENT_ITEM_TYPE;
+            case USER_ID:
+                return StoCountContract.UserEntry.CONTENT_ITEM_TYPE;
+            case PRODUCT_ID:
+                return StoCountContract.ProductEntry.CONTENT_ITEM_TYPE;
+            case STOCK_PERIOD_ID:
+                return StoCountContract.StockPeriodEntry.CONTENT_ITEM_TYPE;
+            case PRODUCT_COUNT_ID:
+                return StoCountContract.ProductCountEntry.CONTENT_ITEM_TYPE;
+            case USER:
+                return StoCountContract.UserEntry.CONTENT_TYPE;
+            case PRODUCT:
+                return StoCountContract.ProductEntry.CONTENT_TYPE;
+            case STOCK_PERIOD:
+                return StoCountContract.StockPeriodEntry.CONTENT_TYPE;
+            case PRODUCT_COUNT:
+                return StoCountContract.ProductCountEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -210,28 +242,36 @@ public class ProductProvider extends ContentProvider {
         final int match = uriMatcher.match(uri);
         Uri returnUri;
         switch (match) {
-            case BOOK: {
-                long _id = db.insert(StoCountContract.BookEntry.TABLE_NAME, null, values);
+            case USER: {
+                long _id = db.insert(StoCountContract.UserEntry.TABLE_NAME, null, values);
                 if ( _id > 0 ){
-                    returnUri = StoCountContract.BookEntry.buildBookUri(_id);
+                    returnUri = StoCountContract.UserEntry.buildUserUri(_id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
-                getContext().getContentResolver().notifyChange(StoCountContract.BookEntry.buildFullBookUri(_id), null);
+                //getContext().getContentResolver().notifyChange(StoCountContract.BookEntry.buildFullBookUri(_id), null);
                 break;
             }
-            case AUTHOR:{
-                long _id = db.insert(StoCountContract.AuthorEntry.TABLE_NAME, null, values);
+            case PRODUCT:{
+                long _id = db.insert(StoCountContract.ProductEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = StoCountContract.AuthorEntry.buildAuthorUri(values.getAsLong("_id"));
+                    returnUri = StoCountContract.ProductEntry.buildAuthorUri(values.getAsLong("_id"));
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
-            case CATEGORY: {
-                long _id = db.insert(StoCountContract.CategoryEntry.TABLE_NAME, null, values);
+            case STOCK_PERIOD: {
+                long _id = db.insert(StoCountContract.StockPeriodEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = StoCountContract.CategoryEntry.buildCategoryUri(values.getAsLong("_id"));
+                    returnUri = StoCountContract.StockPeriodEntry.buildCategoryUri(values.getAsLong("_id"));
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case PRODUCT_COUNT: {
+                long _id = db.insert(StoCountContract.ProductCountEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = StoCountContract.ProductCountEntry.buildCategoryUri(values.getAsLong("_id"));
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -248,22 +288,22 @@ public class ProductProvider extends ContentProvider {
         final int match = uriMatcher.match(uri);
         int rowsDeleted;
         switch (match) {
-            case BOOK:
+            case USER:
                 rowsDeleted = db.delete(
-                        StoCountContract.BookEntry.TABLE_NAME, selection, selectionArgs);
+                        StoCountContract.UserEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            case AUTHOR:
+            case PRODUCT:
                 rowsDeleted = db.delete(
-                        StoCountContract.AuthorEntry.TABLE_NAME, selection, selectionArgs);
+                        StoCountContract.ProductEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            case CATEGORY:
+            case STOCK_PERIOD:
                 rowsDeleted = db.delete(
-                        StoCountContract.CategoryEntry.TABLE_NAME, selection, selectionArgs);
+                        StoCountContract.StockPeriodEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            case BOOK_ID:
+            case PRODUCT_COUNT:
                 rowsDeleted = db.delete(
-                        StoCountContract.BookEntry.TABLE_NAME,
-                        StoCountContract.BookEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
+                        StoCountContract.ProductCountEntry.TABLE_NAME,
+                        StoCountContract.ProductCountEntry._ID + " = '" + ContentUris.parseId(uri) + "'",
                         selectionArgs);
                 break;
             default:
@@ -282,19 +322,22 @@ public class ProductProvider extends ContentProvider {
         final int match = uriMatcher.match(uri);
         int rowsUpdated;
         switch (match) {
-            case BOOK:
-                rowsUpdated = db.update(StoCountContract.BookEntry.TABLE_NAME, values, selection,
+            case USER:
+                rowsUpdated = db.update(StoCountContract.UserEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
-            case AUTHOR:
-                rowsUpdated = db.update(StoCountContract.AuthorEntry.TABLE_NAME, values, selection,
+            case PRODUCT:
+                rowsUpdated = db.update(StoCountContract.ProductEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
-            case CATEGORY:
-                rowsUpdated = db.update(StoCountContract.CategoryEntry.TABLE_NAME, values, selection,
+            case STOCK_PERIOD:
+                rowsUpdated = db.update(StoCountContract.StockPeriodEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
-
+            case PRODUCT_COUNT:
+                rowsUpdated = db.update(StoCountContract.ProductCountEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

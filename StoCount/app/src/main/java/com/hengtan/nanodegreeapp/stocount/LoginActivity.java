@@ -17,9 +17,12 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import org.jsoup.Jsoup;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -43,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        ButterKnife.inject(this);
+
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                 //when you're done, remove the toast below.
                 try {
                     IntentIntegrator intentIntegrator = new IntentIntegrator(LoginActivity.this);
+                    //intentIntegrator.setOrientationLocked(false);
                     intentIntegrator.initiateScan();
                 } catch (Exception ex) {
                     Log.e(TAG, "Error loading barcode scanning :" + ex.getMessage());
@@ -91,11 +97,14 @@ public class LoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
-            if (result.getContents() == null) {
+
+            final String barcodeScanResult = result.getContents();
+
+            if (barcodeScanResult == null) {
                 Log.d(TAG, "Cancelled scan");
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                Log.d(TAG, "Scanned : " + result.getContents());
+                Log.d(TAG, "Scanned : " + barcodeScanResult);
 
                 WalmartApi testApi = new WalmartApi();
 
@@ -106,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                 Resources res = getResources();
 
                 params.put("apiKey",res.getString(R.string.apiKey));
-                params.put("upc", result.getContents());
+                params.put("upc", barcodeScanResult);
 
                 testService.getProduct(params, new retrofit.Callback<ItemList>() {
                     @Override
@@ -115,13 +124,23 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void run() {
 
-                                // if(result != null && result.items != null && result.items.items != null && result.items.items.size() > 0) {
-                                String name = result.items.get(0).name;
-                                String description = result.items.get(0).shortDescription;
+                                if(result != null && result.items != null && result.items.size() > 0) {
+                                    String name = result.items.get(0).name;
+                                    String description = (result.items.get(0).shortDescription == null) ? result.items.get(0).longDescription : result.items.get(0).shortDescription;
 
-                                txtView.setText(name+ " - "+description);
-                                //  }
+                                    if(description != null) {
+                                        description = Jsoup.parse(description).text().replaceAll("\\<.*?\\>", "");
 
+                                        txtView.setText(name + " - " + description);
+                                    }
+                                    else
+                                    {
+                                        txtView.setText(name);
+                                    }
+                                }
+                                else {
+                                    Toast.makeText(LoginActivity.this, "Product not found for barcode: " + barcodeScanResult, Toast.LENGTH_LONG).show();
+                                }
                             }
                         });
                     }
@@ -131,9 +150,8 @@ public class LoginActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-
                                 String msg = error.getMessage();
-
+                                Toast.makeText(LoginActivity.this, msg , Toast.LENGTH_LONG).show();
                             }
                         });
                     }

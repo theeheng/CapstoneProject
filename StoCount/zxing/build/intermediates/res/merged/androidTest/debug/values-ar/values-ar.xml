@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/build/intermediates/bundles/debug/res/values-ar/values-ar.xml -->
+    <!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/build/intermediates/bundles/debug/res/values-ar/values-ar.xml -->
     <eat-comment/>
     <string name="app_name">ماسح الرمز الشريطي</string>
     <string name="app_picker_name">تطبيقات</string>

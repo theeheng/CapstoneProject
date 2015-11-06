@@ -7,5 +7,6 @@ public class Items
     public String thumbnailImage;
     public String largeImage; //not available on search
     public String shortDescription;
+    public String longDescription;
     public String categoryPath;
 }

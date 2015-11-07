@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/values-hi/strings.xml -->
+    <!-- From: file:/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/res/values-hi/strings.xml -->
     <eat-comment/>
     <string name="app_name">बारकोड स्कैनर</string>
     <string name="app_picker_name">अनुप्रयोगों</string>

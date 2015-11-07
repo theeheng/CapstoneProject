@@ -33,5 +33,8 @@ public interface WalmartService {
 
     @GET("/search")
     void searchProduct(@QueryMap Map<String, Object> options, Callback<ItemList> callback);
+
+    @GET("/search")
+    ItemList searchProduct(@QueryMap Map<String, Object> options);
 }
 

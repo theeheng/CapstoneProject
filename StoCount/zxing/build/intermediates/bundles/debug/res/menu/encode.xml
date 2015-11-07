@@ -25,4 +25,4 @@
         android:icon="@android:drawable/ic_menu_sort_alphabetically"
         android:orderInCategory="2"
         android:showAsAction="withText|ifRoom"/>
-</menu><!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/menu/encode.xml -->
+</menu><!-- From: file:/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/res/menu/encode.xml -->

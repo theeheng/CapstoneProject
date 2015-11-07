@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/values-cs/strings.xml -->
+    <!-- From: file:/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/res/values-cs/strings.xml -->
     <eat-comment/>
     <string name="app_name">Barcode Scanner</string>
     <string name="app_picker_name">Aplikace</string>

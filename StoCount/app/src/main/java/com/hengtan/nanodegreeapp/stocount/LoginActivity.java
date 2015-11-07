@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -39,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
 
     @InjectView(R.id.helloWorldTextView)
-    protected TextView txtView;
+    protected EditText txtView;
 
     @InjectView(R.id.scanButton)
     protected Button btnScan;
@@ -47,17 +49,24 @@ public class LoginActivity extends AppCompatActivity {
     @InjectView(R.id.searchButton)
     protected Button btnSearch;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
 
+
+       // txtView.setInputType(InputType.TYPE_NULL);
+       // txtView.setBackground(null);
+
         final Intent queryIntent = getIntent();
         final String queryAction = queryIntent.getAction();
 
         if (Intent.ACTION_SEARCH.equals(queryAction))
         {
+            String test = queryIntent.getStringExtra(SearchManager.QUERY);
            /* CallSearchStockCountItem searchItemAsync = new CallSearchStockCountItem(this);
             String searchType = HomeActivity.SearchType.SearchByName.toString();
             searchItemAsync.execute(searchType, queryIntent.getStringExtra(SearchManager.QUERY), null, Boolean.toString(false));
@@ -66,6 +75,9 @@ public class LoginActivity extends AppCompatActivity {
         }
         else if(Intent.ACTION_VIEW.equals(queryAction))
         {
+            String itemId = queryIntent.getData().getLastPathSegment();
+
+            SearchProductFromWalmartAPI(null, itemId);
             /*
             CallSearchStockCountItem searchItemAsync = new CallSearchStockCountItem(this);
             String searchType = SearchType.SearchBySiteItemId.toString();
@@ -136,61 +148,82 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Scanned : " + barcodeScanResult);
 
-                WalmartApi testApi = new WalmartApi();
-
-                WalmartService testService = testApi.getService();
-
-                Map<String, Object> params = new HashMap<String, Object>();
-
-                Resources res = getResources();
-
-                params.put("apiKey",res.getString(R.string.apiKey));
-                params.put("upc", barcodeScanResult);
-
-                testService.getProduct(params, new retrofit.Callback<ItemList>() {
-                    @Override
-                    public void success(final ItemList result, Response response) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                if(result != null && result.items != null && result.items.size() > 0) {
-                                    String name = result.items.get(0).name;
-                                    String description = (result.items.get(0).shortDescription == null) ? result.items.get(0).longDescription : result.items.get(0).shortDescription;
-
-                                    if(description != null) {
-                                        description = Jsoup.parse(description).text().replaceAll("\\<.*?\\>", "");
-
-                                        txtView.setText(name + " - " + description);
-                                    }
-                                    else
-                                    {
-                                        txtView.setText(name);
-                                    }
-                                }
-                                else {
-                                    Toast.makeText(LoginActivity.this, "Product not found for barcode: " + barcodeScanResult, Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void failure(final RetrofitError error) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                String msg = error.getMessage();
-                                Toast.makeText(LoginActivity.this, msg , Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                });
+                SearchProductFromWalmartAPI(barcodeScanResult,null);
             }
         } else {
             Log.d(TAG, "Weird");
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    public void SearchProductFromWalmartAPI(String barcodeScanResult, String itemId)
+    {
+        WalmartApi testApi = new WalmartApi();
+
+        WalmartService testService = testApi.getService();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        Resources res = getResources();
+
+        params.put("apiKey", res.getString(R.string.apiKey));
+
+        if(barcodeScanResult != null) {
+            params.put("upc", barcodeScanResult);
+        }
+        else if(itemId != null)
+        {
+            params.put("itemId", itemId);
+            barcodeScanResult = itemId;
+        }
+
+        final String searchCriteria = barcodeScanResult;
+
+        testService.getProduct(params, new retrofit.Callback<ItemList>() {
+            @Override
+            public void success(final ItemList result, Response response) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if(result != null && result.items != null && result.items.size() > 0) {
+                            String name = result.items.get(0).name;
+                            String description = (result.items.get(0).shortDescription == null) ? result.items.get(0).longDescription : result.items.get(0).shortDescription;
+
+                            if(description != null) {
+                                description = Jsoup.parse(description).text().replaceAll("\\<.*?\\>", "");
+
+                                txtView.setText(name + " - " + description);
+
+                                txtView.setMovementMethod(new ScrollingMovementMethod());
+                                //txtView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                            }
+                            else
+                            {
+                                txtView.setText(name);
+                                //txtView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                                //txtView.setClickable(true);
+                                //txtView.setFocusable(true);
+                            }
+                        }
+                        else {
+                            Toast.makeText(LoginActivity.this, "Product not found for : " + searchCriteria, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void failure(final RetrofitError error) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String msg = error.getMessage();
+                        Toast.makeText(LoginActivity.this, msg , Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 }

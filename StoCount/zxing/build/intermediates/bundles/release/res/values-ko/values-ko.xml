@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/values-ko/strings.xml -->
+    <!-- From: file:/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/res/values-ko/strings.xml -->
     <eat-comment/>
     <string name="app_name">바코드 스캐너</string>
     <string name="app_picker_name">어플리케이션</string>

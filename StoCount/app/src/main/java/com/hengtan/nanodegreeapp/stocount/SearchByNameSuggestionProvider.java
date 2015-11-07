@@ -105,7 +105,7 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
     private Cursor getSuggestions(String query)
     {
         //List<StockCountItemSearchSuggestion> result;
-        List<String> result = new ArrayList<String>();
+        //List<String> result = new ArrayList<String>();
 
         if (query == null) return null;
         else if(query.length() <= 2) {
@@ -120,17 +120,26 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
             //result.add("Mango juice");
         }
 
-        MatrixCursor cursor = new MatrixCursor(COLUMNS);
+        return createCursor();
 
-        if(result != null) {
+    }
+
+    private Cursor createCursor()
+    {
+        MatrixCursor cursor = null;
+
+        if(searchResult != null) {
+
+            cursor = new MatrixCursor(COLUMNS);
+
             for(SearchSuggestion s : searchResult) {
                 cursor.addRow(createRow(s));
             }
         }
 
-
         return cursor;
     }
+
     private Object[] createRow(SearchSuggestion suggestion)
     {
         return columnValuesOfQuery(suggestion.id, //suggestion.SiteItemId,
@@ -202,42 +211,35 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         //Resources res = getResources();
 
         //params.put("apiKey",res.getString(R.string.apiKey));
-        params.put("apiKey","");
+        params.put("apiKey","fdzf42nwrkg8cwu3uzvx7mrs");
         params.put("format", "json");
         params.put("query", query);
 
-        testService.searchProduct(params, new retrofit.Callback<ItemList>() {
-            @Override
-            public void success(final ItemList result, Response response) {
+        try {
+            ItemList result = testService.searchProduct(params);
 
-                if (result != null && result.items != null && result.items.size() > 0) {
+            if (result != null && result.items != null && result.items.size() > 0) {
 
-                    searchResult = new ArrayList<SearchSuggestion>();
+                searchResult = new ArrayList<SearchSuggestion>();
 
-                    for (Items s : result.items) {
+                for (Items s : result.items) {
 
-                        SearchSuggestion ss = new SearchSuggestion();
-                        ss.id = s.itemId;
-                        ss.name = s.name;
-                        ss.category = s.categoryPath;
+                    SearchSuggestion ss = new SearchSuggestion();
+                    ss.id = s.itemId;
+                    ss.name = s.name;
+                    ss.category = s.categoryPath;
 
-                        searchResult.add(ss);
-                    }
-
-                } else {
-                    //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
+                    searchResult.add(ss);
                 }
 
+            } else {
+                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
             }
-
-            @Override
-            public void failure(final RetrofitError error) {
-
-                String msg = error.getMessage();
-
-            }
-        });
-
+        }
+        catch(Exception ex)
+        {
+            String err = ex.getMessage();
+        }
     }
 }
 

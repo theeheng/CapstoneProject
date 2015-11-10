@@ -1,6 +1,6 @@
 package walmart.webapi.android;
 
-public class Items
+public class WalmartItems
 {
     public int itemId;
     public String name;

@@ -25,21 +25,24 @@ public final class IntentResult {
 
     private final String contents;
     private final String formatName;
+    private final String type;
     private final byte[] rawBytes;
     private final Integer orientation;
     private final String errorCorrectionLevel;
 
     IntentResult() {
-        this(null, null, null, null, null);
+        this(null, null, null, null, null, null);
     }
 
     IntentResult(String contents,
                  String formatName,
+                 String type,
                  byte[] rawBytes,
                  Integer orientation,
                  String errorCorrectionLevel) {
         this.contents = contents;
         this.formatName = formatName;
+        this.type = type;
         this.rawBytes = rawBytes;
         this.orientation = orientation;
         this.errorCorrectionLevel = errorCorrectionLevel;
@@ -57,6 +60,13 @@ public final class IntentResult {
      */
     public String getFormatName() {
         return formatName;
+    }
+
+    /**
+     * @return name of type, like "ISBN", "PRODUCT". See {@code BarcodeFormat} for more format names.
+     */
+    public String getType() {
+        return type;
     }
 
     /**

@@ -18,4 +18,4 @@
          android:id="@+id/help_contents"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
-         android:layout_weight="1"/><!-- From: file:/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/res/layout/help.xml -->
+         android:layout_weight="1"/><!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/layout/help.xml -->

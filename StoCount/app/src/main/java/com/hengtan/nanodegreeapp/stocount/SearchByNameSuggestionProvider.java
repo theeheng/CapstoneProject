@@ -8,22 +8,15 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.jsoup.Jsoup;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import walmart.webapi.android.ItemList;
-import walmart.webapi.android.Items;
+import walmart.webapi.android.WalmartItemList;
+import walmart.webapi.android.WalmartItems;
 import walmart.webapi.android.WalmartApi;
 import walmart.webapi.android.WalmartService;
 
@@ -202,27 +195,27 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
 
     private void getSuggestedItemNameFromAPI(String query)
     {
+
         WalmartApi testApi = new WalmartApi();
 
         WalmartService testService = testApi.getService();
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        //Resources res = getResources();
+        Resources res = getContext().getResources();
 
-        //params.put("apiKey",res.getString(R.string.apiKey));
-        params.put("apiKey","fdzf42nwrkg8cwu3uzvx7mrs");
+        params.put("apiKey",res.getString(R.string.walmart_apiKey));
         params.put("format", "json");
         params.put("query", query);
 
         try {
-            ItemList result = testService.searchProduct(params);
+            WalmartItemList result = testService.searchProduct(params);
 
             if (result != null && result.items != null && result.items.size() > 0) {
 
                 searchResult = new ArrayList<SearchSuggestion>();
 
-                for (Items s : result.items) {
+                for (WalmartItems s : result.items) {
 
                     SearchSuggestion ss = new SearchSuggestion();
                     ss.id = s.itemId;

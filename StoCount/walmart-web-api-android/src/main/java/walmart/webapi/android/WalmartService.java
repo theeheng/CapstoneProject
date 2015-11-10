@@ -21,7 +21,7 @@ public interface WalmartService {
      */
 
     @GET("/items")
-    void getProduct(@QueryMap Map<String, Object> options, Callback<ItemList> callback);
+    void getProduct(@QueryMap Map<String, Object> options, Callback<WalmartItemList> callback);
 
     /**
      * Get Spotify catalog information about playlists that match a keyword string.
@@ -32,9 +32,9 @@ public interface WalmartService {
      */
 
     @GET("/search")
-    void searchProduct(@QueryMap Map<String, Object> options, Callback<ItemList> callback);
+    void searchProduct(@QueryMap Map<String, Object> options, Callback<WalmartItemList> callback);
 
     @GET("/search")
-    ItemList searchProduct(@QueryMap Map<String, Object> options);
+    WalmartItemList searchProduct(@QueryMap Map<String, Object> options);
 }
 

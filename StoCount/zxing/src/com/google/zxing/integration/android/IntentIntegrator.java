@@ -279,12 +279,14 @@ public class IntentIntegrator {
             if (resultCode == Activity.RESULT_OK) {
                 String contents = intent.getStringExtra(Intents.Scan.RESULT);
                 String formatName = intent.getStringExtra(Intents.Scan.RESULT_FORMAT);
+                String type = intent.getStringExtra(Intents.Scan.RESULT_TYPE);
                 byte[] rawBytes = intent.getByteArrayExtra(Intents.Scan.RESULT_BYTES);
                 int intentOrientation = intent.getIntExtra(Intents.Scan.RESULT_ORIENTATION, Integer.MIN_VALUE);
                 Integer orientation = intentOrientation == Integer.MIN_VALUE ? null : intentOrientation;
                 String errorCorrectionLevel = intent.getStringExtra(Intents.Scan.RESULT_ERROR_CORRECTION_LEVEL);
                 return new IntentResult(contents,
                         formatName,
+                        type,
                         rawBytes,
                         orientation,
                         errorCorrectionLevel);

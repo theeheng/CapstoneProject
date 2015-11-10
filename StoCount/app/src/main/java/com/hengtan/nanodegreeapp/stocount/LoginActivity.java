@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -13,28 +12,40 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.SearchView;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.amazon.webservices.awsecommerceservice.ImageSet;
+import com.bumptech.glide.Glide;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
-import org.jsoup.Jsoup;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import walmart.webapi.android.ItemList;
-import walmart.webapi.android.Items;
 import walmart.webapi.android.WalmartApi;
+import walmart.webapi.android.WalmartItemList;
+import walmart.webapi.android.WalmartItems;
 import walmart.webapi.android.WalmartService;
+
+import com.amazon.service.ecommerce.AWSECommerceClient;
+import com.amazon.webservices.awsecommerceservice.Errors;
+import com.amazon.webservices.awsecommerceservice.ItemLookup;
+import com.amazon.webservices.awsecommerceservice.ItemLookupRequest;
+import com.amazon.webservices.awsecommerceservice.ItemLookupResponse;
+import com.amazon.webservices.awsecommerceservice.Items;
+import com.amazon.webservices.awsecommerceservice.client.AWSECommerceServicePortType_SOAPClient;
+import com.leansoft.nano.log.ALog;
+import com.leansoft.nano.ws.SOAPServiceCallback;
+
+import org.jsoup.Jsoup;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -49,7 +60,8 @@ public class LoginActivity extends AppCompatActivity {
     @InjectView(R.id.searchButton)
     protected Button btnSearch;
 
-
+    @InjectView(R.id.image)
+    protected ImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG,"Create intent NOT from search");
         }
 
+        Glide.with(this).load(R.mipmap.no_image).fitCenter().into(mImageView);
     }
 
     @Override
@@ -148,7 +161,12 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 Log.d(TAG, "Scanned : " + barcodeScanResult);
 
-                SearchProductFromWalmartAPI(barcodeScanResult,null);
+                String formatNameResult = result.getFormatName();
+                String formatTypeResult = result.getType();
+
+                SearchProductFromAmazonApi(barcodeScanResult, formatNameResult, formatTypeResult);
+
+               // SearchProductFromWalmartAPI(barcodeScanResult,null);
             }
         } else {
             Log.d(TAG, "Weird");
@@ -167,7 +185,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Resources res = getResources();
 
-        params.put("apiKey", res.getString(R.string.apiKey));
+        params.put("apiKey", res.getString(R.string.walmart_apiKey));
 
         if(barcodeScanResult != null) {
             params.put("upc", barcodeScanResult);
@@ -180,9 +198,9 @@ public class LoginActivity extends AppCompatActivity {
 
         final String searchCriteria = barcodeScanResult;
 
-        testService.getProduct(params, new retrofit.Callback<ItemList>() {
+        testService.getProduct(params, new retrofit.Callback<WalmartItemList>() {
             @Override
-            public void success(final ItemList result, Response response) {
+            public void success(final WalmartItemList result, Response response) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -191,21 +209,8 @@ public class LoginActivity extends AppCompatActivity {
                             String name = result.items.get(0).name;
                             String description = (result.items.get(0).shortDescription == null) ? result.items.get(0).longDescription : result.items.get(0).shortDescription;
 
-                            if(description != null) {
-                                description = Jsoup.parse(description).text().replaceAll("\\<.*?\\>", "");
+                            UpdateUI(name, description, result.items.get(0).largeImage);
 
-                                txtView.setText(name + " - " + description);
-
-                                txtView.setMovementMethod(new ScrollingMovementMethod());
-                                //txtView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                            }
-                            else
-                            {
-                                txtView.setText(name);
-                                //txtView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                                //txtView.setClickable(true);
-                                //txtView.setFocusable(true);
-                            }
                         }
                         else {
                             Toast.makeText(LoginActivity.this, "Product not found for : " + searchCriteria, Toast.LENGTH_LONG).show();
@@ -225,5 +230,139 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    public void SearchProductFromAmazonApi(String barcodeScanResult, String formatName, String formatType)
+    {
+        Resources res = getResources();
+
+        // Get shared client
+        AWSECommerceServicePortType_SOAPClient client = AWSECommerceClient.getSharedClient(res.getString(R.string.aws_accesskeyid), res.getString(R.string.aws_securekeyid));
+
+        client.setDebug(true);
+
+        // Build request
+        ItemLookup request = new ItemLookup();
+        request.associateTag = "tag"; // seems any tag is ok
+        request.shared = new ItemLookupRequest();
+        request.shared.searchIndex = "All";
+        request.shared.responseGroup = new ArrayList<String>();
+        request.shared.responseGroup.add("Images");
+        request.shared.responseGroup.add("ItemAttributes");
+        request.shared.responseGroup.add("EditorialReview");
+        List<String> itemLookup = new ArrayList<String>();
+        itemLookup.add(barcodeScanResult);
+        request.shared.itemId = itemLookup;
+
+        if(formatName.indexOf("EAN")> -1) {
+
+            if(formatType.indexOf("ISBN") > -1) {
+                request.shared.idType = "ISBN";
+            }
+            else {
+                request.shared.idType = "EAN";
+            }
+        }else if(formatName.indexOf("UPC")> -1) {
+            request.shared.idType = "UPC";
+        }
+
+
+        // authenticate the request
+        // http://docs.aws.amazon.com/AWSECommerceService/latest/DG/NotUsingWSSecurity.html
+        AWSECommerceClient.authenticateRequest("ItemLookup");
+
+        // make API call
+        client.itemLookup(request, new SOAPServiceCallback<ItemLookupResponse>() {
+
+            @Override
+            public void onSuccess(ItemLookupResponse responseObject) { // handle successful response
+
+                // success handling logic
+                if (responseObject.items != null && responseObject.items.size() > 0) {
+                    Items items = responseObject.items.get(0);
+                    if (items.item != null && items.item.size() > 0) {
+
+                        String name = items.item.get(0).itemAttributes.title;
+                        String description = null;
+                        String thumbnailUrl = null;
+
+                        if(items.item.get(0).editorialReviews !=  null && items.item.get(0).editorialReviews.editorialReview != null && items.item.get(0).editorialReviews.editorialReview.size() > 0) {
+                            description = items.item.get(0).editorialReviews.editorialReview.get(0).content;
+                        }
+
+                        if(items.item.get(0).imageSets !=  null && items.item.get(0).imageSets.size()  > 0 && items.item.get(0).imageSets.get(0).imageSet.size() > 0 && items.item.get(0).imageSets.get(0).imageSet.get(0).thumbnailImage != null) {
+
+                            for(ImageSet imgset : items.item.get(0).imageSets.get(0).imageSet)
+                                if(imgset.category.equals("primary"))
+                                {
+                                    thumbnailUrl = imgset.mediumImage.url; //imgset.thumbnailImage.url;
+                                }
+                        }
+
+                        UpdateUI(name, description, thumbnailUrl);
+
+                    } else {
+                        Toast.makeText(LoginActivity.this, "No result", Toast.LENGTH_LONG).show();
+                    }
+                } else { // response resident error
+                    if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
+                        Errors errors = responseObject.operationRequest.errors;
+                        if (errors.error != null && errors.error.size() > 0) {
+                            com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
+                            Toast.makeText(LoginActivity.this, error.message, Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "No result", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(LoginActivity.this, "No result", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable error, String errorMessage) { // HTTP or parsing error
+
+
+                ALog.e(TAG, errorMessage);
+                Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSOAPFault(Object soapFault) { // soap fault
+
+
+                com.leansoft.nano.soap11.Fault fault = (com.leansoft.nano.soap11.Fault) soapFault;
+
+                ALog.e(TAG, fault.faultstring);
+
+                Toast.makeText(LoginActivity.this, fault.faultstring, Toast.LENGTH_LONG).show();
+
+            }
+
+        });
+    }
+
+    public void UpdateUI(String name, String description, String thumbnailUrl)
+    {
+        if(description != null) {
+            description = Jsoup.parse(description).text().replaceAll("\\<.*?\\>", "");
+
+            txtView.setText(name + " - " + description);
+
+            txtView.setMovementMethod(new ScrollingMovementMethod());
+            //txtView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        }
+        else
+        {
+            txtView.setText(name);
+            //txtView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            //txtView.setClickable(true);
+            //txtView.setFocusable(true);
+        }
+
+        if(thumbnailUrl != null && (!thumbnailUrl.isEmpty()))
+        {
+            Glide.with(this).load(thumbnailUrl).fitCenter().into(mImageView);
+        }
     }
 }

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/StoCount.iml" filepath="$PROJECT_DIR$/StoCount.iml" />
+      <module fileurl="file://$PROJECT_DIR$/amazon-advertising-api-android/amazon-advertising-api-android.iml" filepath="$PROJECT_DIR$/amazon-advertising-api-android/amazon-advertising-api-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/tesco-web-api-android/tesco-web-api-android.iml" filepath="$PROJECT_DIR$/tesco-web-api-android/tesco-web-api-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/walmart-web-api-android/walmart-web-api-android.iml" filepath="$PROJECT_DIR$/walmart-web-api-android/walmart-web-api-android.iml" />

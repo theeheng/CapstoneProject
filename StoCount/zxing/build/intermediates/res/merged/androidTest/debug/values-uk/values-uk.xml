@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/build/intermediates/bundles/debug/res/values-uk/values-uk.xml -->
-    <eat-comment/>
     <string name="app_name">Сканер штрих-кодів</string>
     <string name="app_picker_name">Програми</string>
     <string name="bookmark_picker_name">Закладки</string>

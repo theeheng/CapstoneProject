@@ -35,4 +35,4 @@
         android:icon="@android:drawable/ic_menu_help"
         android:orderInCategory="4"
         android:showAsAction="withText"/>
-</menu><!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/menu/capture.xml --><!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/build/intermediates/bundles/debug/res/menu/capture.xml -->
+</menu>

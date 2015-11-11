@@ -35,4 +35,4 @@
             android:singleLine="false"
             android:textIsSelectable="false"/>
 
-</LinearLayout><!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/layout/history_list_item.xml -->
+</LinearLayout>

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/values-zh-rCN/strings.xml -->
-    <eat-comment/>
     <string name="app_name">条码扫描器</string>
     <string name="app_picker_name">应用</string>
     <string name="bookmark_picker_name">书签</string>

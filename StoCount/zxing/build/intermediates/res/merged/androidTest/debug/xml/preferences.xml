@@ -133,4 +133,3 @@
         android:title="@string/preferences_disable_barcode_scene_mode_title"/>
   </PreferenceCategory>
 </PreferenceScreen>
-<!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/res/xml/preferences.xml --><!-- From: file:/I:/GitHub/CapstoneProject/StoCount/zxing/build/intermediates/bundles/debug/res/xml/preferences.xml -->

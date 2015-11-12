@@ -4,8 +4,6 @@
     android:hint="@string/search_hint"
     android:searchSuggestAuthority="com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider"
     android:searchSettingsDescription="@string/search_setting_description"
-    android:includeInGlobalSearch="true"
-    android:queryAfterZeroResults="true"
     android:searchSuggestIntentAction="android.intent.action.VIEW"
     android:searchMode="showSearchLabelAsBadge"
     android:searchSuggestSelection=" ? ">

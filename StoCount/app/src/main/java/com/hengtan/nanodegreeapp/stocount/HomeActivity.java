@@ -1,10 +1,17 @@
 package com.hengtan.nanodegreeapp.stocount;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.internal.view.menu.ActionMenuItem;
+import android.support.v7.internal.view.menu.ActionMenuItemView;
+import android.support.v7.widget.SearchView;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -46,7 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements SearchView.OnSuggestionListener {
 
     private static final String TAG = "INTENT_TO_SCAN_ACTIVITY";
 
@@ -61,6 +68,8 @@ public class HomeActivity extends AppCompatActivity {
 
     @InjectView(R.id.image)
     protected ImageView mImageView;
+
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +115,24 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login, menu);
-        return true;
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setIconified(false);
+
+        searchView.setOnSuggestionListener(this);
+        /*searchView.setOnQueryTextListener(
+                new
+
+        );*/
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -144,7 +169,10 @@ public class HomeActivity extends AppCompatActivity {
 
     @OnClick(R.id.searchButton)
     public void onSearchBtnClick(View v) {
-        super.onSearchRequested();
+
+        ActionMenuItemView actionSearch = (ActionMenuItemView) findViewById(R.id.action_search);
+        actionSearch.callOnClick();
+        //super.onSearchRequested();
     }
 
     @Override
@@ -362,6 +390,28 @@ public class HomeActivity extends AppCompatActivity {
         if(thumbnailUrl != null && (!thumbnailUrl.isEmpty()))
         {
             Glide.with(this).load(thumbnailUrl).fitCenter().into(mImageView);
+        }
+    }
+
+    @Override
+    public boolean onSuggestionSelect(int position) {
+        return false;
+    }
+
+    @Override
+    public boolean onSuggestionClick(int position) {
+        if(searchView != null) {
+            CursorAdapter c = searchView.getSuggestionsAdapter();
+
+            Cursor cur = c.getCursor();
+            cur.move(position);
+            int suggestionItemId = cur.getInt(0);
+            SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }

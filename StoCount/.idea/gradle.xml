@@ -5,13 +5,14 @@
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="$APPLICATION_HOME_DIR$/gradle/gradle-2.4" />
+        <option name="gradleHome" value="C:\Program Files\Android\Android Studio\gradle\gradle-2.4" />
         <option name="gradleJvm" value="1.7" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/amazon-advertising-api-android" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/floatingactionmenu" />
             <option value="$PROJECT_DIR$/tesco-web-api-android" />
             <option value="$PROJECT_DIR$/walmart-web-api-android" />
             <option value="$PROJECT_DIR$/zxing" />

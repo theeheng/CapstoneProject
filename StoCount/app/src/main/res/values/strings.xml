@@ -7,6 +7,8 @@
     <string name="walmart_apiKey"></string>
     <string name="aws_accesskeyid"></string>
     <string name="aws_securekeyid"></string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+
     <string name="search_hint">search by stock item name</string>
     <string name="search_setting_description">Stock Item Name</string>
 

@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res/com.hengtan.nanodegreeapp.stocount"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -72,7 +72,7 @@
         fab:menu_backgroundColor="#ccffffff"
         fab:menu_fab_label="Menu label">
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.hengtan.nanodegreeapp.stocount.fam.FloatingActionButton
             android:id="@+id/fab1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             fab:fab_size="mini"
             fab:fab_label="Menu item 1" />
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.hengtan.nanodegreeapp.stocount.fam.FloatingActionButton
             android:id="@+id/fab2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
             fab:fab_size="mini"
             fab:fab_label="Menu item 2" />
 
-        <com.github.clans.fab.FloatingActionButton
+        <com.hengtan.nanodegreeapp.stocount.fam.FloatingActionButton
             android:id="@+id/fab3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

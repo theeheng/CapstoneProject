@@ -44,7 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".RecyclerViewActivity"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"/>
         <provider
             android:name=".SearchByNameSuggestionProvider"
             android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider" >

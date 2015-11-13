@@ -184,7 +184,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 protected void setResource(Bitmap resource) {
                     RoundedBitmapDrawable circularBitmapDrawable =
                             RoundedBitmapDrawableFactory.create(LoginActivity.this.getResources(), resource);
-                    circularBitmapDrawable.setCircular(true);
+
+                    circularBitmapDrawable.setCornerRadius(Math.max(resource.getWidth(), resource.getHeight()) / 2.0f);
+                    //circularBitmapDrawable.setCircular(true);
                     mGoogleIcon.setImageDrawable(circularBitmapDrawable);
                 }
             });

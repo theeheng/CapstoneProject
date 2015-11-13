@@ -170,8 +170,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @OnClick(R.id.searchButton)
     public void onSearchBtnClick(View v) {
 
-        ActionMenuItemView actionSearch = (ActionMenuItemView) findViewById(R.id.action_search);
-        actionSearch.callOnClick();
+        //ActionMenuItemView actionSearch = (ActionMenuItemView) findViewById(R.id.action_search);
+        //actionSearch.callOnClick();
+        Intent intent = new Intent(this, RecyclerViewActivity.class);
+        startActivity(intent);
         //super.onSearchRequested();
     }
 

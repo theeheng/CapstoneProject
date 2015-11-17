@@ -28,7 +28,7 @@ public class TescoApi {
      * Main Tesco Web API endpoint
      * https://secure.techfortesco.com/tescolabsapi/restservice.aspx?command=PRODUCTSEARCH&searchtext=chocolate&page=1&sessionkey=HlsMYtFYAKwQ1YQfhimkpuGY16OenzBEfjX2x4gGl3LzzCZN7g
      */
-    public static final String TESCO_WEB_API_ENDPOINT = "https://api.spotify.com/v1";
+    public static final String TESCO_WEB_API_ENDPOINT = "https://secure.techfortesco.com/tescolabsapi/";
 
     /**
      * The request interceptor that will add the header with OAuth
@@ -48,7 +48,7 @@ public class TescoApi {
     private String mAccessToken;
 
     /**
-     * Create instance of SpotifyApi with given executors.
+     * Create instance of TescoApi with given executors.
      *
      * @param httpExecutor executor for http request. Cannot be null.
      * @param callbackExecutor executor for callbacks. If null is passed than the same
@@ -94,7 +94,7 @@ public class TescoApi {
     }
 
     /**
-     * @return The SpotifyApi instance
+     * @return The TescoApi instance
      */
     public TescoService getService() {
         return mTescoService;

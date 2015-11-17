@@ -13,22 +13,22 @@ public interface WalmartService {
 
 
     /**
-     * Get Spotify catalog information about playlists that match a keyword string.
+     * Get item detail information that match barcode string or item id.
      *
-     * @param q        The search query's keywords (and optional field filters and operators), for example "roadhouse+blues"
+     * @param options  The item query's option include: apikey , upc (upc barcode, ex: 885909456017), itemid (ex: 21805445)
      * @param callback Callback method
-     * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
+     * @see <a href="https://developer.walmartlabs.com/docs/read/Product_Lookup_API__new">Product Lookup API</a>
      */
 
     @GET("/items")
     void getProduct(@QueryMap Map<String, Object> options, Callback<WalmartItemList> callback);
 
     /**
-     * Get Spotify catalog information about playlists that match a keyword string.
+     * Get item that matches text or keyword string.
      *
-     * @param q        The search query's keywords (and optional field filters and operators), for example "roadhouse+blues"
+     * @param options  The search query's options include: apikey, query (ex: "ipod"), sort (ex: "price"), ord (ex:"asc")
      * @param callback Callback method
-     * @see <a href="https://developer.spotify.com/web-api/search-item/">Search for an Item</a>
+     * @see <a href="https://developer.walmartlabs.com/docs/read/Search_API">Search API</a>
      */
 
     @GET("/search")

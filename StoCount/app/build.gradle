@@ -26,6 +26,7 @@ android {
 
 dependencies {
     compile(project(':walmart-web-api-android'))
+    compile(project(':tesco-web-api-android'))
     compile(project(':amazon-advertising-api-android'))
     compile(project(':zxing'))
     compile(project(':floatingactionmenu'))

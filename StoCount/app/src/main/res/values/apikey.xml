@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tesco_apiEmail"></string>
+    <string name="tesco_apiPassword"></string>
+    <string name="tesco_apiDeveloperKey"></string>
+    <string name="tesco_apiApplicationKey"></string>
+    <string name="walmart_apiKey"></string>
+    <string name="aws_accesskeyid"></string>
+    <string name="aws_securekeyid"></string>
+</resources>

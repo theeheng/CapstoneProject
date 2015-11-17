@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tesco.webapi.android.TescoApi;
+import tesco.webapi.android.TescoProduct;
+import tesco.webapi.android.TescoProductSearch;
+import tesco.webapi.android.TescoService;
 import walmart.webapi.android.WalmartItemList;
 import walmart.webapi.android.WalmartItems;
 import walmart.webapi.android.WalmartApi;
@@ -32,6 +36,7 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
     private static final UriMatcher sURIMatcher = buildUriMatcher();
 
     List<SearchSuggestion> searchResult = null;
+    private String previousQuery;
 
     private static final String[] COLUMNS = {
             "_id",  // must include this column
@@ -104,10 +109,10 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         else if(query.length() <= 2) {
             return null;
         }
-        else
+        else if(!query.equals(previousQuery) || (query.equals(previousQuery) &&  (searchResult == null || (searchResult != null && searchResult.size() == 0))))
         {
             //result = getSuggestedItemNameFromDB(query);
-            getSuggestedItemNameFromAPI(query);
+            getSuggestedItemNameFromTescoAPI(query);
             //result.add("Orange juice");
             //result.add("Apple juice");
             //result.add("Mango juice");
@@ -193,7 +198,7 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    private void getSuggestedItemNameFromAPI(String query)
+    private void getSuggestedItemNameFromWalmartAPI(String query)
     {
 
         WalmartApi testApi = new WalmartApi();
@@ -234,6 +239,46 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
             String err = ex.getMessage();
         }
     }
+
+
+    private void getSuggestedItemNameFromTescoAPI(String query)
+    {
+
+        previousQuery = query;
+
+        TescoApi testApi = new TescoApi();
+
+        TescoService testService = testApi.getService();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        try {
+            TescoProductSearch result = testService.productSearch(query, Application.getTescoApiSessionKey());
+
+            if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0) {
+
+                searchResult = new ArrayList<SearchSuggestion>();
+
+                for (TescoProduct s : result.getProducts()) {
+
+                    SearchSuggestion ss = new SearchSuggestion();
+                    ss.id = Integer.parseInt(s.getProductId());
+                    ss.name = s.getName();
+                    ss.category = s.getUnitType();
+
+                    searchResult.add(ss);
+                }
+
+            } else {
+                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
+            }
+        }
+        catch(Exception ex)
+        {
+            String err = ex.getMessage();
+        }
+    }
+
 }
 
 class SearchSuggestion

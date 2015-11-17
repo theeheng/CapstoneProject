@@ -32,6 +32,10 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import tesco.webapi.android.TescoApi;
+import tesco.webapi.android.TescoProductSearch;
+import tesco.webapi.android.TescoService;
+import tesco.webapi.android.TescoSessionKey;
 import walmart.webapi.android.WalmartApi;
 import walmart.webapi.android.WalmartItemList;
 import walmart.webapi.android.WalmartService;
@@ -81,33 +85,23 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
        // txtView.setInputType(InputType.TYPE_NULL);
        // txtView.setBackground(null);
 
-        final Intent queryIntent = getIntent();
+        /*final Intent queryIntent = getIntent();
         final String queryAction = queryIntent.getAction();
 
         if (Intent.ACTION_SEARCH.equals(queryAction))
         {
             String test = queryIntent.getStringExtra(SearchManager.QUERY);
-           /* CallSearchStockCountItem searchItemAsync = new CallSearchStockCountItem(this);
-            String searchType = HomeActivity.SearchType.SearchByName.toString();
-            searchItemAsync.execute(searchType, queryIntent.getStringExtra(SearchManager.QUERY), null, Boolean.toString(false));
-            finish();
-            */
         }
         else if(Intent.ACTION_VIEW.equals(queryAction))
         {
             String itemId = queryIntent.getData().getLastPathSegment();
-
-            SearchProductFromWalmartAPI(null, itemId);
-            /*
-            CallSearchStockCountItem searchItemAsync = new CallSearchStockCountItem(this);
-            String searchType = SearchType.SearchBySiteItemId.toString();
-            searchItemAsync.execute(searchType, queryIntent.getData().getLastPathSegment());
-            finish();
-            */
+            //SearchProductFromWalmartAPI(null, itemId);
+            SearchProductFromTescoAPI(null,itemId);
         }
         else {
             Log.d(TAG,"Create intent NOT from search");
         }
+        */
 
         Glide.with(this).load(R.mipmap.no_image).fitCenter().into(mImageView);
     }
@@ -261,6 +255,47 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         });
     }
 
+    public void SearchProductFromTescoAPI(String barcodeScanResult, final String itemId)
+    {
+        TescoApi testApi = new TescoApi();
+
+        TescoService testService = testApi.getService();
+
+
+        testService.productSearch(itemId, Application.getTescoApiSessionKey(), new retrofit.Callback<TescoProductSearch>() {
+            @Override
+            public void success(final TescoProductSearch result, Response response) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0)
+                        {
+                            String name = result.getProducts().get(0).getName();
+                            String description = result.getProducts().get(0).getExtendedDescription();
+
+                            UpdateUI(name, description, result.getProducts().get(0).getImagePath().replace("90x90","225x225")); //540x540
+
+                        } else {
+                            Toast.makeText(HomeActivity.this, "Product not found for : " + itemId, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void failure(final RetrofitError error) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String msg = error.getMessage();
+                        Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+    }
+
     public void SearchProductFromAmazonApi(String barcodeScanResult, String formatName, String formatType)
     {
         Resources res = getResources();
@@ -408,7 +443,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
             Cursor cur = c.getCursor();
             cur.move(position);
             int suggestionItemId = cur.getInt(0);
-            SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
+            //SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
+
+            SearchProductFromTescoAPI(null, Integer.toString(suggestionItemId));
+
             return true;
         }
         else

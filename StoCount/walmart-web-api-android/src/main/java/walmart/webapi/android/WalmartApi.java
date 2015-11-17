@@ -48,7 +48,7 @@ public class WalmartApi {
     private String mAccessToken;
 
     /**
-     * Create instance of SpotifyApi with given executors.
+     * Create instance of WalmartApi with given executors.
      *
      * @param httpExecutor     executor for http request. Cannot be null.
      * @param callbackExecutor executor for callbacks. If null is passed than the same

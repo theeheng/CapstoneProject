@@ -369,14 +369,20 @@ public class SwipeToDismissTouchListener<SomeCollectionView extends ViewAdapter>
         // Animate the dismissed list item to zero-height and fire the dismiss callback when
         // all dismissed list item animations have completed. This triggers layout on each animation
         // frame; in the future we may want to do something smarter and more performant.
+
         if (mPendingDismiss != null) {
-            boolean dismissingDifferentRow = mPendingDismiss.position != dismissPosition;
-            int newPosition = mPendingDismiss.position < dismissPosition ? dismissPosition-1 : dismissPosition;
-            processPendingDismisses();
+
+            boolean dismissingDifferentRow = dismissPosition != mPendingDismiss.position;
+
+            undoPendingDismiss();
+
+           // processPendingDismisses();
             if (dismissingDifferentRow) {
-                addPendingDismiss(dismissView, newPosition);
+                addPendingDismiss(dismissView, dismissPosition);
             }
+
         } else {
+
             addPendingDismiss(dismissView, dismissPosition);
         }
     }
@@ -411,7 +417,7 @@ public class SwipeToDismissTouchListener<SomeCollectionView extends ViewAdapter>
      * container reappear.
      * @return whether there were any pending rows to be dismissed.
      */
-    public boolean undoPendingDismiss() {
+    public boolean undoPendingDismiss2() {
         boolean existPendingDismisses = existPendingDismisses();
         if (existPendingDismisses) {
             mPendingDismiss.rowContainer.undoContainer.setVisibility(View.GONE);
@@ -425,6 +431,40 @@ public class SwipeToDismissTouchListener<SomeCollectionView extends ViewAdapter>
         }
         return existPendingDismisses;
     }
+
+    /**
+     * If a view was dismissed and the undo container is showing it will undo and make the data
+     * container reappear.
+     * @return whether there were any pending rows to be dismissed.
+     */
+    public boolean undoPendingDismiss() {
+        boolean existPendingDismisses = existPendingDismisses();
+        if (existPendingDismisses) {
+
+            mPendingDismiss.rowContainer.undoContainer
+                        .animate()
+                        .translationX(0)
+                        .alpha(1)
+                        .setDuration(mAnimationTime)
+                        .setListener(null);
+
+            mPendingDismiss.rowContainer.undoContainer.setVisibility(View.GONE);
+
+
+            mPendingDismiss.rowContainer.dataContainer
+                    .animate()
+                    .translationX(0)
+                    .alpha(1)
+                    .setDuration(mAnimationTime)
+                    .setListener(null);
+
+
+
+            mPendingDismiss = null;
+        }
+        return existPendingDismisses;
+    }
+
 
     private void processPendingDismisses(final PendingDismissData pendingDismissData) {
         mPendingDismiss = null;

@@ -23,7 +23,7 @@ import android.view.animation.AnticipateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
-
+import android.support.design.widget.CoordinatorLayout;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -247,6 +247,7 @@ public class FloatingActionMenu extends ViewGroup {
         mMenuButton.mFabSize = mMenuFabSize;
         mMenuButton.updateBackground();
         mMenuButton.setLabelText(mMenuLabelText);
+        mMenuButton.setId(R.id.fab_menu_button);
 
         mImageToggle = new ImageView(getContext());
         mImageToggle.setImageDrawable(mIcon);
@@ -998,5 +999,13 @@ public class FloatingActionMenu extends ViewGroup {
 
     public void setOnMenuButtonClickListener(OnClickListener clickListener) {
         mMenuButton.setOnClickListener(clickListener);
+    }
+
+    public Integer getMenuButtonId()
+    {
+        if(mMenuButton == null)
+            return null;
+        else
+            return mMenuButton.getId();
     }
 }

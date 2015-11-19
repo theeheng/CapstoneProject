@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res/com.hengtan.nanodegreeapp.stocount"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -58,7 +58,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/scanButton"/>
 
-    <com.hengtan.nanodegreeapp.stocount.fam.FloatingActionMenu
+    <android.support.design.widget.SupportFloatingActionsMenu
         android:id="@+id/menu1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -67,34 +67,31 @@
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
-        fab:menu_labels_ellipsize="end"
-        fab:menu_labels_singleLine="true"
-        fab:menu_backgroundColor="#ccffffff"
-        fab:menu_fab_label="Menu label">
+        app:fab_expandDirection="up"
+        app:fab_labelsPosition="left"
+        app:layout_anchorGravity="bottom|right|end">
 
-        <com.hengtan.nanodegreeapp.stocount.fam.FloatingActionButton
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_edit"
-            fab:fab_size="mini"
-            fab:fab_label="Menu item 1" />
+            app:fab_icon="@drawable/ic_edit"
+            app:fab_title="Menu item 1"  />
 
-        <com.hengtan.nanodegreeapp.stocount.fam.FloatingActionButton
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_edit"
-            fab:fab_size="mini"
-            fab:fab_label="Menu item 2" />
+            app:fab_icon="@drawable/ic_edit"
+            app:fab_title="Menu item 2" />
 
-        <com.hengtan.nanodegreeapp.stocount.fam.FloatingActionButton
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_edit"
-            fab:fab_size="mini"
-            fab:fab_label="@string/lorem_ipsum" />
+            app:fab_icon="@drawable/ic_edit"
+            app:fab_title="@string/lorem_ipsum" />
 
-    </com.hengtan.nanodegreeapp.stocount.fam.FloatingActionMenu>
+    </android.support.design.widget.SupportFloatingActionsMenu>
 </RelativeLayout>

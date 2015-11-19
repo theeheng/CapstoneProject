@@ -29,7 +29,6 @@ dependencies {
     compile(project(':tesco-web-api-android'))
     compile(project(':amazon-advertising-api-android'))
     compile(project(':zxing'))
-    compile(project(':floatingactionmenu'))
     compile(project(':swipe'))
     //compile files('libs/swipe-to-dismiss-undo-1.0.jar')
     compile files('libs/nano-0.7.0.jar')
@@ -42,4 +41,5 @@ dependencies {
     compile 'com.android.support:design:22.2.1'
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.1'
+    compile 'com.getbase:floatingactionbutton:1.10.1'
 }

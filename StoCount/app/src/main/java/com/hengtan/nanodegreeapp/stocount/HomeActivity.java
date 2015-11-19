@@ -166,7 +166,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
         //ActionMenuItemView actionSearch = (ActionMenuItemView) findViewById(R.id.action_search);
         //actionSearch.callOnClick();
-        Intent intent = new Intent(this, RecyclerViewActivity.class);
+        Intent intent = new Intent(this, DetailActivity.class);
         startActivity(intent);
         //super.onSearchRequested();
     }
@@ -441,7 +441,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
             CursorAdapter c = searchView.getSuggestionsAdapter();
 
             Cursor cur = c.getCursor();
-            cur.move(position);
+            cur.moveToPosition(position);
             int suggestionItemId = cur.getInt(0);
             //SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
 

@@ -48,6 +48,9 @@
         <activity android:name=".RecyclerViewActivity"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"/>
+        <activity android:name=".DetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <provider
             android:name=".SearchByNameSuggestionProvider"
             android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider" >

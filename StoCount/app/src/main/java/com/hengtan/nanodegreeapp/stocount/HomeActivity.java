@@ -166,7 +166,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
         //ActionMenuItemView actionSearch = (ActionMenuItemView) findViewById(R.id.action_search);
         //actionSearch.callOnClick();
-        Intent intent = new Intent(this, TextInputLayoutActivity.class);
+        Intent intent = new Intent(this, DetailActivity.class);
         startActivity(intent);
         //super.onSearchRequested();
     }

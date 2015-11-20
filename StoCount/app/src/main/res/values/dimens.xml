@@ -6,4 +6,30 @@
     <dimen name="g_top_margin">100dp</dimen>
     <dimen name="list_item_padding_sides">16dp</dimen>
     <dimen name="list_item_height">80dp</dimen>
+
+
+    <!-- detail -->
+    <dimen name="toolbar_content_insertStart">0dp</dimen>
+    <dimen name="toolbar_collapsed_height">144dp</dimen>
+
+    <dimen name="detail_metabar_title_bottom_padding">4dp</dimen>
+
+    <dimen name="detail_header_title_height">128dp</dimen>
+    <dimen name="detail_image_height">250dp</dimen>
+    <dimen name="detail_title_text_size">20sp</dimen>
+    <dimen name="detail_subhead_text_size">16sp</dimen>
+    <dimen name="detail_body_text_size">14sp</dimen>
+    <item name="detail_header_line_spacing_multiplier" format="float" type="fraction">0.9</item>
+    <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
+
+
+    <dimen name="fab_size">56dp</dimen>
+    <dimen name="fab_press_translation_z">12dp</dimen>
+
+    <dimen name="flexi_appbar_height">168dp</dimen>
+
+    <dimen name="keyline_margin">16dp</dimen>
+    <dimen name="keyline_content_start">72dp</dimen>
+    <dimen name="keyline_content_end_with_fab">32dp</dimen>
+
 </resources>

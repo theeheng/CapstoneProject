@@ -21,4 +21,16 @@
 
         <item name="android:textColor">@color/blue_grey_900</item>
     </style>
+
+    <style name="Theme.Bacon.Detail.HeaderTitle" parent="@android:style/TextAppearance.DeviceDefault.Large">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/detail_metabar_title_bottom_padding</item>
+        <item name="android:fontFamily">Roboto-Condensed</item>
+        <item name="android:textColor">@color/theme_text_detail_header</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/detail_title_text_size</item>
+        <item name="android:lineSpacingMultiplier">@fraction/detail_header_line_spacing_multiplier</item>
+    </style>
+
 </resources>

@@ -17,4 +17,7 @@
     <color name="pink_pressed">#ec407a</color>
     <color name="blue_semi_transparent">#805677fc</color>
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
+
+    <color name="theme_text_detail_header">#e0781315</color>
+
 </resources>

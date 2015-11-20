@@ -11,38 +11,60 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="256dp"
-        android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="wrap_content"
+        android:background="?colorPrimary"
+        app:elevation="@dimen/appbar_elevation">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginEnd="50dp"
-            app:expandedTitleMarginStart="50dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/test"
-                app:layout_collapseMode="parallax"
-                app:layout_scrollFlags="scroll|enterAlways" />
+
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                android:layout_height="wrap_content"
+                android:contentInsetStart="@dimen/toolbar_content_insertStart"
+                android:contentInsetLeft="@dimen/toolbar_content_insertStart"
+                app:contentInsetLeft="@dimen/toolbar_content_insertStart"
+                app:contentInsetStart="@dimen/toolbar_content_insertStart"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                android:minHeight="@dimen/toolbar_collapsed_height" >
 
-        </android.support.design.widget.CollapsingToolbarLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/photo"
+                        android:layout_width="match_parent"
+                        android:src="@mipmap/test"
+                        android:layout_height="@dimen/detail_image_height"
+                        android:scaleType="centerCrop"/>
+
+                    <LinearLayout
+                        android:id="@+id/meta_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/detail_header_title_height"
+                        android:background="@color/blue_grey_900"
+                        android:orientation="vertical"
+                        android:paddingTop="@dimen/keyline_margin"
+                        android:paddingLeft="@dimen/keyline_content_start"
+                        android:paddingRight="@dimen/keyline_margin"
+                        android:paddingBottom="@dimen/keyline_margin"
+                        android:layout_gravity="center_horizontal">
+
+                        <TextView
+                            android:id="@+id/article_title"
+                            style="@style/Theme.Bacon.Detail.HeaderTitle"
+                            android:text="Apple iPod touch 32GB  (Assorted Colors)"
+                            />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.Toolbar>
+
 
     </android.support.design.widget.AppBarLayout>
 
@@ -60,32 +82,54 @@
             android:paddingRight="16dp"
             android:paddingTop="48dp">
 
-            <ImageView
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_password"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_marginBottom="16dp"
-                android:background="@android:color/darker_gray"
-                android:scaleType="centerCrop" />
+                android:layout_marginTop="16dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="16dp"
-                android:background="@android:color/darker_gray"
-                android:scaleType="centerCrop" />
+                <EditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Category"
+                    android:text="Home Page/Electronics/Portable Audio/Apple iPods" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="16dp"
-                android:background="@android:color/darker_gray"
-                android:scaleType="centerCrop" />
+            </android.support.design.widget.TextInputLayout>
 
-            <ImageView
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_username"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@android:color/darker_gray"
-                android:scaleType="centerCrop" />
+                android:layout_height="400dp"
+                android:layout_marginTop="16dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp">
+
+                <EditText
+                    android:id="@+id/et_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:lines="10"
+                    android:gravity="top|left"
+                    android:text="@string/lorem_ipsum"
+                    android:hint="description"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/editButton"
+                android:text="Edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
 
         </LinearLayout>
 

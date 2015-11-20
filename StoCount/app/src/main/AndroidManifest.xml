@@ -51,6 +51,8 @@
         <activity android:name=".DetailActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
+        <activity android:name=".TextInputLayoutActivity"
+            android:screenOrientation="portrait"/>
         <provider
             android:name=".SearchByNameSuggestionProvider"
             android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider" >

@@ -97,7 +97,7 @@
         android:layout_marginRight="@dimen/fab_margin"
         android:clickable="true"
         app:fab_expandDirection="down"
-        app:fab_labelsPosition="left"
+        app:fab_labelStyle="@style/menu_labels_style"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end">
 

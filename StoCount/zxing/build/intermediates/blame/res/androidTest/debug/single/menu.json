@@ -1,14 +1,14 @@
 [
     {
-        "merged": "I:\\GitHub\\CapstoneProject\\StoCount\\zxing\\build\\intermediates\\res\\merged\\androidTest\\debug\\menu\\history.xml",
-        "source": "I:\\GitHub\\CapstoneProject\\StoCount\\zxing\\build\\intermediates\\bundles\\debug\\res\\menu\\history.xml"
+        "merged": "/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/build/intermediates/res/merged/androidTest/debug/menu/history.xml",
+        "source": "/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/build/intermediates/bundles/debug/res/menu/history.xml"
     },
     {
-        "merged": "I:\\GitHub\\CapstoneProject\\StoCount\\zxing\\build\\intermediates\\res\\merged\\androidTest\\debug\\menu\\capture.xml",
-        "source": "I:\\GitHub\\CapstoneProject\\StoCount\\zxing\\build\\intermediates\\bundles\\debug\\res\\menu\\capture.xml"
+        "merged": "/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/build/intermediates/res/merged/androidTest/debug/menu/capture.xml",
+        "source": "/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/build/intermediates/bundles/debug/res/menu/capture.xml"
     },
     {
-        "merged": "I:\\GitHub\\CapstoneProject\\StoCount\\zxing\\build\\intermediates\\res\\merged\\androidTest\\debug\\menu\\encode.xml",
-        "source": "I:\\GitHub\\CapstoneProject\\StoCount\\zxing\\build\\intermediates\\bundles\\debug\\res\\menu\\encode.xml"
+        "merged": "/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/build/intermediates/res/merged/androidTest/debug/menu/encode.xml",
+        "source": "/Users/hengtan/Documents/CapstoneProject/StoCount/zxing/build/intermediates/bundles/debug/res/menu/encode.xml"
     }
 ]

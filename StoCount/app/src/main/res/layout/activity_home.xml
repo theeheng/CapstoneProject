@@ -1,11 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.hengtan.nanodegreeapp.stocount.HomeActivity">
+    android:background="@color/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -51,47 +48,36 @@
         android:layout_below="@+id/linearLayout"
         android:layout_toRightOf=  "@+id/scanButton"/>
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment"
-        android:name="com.hengtan.nanodegreeapp.stocount.AdFragment"
-        tools:layout="@layout/fragment_ad" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/scanButton"/>
+
+
 
     <android.support.design.widget.SupportFloatingActionsMenu
-        android:id="@+id/menu1"
+        android:id="@+id/multiple_actions"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        app:fab_expandDirection="up"
-        app:fab_labelsPosition="left"
-        app:layout_anchorGravity="bottom|right|end">
+        app:fab_addButtonColorNormal="@color/white"
+        app:fab_addButtonColorPressed="@color/white_pressed"
+        app:fab_addButtonPlusIconColor="@color/half_black"
+        app:fab_labelStyle="@style/menu_labels_style">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab1"
+            android:id="@+id/action_a"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_edit"
-            app:fab_icon="@drawable/ic_edit"
-            app:fab_title="Menu item 1"  />
+            app:fab_colorNormal="@color/white"
+            app:fab_title="Action A"
+            app:fab_colorPressed="@color/white_pressed"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab2"
+            android:id="@+id/action_b"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_icon="@drawable/ic_edit"
-            app:fab_title="Menu item 2" />
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_icon="@drawable/ic_edit"
-            app:fab_title="@string/lorem_ipsum" />
+            app:fab_colorNormal="@color/white"
+            app:fab_title="Action with a n"
+            app:fab_colorPressed="@color/white_pressed"/>
 
     </android.support.design.widget.SupportFloatingActionsMenu>
+
+
+
 </RelativeLayout>

@@ -166,7 +166,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
         //ActionMenuItemView actionSearch = (ActionMenuItemView) findViewById(R.id.action_search);
         //actionSearch.callOnClick();
-        Intent intent = new Intent(this, DetailActivity.class);
+        Intent intent = new Intent(this, RecyclerViewActivity.class);
         startActivity(intent);
         //super.onSearchRequested();
     }
@@ -271,10 +271,14 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
                         if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0)
                         {
-                            String name = result.getProducts().get(0).getName();
-                            String description = result.getProducts().get(0).getExtendedDescription();
+                            Product prod = new Product(result.getProducts().get(0));
 
-                            UpdateUI(name, description, result.getProducts().get(0).getImagePath().replace("90x90","225x225")); //540x540
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+                            Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+                            intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                            startActivity(intent);
+
 
                         } else {
                             Toast.makeText(HomeActivity.this, "Product not found for : " + itemId, Toast.LENGTH_LONG).show();

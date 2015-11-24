@@ -75,8 +75,7 @@
                             android:textColor="@color/white"
                             android:fitsSystemWindows="true"
                             android:inputType="textMultiLine"
-                            android:lines="2"
-                            android:text="Apple iPod touch 32GB  (Assorted Colors)" />
+                            android:lines="2" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -124,8 +123,7 @@
                     android:id="@+id/et_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Home Page/Electronics/Portable Audio/Apple iPods" />
+                    android:layout_marginTop="16dp" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -134,8 +132,6 @@
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/lorem_ipsum"
-
                 android:textSize="18dp" />
 
             <android.support.design.widget.TextInputLayout
@@ -152,9 +148,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
                     android:lines="10"
-                    android:gravity="top|left"
-                    android:text="@string/lorem_ipsum"
-                    />
+                    android:gravity="top|left" />
 
             </android.support.design.widget.TextInputLayout>
 

@@ -1,5 +1,6 @@
 package com.hengtan.nanodegreeapp.stocount;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -13,9 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
@@ -38,6 +41,8 @@ public class DetailActivity extends AppCompatActivity {
     private EditText category;
     private EditText description;
     private TextView descriptionTextView;
+    private ImageView image;
+
     private String nameOriginalText;
     private String categoryOriginalText;
     private String descriptionOriginalText;
@@ -46,6 +51,9 @@ public class DetailActivity extends AppCompatActivity {
 
     private CollapsingToolbarLayout mCollapsingToolbar;
 
+    public static final String PRODUCT_PARCELABLE = "PRODUCTPARCELABLE";
+
+    private Product mProduct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +61,36 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         initToolbar();
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(PRODUCT_PARCELABLE)) {
+            mProduct = savedInstanceState.getParcelable(PRODUCT_PARCELABLE);
+        }
+        else
+        {
+            //Bundle arguments = getArguments();
+            Intent intent = getIntent();
+            Bundle bundle = intent.getExtras();
+
+            if(bundle.get(PRODUCT_PARCELABLE) != null)
+            {
+                bundle = (Bundle) bundle.get(PRODUCT_PARCELABLE);
+                mProduct = bundle.getParcelable(PRODUCT_PARCELABLE);
+            }
+        }
+
+        image = (ImageView)findViewById(R.id.photo);
         name = (EditText)findViewById(R.id.et_name);
         category = (EditText)findViewById(R.id.et_category);
         description = (EditText)findViewById(R.id.et_description);
         descriptionTextView = (TextView)findViewById(R.id.description);
+
+        if(mProduct != null) {
+            name.setText(mProduct.getName());
+            mCollapsingToolbar.setTitle(mProduct.getName());
+            category.setText(mProduct.getCategory());
+            description.setText(mProduct.getDescription());
+            descriptionTextView.setText(mProduct.getDescription());
+            Glide.with(this).load(mProduct.getLargeImage()).fitCenter().into(image);
+        }
 
         nameOriginalText = name.getText().toString();
         categoryOriginalText = category.getText().toString();
@@ -145,7 +179,8 @@ public class DetailActivity extends AppCompatActivity {
                     name.setText(nameOriginalText);
                     category.setText(categoryOriginalText);
                     description.setText(descriptionOriginalText);
-
+                    descriptionTextView.setText(descriptionOriginalText);
+                    
                     photoFabButton.setVisibility(View.VISIBLE);
                     description.setVisibility(View.GONE);
                     descriptionTextInputLayout.setVisibility(View.GONE);
@@ -214,7 +249,6 @@ public class DetailActivity extends AppCompatActivity {
         mCollapsingToolbar =
              (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
-        mCollapsingToolbar.setTitle("Apple iPod touch 32GB  (Assorted Colors)");
         mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
         mCollapsingToolbar.setCollapsedTitleTextColor(getResources().getColor(android.R.color.white));
     }

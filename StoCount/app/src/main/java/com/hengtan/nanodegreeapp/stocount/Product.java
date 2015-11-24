@@ -1,7 +1,11 @@
 package com.hengtan.nanodegreeapp.stocount;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,5 +170,18 @@ public class Product implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public void SaveProduct(ContentResolver contentResolver) {
+        ContentValues values = new ContentValues();
+        //values.put(StoCountContract.ProductEntry._ID, ean);
+        values.put(StoCountContract.ProductEntry.PRODUCT_NAME, this.mName);
+        values.put(StoCountContract.ProductEntry.DESCRIPTION, this.mDescription);
+        values.put(StoCountContract.ProductEntry.THUMBNAIL_IMAGE, this.mThumbnailImage);
+        values.put(StoCountContract.ProductEntry.LARGE_IMAGE, this.mLargeImage);
+        values.put(StoCountContract.ProductEntry.CATEGORY, this.mCategory);
+        values.put(StoCountContract.ProductEntry.BARCODE, this.mBarcode);
+        values.put(StoCountContract.ProductEntry.BARCODE_FORMAT, this.mBarcodeFormat);
+        contentResolver.insert(StoCountContract.ProductEntry.CONTENT_URI, values);
     }
 }

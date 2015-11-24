@@ -1,5 +1,7 @@
 package com.hengtan.nanodegreeapp.stocount;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 
 /**
  * Created by Eric on 15/6/1.
@@ -126,8 +129,7 @@ public class DetailActivity extends AppCompatActivity {
 
 
         final FloatingActionButton editFabButton = (FloatingActionButton) findViewById(R.id.fabEditButton);
-        editFabButton.setOnClickListener(new View.OnClickListener()
-        {
+        editFabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!mIsEditable) {
@@ -153,13 +155,16 @@ public class DetailActivity extends AppCompatActivity {
                     editFabButton.setIcon(R.drawable.ic_star);
 
 
-                }
-                else
-                {
+                } else {
                     nameOriginalText = name.getText().toString();
                     categoryOriginalText = category.getText().toString();
                     descriptionOriginalText = description.getText().toString();
 
+                    mProduct.setName(nameOriginalText);
+                    mProduct.setCategory(categoryOriginalText);
+                    mProduct.setDescription(descriptionOriginalText);
+
+                    mProduct.SaveProduct(getContentResolver());
 
                     Toast.makeText(DetailActivity.this, "Save Detail.........", Toast.LENGTH_LONG).show();
                     famButton.collapse();
@@ -180,14 +185,13 @@ public class DetailActivity extends AppCompatActivity {
                     category.setText(categoryOriginalText);
                     description.setText(descriptionOriginalText);
                     descriptionTextView.setText(descriptionOriginalText);
-                    
+
                     photoFabButton.setVisibility(View.VISIBLE);
                     description.setVisibility(View.GONE);
                     descriptionTextInputLayout.setVisibility(View.GONE);
                     descriptionTextView.setVisibility(View.VISIBLE);
                 }
             }
-
         }
         );
 

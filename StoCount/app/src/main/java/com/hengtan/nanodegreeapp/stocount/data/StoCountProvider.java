@@ -255,7 +255,7 @@ public class StoCountProvider extends ContentProvider {
             case PRODUCT:{
                 long _id = db.insert(StoCountContract.ProductEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = StoCountContract.ProductEntry.buildAuthorUri(values.getAsLong("_id"));
+                    returnUri = StoCountContract.ProductEntry.buildAuthorUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;

@@ -9,26 +9,43 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 /**
  * Created by Eric on 15/6/1.
  */
 public class DetailActivity extends AppCompatActivity {
 
-    private KeyListener passListener;
-    private KeyListener userListener;
-    private TextInputLayout userTextInputLayout;
-    private TextInputLayout passTextInputLayout;
-    private Drawable userDrawable;
-    private Drawable passDrawable;
+    private KeyListener nameListener;
+    private KeyListener categoryListener;
+    private KeyListener descriptionListener;
+    private TextInputLayout nameTextInputLayout;
+    private TextInputLayout categoryTextInputLayout;
+    private TextInputLayout descriptionTextInputLayout;
+    private Drawable nameDrawable;
+    private Drawable categoryDrawable;
+    private Drawable descriptionDrawable;
 
-    private EditText usrname;
-    private EditText pssword;
+    private EditText name;
+    private EditText category;
+    private EditText description;
+    private TextView descriptionTextView;
+    private String nameOriginalText;
+    private String categoryOriginalText;
+    private String descriptionOriginalText;
+
+    private boolean mIsEditable = false;
+
+    private CollapsingToolbarLayout mCollapsingToolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,57 +53,145 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         initToolbar();
 
-        usrname = (EditText)findViewById(R.id.et_username);
-        pssword = (EditText)findViewById(R.id.et_password);
+        name = (EditText)findViewById(R.id.et_name);
+        category = (EditText)findViewById(R.id.et_category);
+        description = (EditText)findViewById(R.id.et_description);
+        descriptionTextView = (TextView)findViewById(R.id.description);
 
-        userDrawable = usrname.getBackground();
-        passDrawable = pssword.getBackground();
+        nameOriginalText = name.getText().toString();
+        categoryOriginalText = category.getText().toString();
+        descriptionOriginalText = description.getText().toString();
 
-        userTextInputLayout = (TextInputLayout) findViewById(R.id.til_username);
-        passTextInputLayout = (TextInputLayout) findViewById(R.id.til_password);
+        nameDrawable = name.getBackground();
+        categoryDrawable = category.getBackground();
+        descriptionDrawable = description.getBackground();
 
-        userListener = usrname.getKeyListener();
-        passListener = pssword.getKeyListener();
+        nameTextInputLayout = (TextInputLayout) findViewById(R.id.til_name);
+        categoryTextInputLayout = (TextInputLayout) findViewById(R.id.til_category);
+        descriptionTextInputLayout = (TextInputLayout) findViewById(R.id.til_description);
+        description.setVisibility(View.GONE);
+        descriptionTextInputLayout.setVisibility(View.GONE);
 
-        usrname.setKeyListener(null);
-        pssword.setKeyListener(null);
+        nameListener = category.getKeyListener();
+        categoryListener = category.getKeyListener();
+        descriptionListener = description.getKeyListener();
 
-        usrname.setBackgroundResource(R.color.transparent);
-        pssword.setBackgroundResource(R.color.transparent);
+        name.setKeyListener(null);
+        category.setKeyListener(null);
+        description.setKeyListener(null);
 
-        Button editBtn = (Button)findViewById(R.id.editButton);
+        name.setBackgroundResource(R.color.transparent);
+        category.setBackgroundResource(R.color.transparent);
+        description.setBackgroundResource(R.color.transparent);
 
-        editBtn.setOnClickListener(new View.OnClickListener()
+        final FloatingActionsMenu famButton = (FloatingActionsMenu) findViewById(R.id.famButton);
+
+        final FloatingActionButton photoFabButton = (FloatingActionButton) findViewById(R.id.fabPhotoButton);
+
+
+
+
+        final FloatingActionButton editFabButton = (FloatingActionButton) findViewById(R.id.fabEditButton);
+        editFabButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View v)
-            {
-                Button btn =  ((Button)v);
+            public void onClick(View v) {
+                if (!mIsEditable) {
+                    mIsEditable = true;
 
-                if(btn.getText().equals("Edit")) {
-                    usrname.setKeyListener(userListener);
-                    userTextInputLayout.setHint("username");
+                    name.setKeyListener(nameListener);
+                    nameTextInputLayout.setHint("product name");
 
-                    pssword.setKeyListener(passListener);
-                    passTextInputLayout.setHint("password");
+                    category.setKeyListener(categoryListener);
+                    categoryTextInputLayout.setHint("category");
 
-                    btn.setText("Save");
+                    description.setKeyListener(descriptionListener);
+                    descriptionTextInputLayout.setHint("description");
 
-                    usrname.setBackground(userDrawable);
-                    pssword.setBackground(passDrawable);
+                    name.setBackground(nameDrawable);
+                    category.setBackground(categoryDrawable);
+                    description.setBackground(descriptionDrawable);
+
+                    description.setVisibility(View.VISIBLE);
+                    descriptionTextInputLayout.setVisibility(View.VISIBLE);
+                    descriptionTextView.setVisibility(View.GONE);
+                    photoFabButton.setVisibility(View.GONE);
+                    editFabButton.setIcon(R.drawable.ic_star);
+
+
                 }
                 else
                 {
-                    userTextInputLayout.setHint(null);
-                    passTextInputLayout.setHint(null);
-                    usrname.setKeyListener(null);
-                    pssword.setKeyListener(null);
-                    usrname.setBackgroundResource(R.color.transparent);
-                    pssword.setBackgroundResource(R.color.transparent);
-                    btn.setText("Edit");
+                    nameOriginalText = name.getText().toString();
+                    categoryOriginalText = category.getText().toString();
+                    descriptionOriginalText = description.getText().toString();
+
+
+                    Toast.makeText(DetailActivity.this, "Save Detail.........", Toast.LENGTH_LONG).show();
+                    famButton.collapse();
+                    editFabButton.setIcon(android.R.drawable.ic_menu_camera);
+                    mIsEditable = false;
+                    nameTextInputLayout.setHint(null);
+                    categoryTextInputLayout.setHint(null);
+                    descriptionTextInputLayout.setHint(null);
+                    name.setKeyListener(null);
+                    category.setKeyListener(null);
+                    description.setKeyListener(null);
+                    name.setBackgroundResource(R.color.transparent);
+                    category.setBackgroundResource(R.color.transparent);
+                    description.setBackgroundResource(R.color.transparent);
+
+                    mCollapsingToolbar.setTitle(nameOriginalText);
+                    name.setText(nameOriginalText);
+                    category.setText(categoryOriginalText);
+                    description.setText(descriptionOriginalText);
+
+                    photoFabButton.setVisibility(View.VISIBLE);
+                    description.setVisibility(View.GONE);
+                    descriptionTextInputLayout.setVisibility(View.GONE);
+                    descriptionTextView.setVisibility(View.VISIBLE);
                 }
             }
-        });
+
+        }
+        );
+
+        famButton.setOnFloatingActionsMenuUpdateListener(
+                new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+                    @Override
+                    public void onMenuCollapsed() {
+
+                        if (mIsEditable) {
+                            editFabButton.setIcon(android.R.drawable.ic_menu_camera);
+                            photoFabButton.setIcon(android.R.drawable.ic_menu_gallery);
+                            mIsEditable = false;
+                            nameTextInputLayout.setHint(null);
+                            categoryTextInputLayout.setHint(null);
+                            descriptionTextInputLayout.setHint(null);
+                            name.setKeyListener(null);
+                            category.setKeyListener(null);
+                            description.setKeyListener(null);
+                            name.setBackgroundResource(R.color.transparent);
+                            category.setBackgroundResource(R.color.transparent);
+                            description.setBackgroundResource(R.color.transparent);
+                            name.setText(nameOriginalText);
+                            category.setText(categoryOriginalText);
+                            description.setText(descriptionOriginalText);
+                            editFabButton.setVisibility(View.VISIBLE);
+                            photoFabButton.setVisibility(View.VISIBLE);
+                            description.setVisibility(View.GONE);
+                            descriptionTextInputLayout.setVisibility(View.GONE);
+                            descriptionTextView.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onMenuExpanded() {
+
+                    }
+                }
+        );
+
 
     }
 
@@ -101,13 +206,17 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+       final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      //  toolbar.
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //CollapsingToolbarLayout collapsingToolbar =
-         //       (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        //collapsingToolbar.setTitle("Apple iPod touch 32GB  (Assorted Colors)");
+        mCollapsingToolbar =
+             (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
+        mCollapsingToolbar.setTitle("Apple iPod touch 32GB  (Assorted Colors)");
+        mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+        mCollapsingToolbar.setCollapsedTitleTextColor(getResources().getColor(android.R.color.white));
     }
 
 }

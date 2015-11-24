@@ -18,6 +18,6 @@
     <color name="blue_semi_transparent">#805677fc</color>
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
 
-    <color name="theme_text_detail_header">#e0781315</color>
+    <color name="theme_text_detail_header">#e0f8f9ff</color>
 
 </resources>

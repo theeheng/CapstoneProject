@@ -11,155 +11,188 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?colorPrimary"
-        app:elevation="@dimen/appbar_elevation">
+        android:layout_height="@dimen/detail_backdrop_height"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginStart="@dimen/keyline_content_start"
+            app:expandedTitleMarginBottom="@dimen/detail_backdrop_height"
+            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
+            >
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:fitsSystemWindows="true">
+
+                <ImageView
+                    android:id="@+id/photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/detail_image_height"
+                    android:src="@mipmap/test"
+                    android:fitsSystemWindows="true"
+                    android:scaleType="centerCrop"
+                    app:layout_collapseMode="parallax"
+                    />
 
 
 
+                <LinearLayout
+                    android:id="@+id/meta_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/detail_header_title_height"
+                    android:background="@color/blue_grey_900"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/keyline_margin"
+                    android:paddingLeft="@dimen/keyline_content_start"
+                    android:paddingRight="@dimen/keyline_margin"
+                    android:paddingBottom="@dimen/keyline_margin"
+                    android:layout_gravity="center_horizontal"
+                    android:fitsSystemWindows="true">
+
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                       >
+
+                        <EditText
+                            android:id="@+id/et_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/white"
+                            android:fitsSystemWindows="true"
+                            android:inputType="textMultiLine"
+                            android:lines="2"
+                            android:text="Apple iPod touch 32GB  (Assorted Colors)" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentInsetStart="@dimen/toolbar_content_insertStart"
-                android:contentInsetLeft="@dimen/toolbar_content_insertStart"
-                app:contentInsetLeft="@dimen/toolbar_content_insertStart"
-                app:contentInsetStart="@dimen/toolbar_content_insertStart"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                android:minHeight="@dimen/toolbar_collapsed_height" >
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/photo"
-                        android:layout_width="match_parent"
-                        android:src="@mipmap/test"
-                        android:layout_height="@dimen/detail_image_height"
-                        android:scaleType="centerCrop"/>
-
-                    <LinearLayout
-                        android:id="@+id/meta_bar"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/detail_header_title_height"
-                        android:background="@color/blue_grey_900"
-                        android:orientation="vertical"
-                        android:paddingTop="@dimen/keyline_margin"
-                        android:paddingLeft="@dimen/keyline_content_start"
-                        android:paddingRight="@dimen/keyline_margin"
-                        android:paddingBottom="@dimen/keyline_margin"
-                        android:layout_gravity="center_horizontal">
-
-                        <TextView
-                            android:id="@+id/article_title"
-                            style="@style/Theme.Bacon.Detail.HeaderTitle"
-                            android:text="Apple iPod touch 32GB  (Assorted Colors)"
-                            />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </android.support.v7.widget.Toolbar>
-
+        </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
+
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingBottom="16dp"
-            android:paddingLeft="16dp"
+            android:paddingLeft="@dimen/keyline_content_start"
             android:paddingRight="16dp"
-            android:paddingTop="48dp">
+            >
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_password"
+                android:id="@+id/til_category"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                >
 
                 <EditText
-                    android:id="@+id/et_password"
+                    android:id="@+id/et_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Category"
+                    android:layout_marginTop="16dp"
                     android:text="Home Page/Electronics/Portable Audio/Apple iPods" />
 
             </android.support.design.widget.TextInputLayout>
 
+            <TextView
+                android:id="@+id/description"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/lorem_ipsum"
+
+                android:textSize="18dp" />
+
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_username"
+                android:id="@+id/til_description"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="300dp"
                 android:layout_marginTop="16dp"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:focusableInTouchMode="true">
 
                 <EditText
-                    android:id="@+id/et_username"
+                    android:id="@+id/et_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
                     android:lines="10"
                     android:gravity="top|left"
                     android:text="@string/lorem_ipsum"
-                    android:hint="description"
                     />
 
             </android.support.design.widget.TextInputLayout>
-
-            <Button
-                android:id="@+id/editButton"
-                android:text="Edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
 
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
+
     <android.support.design.widget.SupportFloatingActionsMenu
+        android:id="@+id/famButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/fab_margin"
         android:clickable="true"
         app:fab_expandDirection="down"
-        app:fab_labelStyle="@style/menu_labels_style"
+        app:fab_labelsPosition="left"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_icon="@android:drawable/ic_menu_camera"
-            app:fab_size="mini"
-            app:fab_title="camera"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabPhotoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_icon="@android:drawable/ic_menu_gallery"
-            app:fab_size="mini"
             app:fab_title="gallery"/>
-
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@android:drawable/ic_menu_camera"
+            app:fab_title="camera"/>
     </android.support.design.widget.SupportFloatingActionsMenu>
 
 
+
+
 </android.support.design.widget.CoordinatorLayout>
+
+
+

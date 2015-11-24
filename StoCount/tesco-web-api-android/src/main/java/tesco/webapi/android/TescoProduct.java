@@ -27,6 +27,7 @@ public class TescoProduct {
     private String StorageInfo;
     private Double UnitPrice;
     private String UnitType;
+    private String ExtendedInfoUrl;
 
     /**
      *
@@ -423,5 +424,25 @@ public class TescoProduct {
     public void setUnitType(String UnitType) {
         this.UnitType = UnitType;
     }
+
+
+    /**
+     *
+     * @return
+     * The ExtendedInfoUrl
+     */
+    public String getExtendedInfoUrl() {
+        return ExtendedInfoUrl;
+    }
+
+    /**
+     *
+     * @param ExtendedInfoUrl
+     * The ExtendedInfoUrl
+     */
+    public void setExtendedInfoUrl(String ExtendedInfoUrl) {
+        this.ExtendedInfoUrl = ExtendedInfoUrl;
+    }
+
 
 }

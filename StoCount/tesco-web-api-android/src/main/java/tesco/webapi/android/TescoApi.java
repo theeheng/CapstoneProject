@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.android.MainThreadExecutor;
+import retrofit.converter.Converter;
 
 /**
  * Creates and configures a REST adapter for Tesco Web API.
@@ -26,9 +27,8 @@ public class TescoApi {
 
     /**
      * Main Tesco Web API endpoint
-     * https://secure.techfortesco.com/tescolabsapi/restservice.aspx?command=PRODUCTSEARCH&searchtext=chocolate&page=1&sessionkey=HlsMYtFYAKwQ1YQfhimkpuGY16OenzBEfjX2x4gGl3LzzCZN7g
      */
-    public static final String TESCO_WEB_API_ENDPOINT = "https://secure.techfortesco.com/tescolabsapi/";
+    public static final String TESCO_WEB_API_ENDPOINT = "http://mobile.tesco.com/";
 
     /**
      * The request interceptor that will add the header with OAuth
@@ -60,12 +60,14 @@ public class TescoApi {
 
     private TescoService init(Executor httpExecutor, Executor callbackExecutor) {
 
-        final RestAdapter restAdapter = new RestAdapter.Builder()
+        RestAdapter.Builder builder = new RestAdapter.Builder()
                 .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .setExecutors(httpExecutor, callbackExecutor)
                 .setEndpoint(TESCO_WEB_API_ENDPOINT)
-                .setRequestInterceptor(new WebApiAuthenticator())
-                .build();
+                .setRequestInterceptor(new WebApiAuthenticator());
+
+
+        final RestAdapter restAdapter = builder.build();
 
         return restAdapter.create(TescoService.class);
     }
@@ -79,6 +81,8 @@ public class TescoApi {
         MainThreadExecutor callbackExecutor = new MainThreadExecutor();
         mTescoService = init(httpExecutor, callbackExecutor);
     }
+
+
 
     /**
      * Sets access token on the wrapper.

@@ -3,6 +3,7 @@ package tesco.webapi.android;
 import java.util.Map;
 
 import retrofit.Callback;
+import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -21,10 +22,10 @@ public interface TescoService {
      * @see <a href="https://secure.techfortesco.com/tescoapiweb/wiki/login.html">LOGIN</a>
      */
 
-    @GET("/restservice.aspx?command=LOGIN")
+    @GET("/groceryapi/RESTService.aspx?command=LOGIN")
     void getSessionKey(@Query(encodeValue = false, value = "email") String email, @Query("password") String password, @Query("developerkey") String developerKey, @Query("applicationKey") String applicationKey , Callback<TescoSessionKey> callback);
 
-    @GET("/restservice.aspx?command=LOGIN")
+    @GET("/groceryapi/RESTService.aspx?command=LOGIN")
     TescoSessionKey getSessionKey(@Query(encodeValue = false, value = "email") String email, @Query("password") String password, @Query("developerkey") String developerKey, @Query("applicationKey") String applicationKey);
 
     /**
@@ -35,10 +36,13 @@ public interface TescoService {
      * @see <a href="https://secure.techfortesco.com/tescoapiweb/wiki/productsearch.html">PRODUCT SEARCH</a>
      */
 
-    @GET("/restservice.aspx?command=PRODUCTSEARCH&ExtendedInfo=Y")
-    void productSearch(@Query("searchText") String searchText, @Query("sessionkey") String sessionkey, Callback<TescoProductSearch> callback);
+    @GET("/groceryapi/RESTService.aspx?command=PRODUCTSEARCH&ExtendedInfo=Y&version=2.0&isanonymous=Y")
+    void productSearch(@Query("searchText") String searchText, Callback<TescoProductSearch> callback);
 
-    @GET("/restservice.aspx?command=PRODUCTSEARCH")
-    TescoProductSearch productSearch(@Query("searchText") String searchText, @Query("sessionkey") String sessionkey);
+    @GET("/groceryapi/RESTService.aspx?command=PRODUCTSEARCH&version=2.0&isanonymous=Y")
+    TescoProductSearch productSearch(@Query("searchText") String searchText);
+
+    @GET("/Embed/product/{productId}")
+    void productExtendedInfo(@Path("productId") String productId, Callback<Response> callback);
 
 }

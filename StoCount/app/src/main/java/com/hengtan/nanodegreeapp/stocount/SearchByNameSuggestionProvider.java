@@ -253,7 +253,7 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         Map<String, Object> params = new HashMap<String, Object>();
 
         try {
-            TescoProductSearch result = testService.productSearch(query, Application.getTescoApiSessionKey());
+            TescoProductSearch result = testService.productSearch(query);
 
             if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0) {
 

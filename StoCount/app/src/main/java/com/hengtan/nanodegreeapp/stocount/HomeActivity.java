@@ -32,6 +32,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 import tesco.webapi.android.TescoApi;
 import tesco.webapi.android.TescoProductSearch;
 import tesco.webapi.android.TescoService;
@@ -187,7 +188,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 String formatNameResult = result.getFormatName();
                 String formatTypeResult = result.getType();
 
-                SearchProductFromAmazonApi(barcodeScanResult, formatNameResult, formatTypeResult);
+                SearchProductFromTescoAPI(null, barcodeScanResult);
+
+                //SearchProductFromAmazonApi(barcodeScanResult, formatNameResult, formatTypeResult);
 
                // SearchProductFromWalmartAPI(barcodeScanResult,null);
             }
@@ -228,14 +231,13 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                     @Override
                     public void run() {
 
-                        if(result != null && result.items != null && result.items.size() > 0) {
+                        if (result != null && result.items != null && result.items.size() > 0) {
                             String name = result.items.get(0).name;
                             String description = (result.items.get(0).shortDescription == null) ? result.items.get(0).longDescription : result.items.get(0).shortDescription;
 
                             UpdateUI(name, description, result.items.get(0).largeImage);
 
-                        }
-                        else {
+                        } else {
                             Toast.makeText(HomeActivity.this, "Product not found for : " + searchCriteria, Toast.LENGTH_LONG).show();
                         }
                     }
@@ -248,7 +250,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                     @Override
                     public void run() {
                         String msg = error.getMessage();
-                        Toast.makeText(HomeActivity.this, msg , Toast.LENGTH_LONG).show();
+                        Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -259,32 +261,68 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     {
         TescoApi testApi = new TescoApi();
 
-        TescoService testService = testApi.getService();
+        final TescoService testService = testApi.getService();
 
 
-        testService.productSearch(itemId, Application.getTescoApiSessionKey(), new retrofit.Callback<TescoProductSearch>() {
+        testService.productSearch(itemId, new retrofit.Callback<TescoProductSearch>() {
             @Override
             public void success(final TescoProductSearch result, Response response) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+
 
                         if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0)
                         {
-                            Product prod = new Product(result.getProducts().get(0));
+                            final Product prod = new Product(result.getProducts().get(0));
 
-                            Bundle bundle = new Bundle();
-                            bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
-                            Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
-                            intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-                            startActivity(intent);
+                            TescoApi descriptionApi = new TescoApi();
+                            TescoService descriptionService = descriptionApi.getService();
 
+                            testService.productExtendedInfo(result.getProducts().get(0).getProductId(), new retrofit.Callback<Response>() {
+
+                                @Override
+                                public void success(final Response result, Response response) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+
+                                            String test = new String(((TypedByteArray) result.getBody()).getBytes());
+
+                                            String divTag = "<div class=\"content\">";
+                                            String divEndTag = "</div>" ;
+
+                                            if(test.indexOf(divTag) > -1) {
+
+                                                int divIndex = test.indexOf(divTag) + divTag.length();
+
+                                                if(test.substring(divIndex).indexOf(divEndTag) > -1) {
+                                                    int divEndIndex = test.substring(divIndex).indexOf(divEndTag) + divIndex;
+                                                    prod.setDescription(Jsoup.parse(test.substring(divIndex, divEndIndex)).text().replaceAll("\\<.*?\\>", ""));
+                                                }
+                                            }
+                                            Bundle bundle = new Bundle();
+                                            bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+                                            Intent intent = new Intent(HomeActivity.this, DetailActivity.class);
+                                            intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                                            startActivity(intent);
+
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void failure(final RetrofitError error) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String msg = error.getMessage();
+                                            Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            });
 
                         } else {
                             Toast.makeText(HomeActivity.this, "Product not found for : " + itemId, Toast.LENGTH_LONG).show();
                         }
-                    }
-                });
             }
 
             @Override

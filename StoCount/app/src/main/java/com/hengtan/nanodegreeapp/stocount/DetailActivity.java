@@ -121,7 +121,7 @@ public class DetailActivity extends AppCompatActivity {
         category.setBackgroundResource(R.color.transparent);
         description.setBackgroundResource(R.color.transparent);
 
-        final FloatingActionsMenu famButton = (FloatingActionsMenu) findViewById(R.id.famButton);
+        final FloatingActionsMenu famButton = (FloatingActionsMenu) findViewById(R.id.famDetailButton);
 
         final FloatingActionButton photoFabButton = (FloatingActionButton) findViewById(R.id.fabPhotoButton);
 

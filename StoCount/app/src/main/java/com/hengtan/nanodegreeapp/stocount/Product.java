@@ -2,6 +2,7 @@ package com.hengtan.nanodegreeapp.stocount;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -18,6 +19,7 @@ import tesco.webapi.android.TescoProductSearch;
  */
 public class Product implements Parcelable {
 
+    private Integer mProductId;
     private String mName;
     private String mDescription;
     private String mThumbnailImage;
@@ -28,9 +30,23 @@ public class Product implements Parcelable {
 
     private List<String> mParcelableString;
 
+    public Product(Cursor cursor) {
+
+        this.mProductId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductEntry._ID));
+        this.mName = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME));
+        this.mDescription = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.DESCRIPTION));
+        this.mCategory = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.CATEGORY));
+        this.mThumbnailImage = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE));
+        this.mLargeImage = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.LARGE_IMAGE));
+        this.mBarcode = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.BARCODE));
+        this.mBarcodeFormat = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.BARCODE_FORMAT));
+
+
+    }
+
     private enum ProductIndex
     {
-        PRODUCT_NAME(0), PRODUCT_DESCRIPTION(1), PRODUCT_THUMBNAILIMAGE(2), PRODUCT_LARGEIMAGE(3), PRODUCT_CATEGORY(4), PRODUCT_BARCODE(5), PRODUCT_BARCODEFORMAT(6);
+        PRODUCT_ID(0), PRODUCT_NAME(1), PRODUCT_DESCRIPTION(2), PRODUCT_THUMBNAILIMAGE(3), PRODUCT_LARGEIMAGE(4), PRODUCT_CATEGORY(5), PRODUCT_BARCODE(6), PRODUCT_BARCODEFORMAT(7);
 
         private int value;
 
@@ -42,6 +58,7 @@ public class Product implements Parcelable {
 
     public Product(TescoProduct tescoProduct)
     {
+        this.mProductId = null;
         this.mName = tescoProduct.getName();
         this.mDescription = tescoProduct.getExtendedDescription();
         this.mThumbnailImage = tescoProduct.getImagePath();
@@ -59,6 +76,15 @@ public class Product implements Parcelable {
     {
         mParcelableString = new ArrayList<String>();
         in.readStringList(this.mParcelableString);
+
+        if(!mParcelableString.get(ProductIndex.PRODUCT_ID.ordinal()).isEmpty())
+        {
+            this.mProductId = Integer.parseInt(mParcelableString.get(ProductIndex.PRODUCT_ID.ordinal()));
+        }
+        else
+        {
+            this.mProductId = null;
+        }
 
         this.mName = mParcelableString.get(ProductIndex.PRODUCT_NAME.ordinal());
         this.mDescription = mParcelableString.get(ProductIndex.PRODUCT_DESCRIPTION.ordinal());
@@ -139,11 +165,29 @@ public class Product implements Parcelable {
         this.mBarcodeFormat = barcodeFormat;
     }
 
+    public Integer getProductId()
+    {
+        return this.mProductId;
+    }
+
+    public void setProductId(Integer productId)
+    {
+        this.mProductId = productId;
+    }
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
         ArrayList<String> values = new ArrayList<String>();
 
+        if(this.mProductId == null)
+        {
+            values.add(ProductIndex.PRODUCT_ID.ordinal(),"");
+        }
+        else
+        {
+            values.add(ProductIndex.PRODUCT_ID.ordinal(),this.mProductId.toString());
+        }
         values.add(ProductIndex.PRODUCT_NAME.ordinal(),this.mName);
         values.add(ProductIndex.PRODUCT_DESCRIPTION.ordinal(),this.mDescription);
         values.add(ProductIndex.PRODUCT_THUMBNAILIMAGE.ordinal(),this.mThumbnailImage);
@@ -174,7 +218,7 @@ public class Product implements Parcelable {
 
     public void SaveProduct(ContentResolver contentResolver) {
         ContentValues values = new ContentValues();
-        //values.put(StoCountContract.ProductEntry._ID, ean);
+
         values.put(StoCountContract.ProductEntry.PRODUCT_NAME, this.mName);
         values.put(StoCountContract.ProductEntry.DESCRIPTION, this.mDescription);
         values.put(StoCountContract.ProductEntry.THUMBNAIL_IMAGE, this.mThumbnailImage);
@@ -182,6 +226,16 @@ public class Product implements Parcelable {
         values.put(StoCountContract.ProductEntry.CATEGORY, this.mCategory);
         values.put(StoCountContract.ProductEntry.BARCODE, this.mBarcode);
         values.put(StoCountContract.ProductEntry.BARCODE_FORMAT, this.mBarcodeFormat);
-        contentResolver.insert(StoCountContract.ProductEntry.CONTENT_URI, values);
+
+        if(this.mProductId != null)
+        {
+            contentResolver.update(StoCountContract.ProductEntry.CONTENT_URI, values, StoCountContract.ProductEntry._ID + " = ? ", new String[] { this.mProductId.toString() } );
+        }
+        else
+        {
+            contentResolver.insert(StoCountContract.ProductEntry.CONTENT_URI, values);
+        }
+
+
     }
 }

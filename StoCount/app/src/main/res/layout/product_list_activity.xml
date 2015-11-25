@@ -1,0 +1,55 @@
+<RelativeLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recycler_view"/>
+
+</LinearLayout>
+
+
+<com.getbase.floatingactionbutton.FloatingActionsMenu
+android:id="@+id/famProductListButton"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_alignParentBottom="true"
+android:layout_alignParentRight="true"
+android:layout_alignParentEnd="true"
+app:fab_addButtonColorNormal="@color/white"
+app:fab_addButtonColorPressed="@color/white_pressed"
+app:fab_addButtonPlusIconColor="@color/half_black"
+app:fab_labelStyle="@style/menu_labels_style"
+android:layout_marginBottom="16dp"
+android:layout_marginRight="16dp"
+android:layout_marginEnd="16dp">
+
+<com.getbase.floatingactionbutton.FloatingActionButton
+    android:id="@+id/fabSearchButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:fab_colorNormal="@color/white"
+    app:fab_title="Add by Product Name"
+    app:fab_colorPressed="@color/white_pressed"/>
+
+<com.getbase.floatingactionbutton.FloatingActionButton
+    android:id="@+id/fabBarcodeButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:fab_colorNormal="@color/white"
+    app:fab_title="Add by barcode"
+    app:fab_colorPressed="@color/white_pressed"/>
+
+</com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+</RelativeLayout>

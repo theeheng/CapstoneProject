@@ -21,7 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         final String SQL_CREATE_USER_TABLE = "CREATE TABLE " + StoCountContract.UserEntry.TABLE_NAME + " ("+
-                StoCountContract.UserEntry._ID + " INTEGER PRIMARY KEY," +
+                StoCountContract.UserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 StoCountContract.UserEntry.DISPLAY_NAME + " TEXT NOT NULL," +
                 StoCountContract.UserEntry.EMAIL + " TEXT ," +
                 StoCountContract.UserEntry.PHOTO_URL + " TEXT ," +
@@ -29,7 +29,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 "UNIQUE ("+ StoCountContract.UserEntry._ID +") ON CONFLICT IGNORE)";
 
         final String SQL_CREATE_PRODUCT_TABLE = "CREATE TABLE " + StoCountContract.ProductEntry.TABLE_NAME + " ("+
-                StoCountContract.ProductEntry._ID + " INTEGER," +
+                StoCountContract.ProductEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 StoCountContract.ProductEntry.PRODUCT_NAME + " TEXT," +
                 StoCountContract.ProductEntry.DESCRIPTION + " TEXT," +
                 StoCountContract.ProductEntry.THUMBNAIL_IMAGE + " TEXT," +

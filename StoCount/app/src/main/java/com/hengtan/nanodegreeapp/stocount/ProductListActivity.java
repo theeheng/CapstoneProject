@@ -2,12 +2,13 @@ package com.hengtan.nanodegreeapp.stocount;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -65,7 +66,7 @@ import tesco.webapi.android.TescoService;
 import walmart.webapi.android.WalmartApi;
 import walmart.webapi.android.WalmartItemList;
 import walmart.webapi.android.WalmartService;
-import android.support.v4.app.LoaderManager;
+import android.app.LoaderManager;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -82,25 +83,33 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @InjectView(R.id.fabBarcodeButton)
     protected FloatingActionButton fabBarcodeButton;
 
+    @InjectView(R.id.recycler_view)
+    protected RecyclerView mRecyclerView;
+
     private SearchView searchView;
 
     private MyBaseAdapter adapter;
+
+    // Identifies a particular Loader being used in this component
+    private static final int URL_LOADER = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_list_activity);
         ButterKnife.inject(this);
+        init();
+        getLoaderManager().restartLoader(URL_LOADER, null, this);
 
-        Cursor cursor = getContentResolver().query(
+        /*Cursor cursor = getContentResolver().query(
                 StoCountContract.ProductEntry.CONTENT_URI,
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause
                 null  // sort order
         );
+        */
 
-        init((RecyclerView) findViewById(R.id.recycler_view), cursor);
     }
 
     @OnClick(R.id.fabSearchButton)
@@ -189,15 +198,22 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         }
     }
 
-    private void init(RecyclerView recyclerView, Cursor cursor) {
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        getLoaderManager().restartLoader(URL_LOADER, null, this);
+    }
+    
+    private void init() {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
-        adapter = new MyBaseAdapter(cursor, this);
-        recyclerView.setAdapter(adapter);
+        adapter = new MyBaseAdapter(this);
+        mRecyclerView.setAdapter(adapter);
         final SwipeToDismissTouchListener<RecyclerViewAdapter> touchListener =
                 new SwipeToDismissTouchListener<>(
-                        new RecyclerViewAdapter(recyclerView),
+                        new RecyclerViewAdapter(mRecyclerView),
                         new SwipeToDismissTouchListener.DismissCallbacks<RecyclerViewAdapter>() {
                             @Override
                             public boolean canDismiss(int position) {
@@ -217,11 +233,11 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                             }
                         });
 
-        recyclerView.setOnTouchListener(touchListener);
+        mRecyclerView.setOnTouchListener(touchListener);
         // Setting this scroll listener is required to ensure that during ListView scrolling,
         // we don't look for swipes.
-        recyclerView.setOnScrollListener((RecyclerView.OnScrollListener) touchListener.makeScrollListener());
-        recyclerView.addOnItemTouchListener(new SwipeableItemClickListener(this,
+        mRecyclerView.setOnScrollListener((RecyclerView.OnScrollListener) touchListener.makeScrollListener());
+        mRecyclerView.addOnItemTouchListener(new SwipeableItemClickListener(this,
                 new OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
@@ -239,22 +255,31 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-
-        return new CursorLoader(
-                this,
-                StoCountContract.ProductEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-        );
+     /*
+     * Takes action based on the ID of the Loader that's being created
+     */
+        switch (id) {
+            case URL_LOADER:
+                // Returns a new CursorLoader
+                return new CursorLoader(
+                        this,
+                        StoCountContract.ProductEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null
+                );
+            default:
+                // An invalid id was passed in
+                return null;
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         adapter.swapCursor(data);
-
+        adapter.notifyDataSetChanged();
         //if (position != ListView.INVALID_POSITION) {
         //    bookList.smoothScrollToPosition(position);
         //}
@@ -462,7 +487,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             request.shared.idType = "UPC";
         }
 
-
         // authenticate the request
         // http://docs.aws.amazon.com/AWSECommerceService/latest/DG/NotUsingWSSecurity.html
         AWSECommerceClient.authenticateRequest("ItemLookup");
@@ -518,14 +542,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             @Override
             public void onFailure(Throwable error, String errorMessage) { // HTTP or parsing error
 
-
                 ALog.e(TAG, errorMessage);
                 Toast.makeText(ProductListActivity.this, errorMessage, Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onSOAPFault(Object soapFault) { // soap fault
-
 
                 com.leansoft.nano.soap11.Fault fault = (com.leansoft.nano.soap11.Fault) soapFault;
 
@@ -545,9 +567,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
         //private final List<String> mDataSet = new ArrayList<>();
 
-        MyBaseAdapter(Cursor cursor, Context context) {
+        MyBaseAdapter(Context context) {
 
-            this.mProductCursor = cursor;
+            this.mProductCursor = null;
             this.mContext = context;
             /*
             for (int i = 0; i < SIZE; i++)
@@ -564,13 +586,18 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         @Override
         public void onBindViewHolder(MyViewHolder holder, int position) {
 
-            mProductCursor.moveToPosition(position);
-            holder.dataTextView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
+            if(mProductCursor != null) {
+                mProductCursor.moveToPosition(position);
+                holder.dataTextView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
+            }
         }
 
         @Override
         public int getItemCount() {
-            return mProductCursor.getCount();
+            if(mProductCursor != null)
+                return mProductCursor.getCount();
+            else
+                return 0;
         }
 
         public void remove(int position) {
@@ -585,16 +612,17 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
         public void onItemclicked(int position)
         {
-            mProductCursor.moveToPosition(position);
+            if(mProductCursor != null) {
+                mProductCursor.moveToPosition(position);
 
-            Product prod = new Product(mProductCursor);
+                Product prod = new Product(mProductCursor);
 
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
-            Intent intent = new Intent(mContext, DetailActivity.class);
-            intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-            mContext.startActivity(intent);
-
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+                Intent intent = new Intent(mContext, DetailActivity.class);
+                intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                mContext.startActivity(intent);
+            }
         }
         static class MyViewHolder extends RecyclerView.ViewHolder {
 

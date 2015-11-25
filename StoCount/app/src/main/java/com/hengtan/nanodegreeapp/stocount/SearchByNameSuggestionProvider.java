@@ -10,6 +10,8 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +21,13 @@ import tesco.webapi.android.TescoApi;
 import tesco.webapi.android.TescoProduct;
 import tesco.webapi.android.TescoProductSearch;
 import tesco.webapi.android.TescoService;
-import walmart.webapi.android.WalmartApi;
 import walmart.webapi.android.WalmartItemList;
 import walmart.webapi.android.WalmartItems;
+import walmart.webapi.android.WalmartApi;
 import walmart.webapi.android.WalmartService;
 
 /**
- * Created by hengtan on 25/11/2015.
+ * Created by htan on 06/11/2015.
  */
 public class SearchByNameSuggestionProvider  extends ContentProvider {
     private static final String tag = "SuggestUrlProvider";
@@ -102,8 +104,6 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
 
     private Cursor getSuggestions(String query)
     {
-        //List<StockCountItemSearchSuggestion> result;
-        //List<String> result = new ArrayList<String>();
 
         if (query == null) return null;
         else if(query.length() <= 2) {
@@ -112,10 +112,7 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         else if(!query.equals(previousQuery) || (query.equals(previousQuery) &&  (searchResult == null || (searchResult != null && searchResult.size() == 0))))
         {
             //result = getSuggestedItemNameFromDB(query);
-            getSuggestedItemNameFromTescoAPI(query);
-            //result.add("Orange juice");
-            //result.add("Apple juice");
-            //result.add("Mango juice");
+            getSuggestedItemNameFromDB(query);
         }
 
         return createCursor();
@@ -198,64 +195,24 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    private void getSuggestedItemNameFromWalmartAPI(String query)
-    {
-
-        WalmartApi testApi = new WalmartApi();
-
-        WalmartService testService = testApi.getService();
-
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        Resources res = getContext().getResources();
-
-        params.put("apiKey",res.getString(R.string.walmart_apiKey));
-        params.put("format", "json");
-        params.put("query", query);
-
-        try {
-            WalmartItemList result = testService.searchProduct(params);
-
-            if (result != null && result.items != null && result.items.size() > 0) {
-
-                searchResult = new ArrayList<SearchSuggestion>();
-
-                for (WalmartItems s : result.items) {
-
-                    SearchSuggestion ss = new SearchSuggestion();
-                    ss.id = s.itemId;
-                    ss.name = s.name;
-                    ss.category = s.categoryPath;
-
-                    searchResult.add(ss);
-                }
-
-            } else {
-                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
-            }
-        }
-        catch(Exception ex)
-        {
-            String err = ex.getMessage();
-        }
-    }
 
 
-    private void getSuggestedItemNameFromTescoAPI(String query)
-    {
+
+    private void getSuggestedItemNameFromDB(String query) {
 
         previousQuery = query;
 
-        TescoApi testApi = new TescoApi();
-
-        TescoService testService = testApi.getService();
-
-        Map<String, Object> params = new HashMap<String, Object>();
+/*        Cursor cursor = query(
+                StoCountContract.ProductEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                StoCountContract.ProductEntry.PRODUCT_NAME+" LIKE '?' ", // cols for "where" clause
+                new String[] { "%"+query+"%" }, // values for "where" clause
+                null  // sort order
+        );
 
         try {
-            TescoProductSearch result = testService.productSearch(query);
 
-            if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0) {
+             if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0) {
 
                 searchResult = new ArrayList<SearchSuggestion>();
 
@@ -277,6 +234,14 @@ public class SearchByNameSuggestionProvider  extends ContentProvider {
         {
             String err = ex.getMessage();
         }
-    }
+    }*/
 
+    }
+}
+
+class SearchSuggestion
+{
+    String name;
+    String category;
+    int id;
 }

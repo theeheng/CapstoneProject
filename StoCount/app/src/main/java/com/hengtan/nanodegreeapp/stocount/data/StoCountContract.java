@@ -64,13 +64,13 @@ public class StoCountContract {
 
         public static final String LARGE_IMAGE = "largeimage";
 
-        public static final String CATEGORY = "category";
+        public static final String ADDITIONAL_INFO = "additionalinfo";
 
         public static final String BARCODE = "barcode";
 
         public static final String BARCODE_FORMAT = "barcodeformat";
 
-        public static Uri buildAuthorUri(long id) {
+        public static Uri buildProductUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }
@@ -89,7 +89,7 @@ public class StoCountContract {
 
         public static final String END_DATE = "enddate";
 
-        public static Uri buildCategoryUri(long id) {
+        public static Uri buildStockPeriodUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
@@ -113,7 +113,7 @@ public class StoCountContract {
 
         public static final String COUNT_DATE = "countdate";
 
-        public static Uri buildCategoryUri(long id) {
+        public static Uri buildProductCountUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 

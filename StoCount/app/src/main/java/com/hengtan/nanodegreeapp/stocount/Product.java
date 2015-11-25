@@ -24,7 +24,7 @@ public class Product implements Parcelable {
     private String mDescription;
     private String mThumbnailImage;
     private String mLargeImage;
-    private String mCategory;
+    private String mAdditionalInfo;
     private String mBarcode;
     private String mBarcodeFormat;
 
@@ -35,7 +35,7 @@ public class Product implements Parcelable {
         this.mProductId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductEntry._ID));
         this.mName = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME));
         this.mDescription = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.DESCRIPTION));
-        this.mCategory = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.CATEGORY));
+        this.mAdditionalInfo = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO));
         this.mThumbnailImage = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE));
         this.mLargeImage = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.LARGE_IMAGE));
         this.mBarcode = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.BARCODE));
@@ -67,7 +67,7 @@ public class Product implements Parcelable {
             this.mLargeImage = this.mThumbnailImage.replace("90x90","540x540"); //90x90 225x225 540x540
         }
 
-        this.mCategory = tescoProduct.getUnitType();
+        this.mAdditionalInfo = tescoProduct.getPriceDescription();
         this.mBarcode = tescoProduct.getEANBarcode();
         this.mBarcodeFormat = "EAN13";
     }
@@ -90,7 +90,7 @@ public class Product implements Parcelable {
         this.mDescription = mParcelableString.get(ProductIndex.PRODUCT_DESCRIPTION.ordinal());
         this.mThumbnailImage = mParcelableString.get(ProductIndex.PRODUCT_THUMBNAILIMAGE.ordinal());
         this.mLargeImage = mParcelableString.get(ProductIndex.PRODUCT_LARGEIMAGE.ordinal());
-        this.mCategory = mParcelableString.get(ProductIndex.PRODUCT_CATEGORY.ordinal());
+        this.mAdditionalInfo = mParcelableString.get(ProductIndex.PRODUCT_CATEGORY.ordinal());
         this.mBarcode = mParcelableString.get(ProductIndex.PRODUCT_BARCODE.ordinal());
         this.mBarcodeFormat = mParcelableString.get(ProductIndex.PRODUCT_BARCODEFORMAT.ordinal());
     }
@@ -135,14 +135,14 @@ public class Product implements Parcelable {
         this.mLargeImage = largeImage;
     }
 
-    public String getCategory()
+    public String getAdditionalInfo()
     {
-        return this.mCategory;
+        return this.mAdditionalInfo;
     }
 
-    public void setCategory(String category)
+    public void setAdditionalInfo(String additionalInfo)
     {
-        this.mCategory = category;
+        this.mAdditionalInfo = additionalInfo;
     }
 
     public String getBarcode()
@@ -192,7 +192,7 @@ public class Product implements Parcelable {
         values.add(ProductIndex.PRODUCT_DESCRIPTION.ordinal(),this.mDescription);
         values.add(ProductIndex.PRODUCT_THUMBNAILIMAGE.ordinal(),this.mThumbnailImage);
         values.add(ProductIndex.PRODUCT_LARGEIMAGE.ordinal(),this.mLargeImage);
-        values.add(ProductIndex.PRODUCT_CATEGORY.ordinal(),this.mCategory);
+        values.add(ProductIndex.PRODUCT_CATEGORY.ordinal(),this.mAdditionalInfo);
         values.add(ProductIndex.PRODUCT_BARCODE.ordinal(),this.mBarcode);
         values.add(ProductIndex.PRODUCT_BARCODEFORMAT.ordinal(),this.mBarcodeFormat);
 
@@ -223,7 +223,7 @@ public class Product implements Parcelable {
         values.put(StoCountContract.ProductEntry.DESCRIPTION, this.mDescription);
         values.put(StoCountContract.ProductEntry.THUMBNAIL_IMAGE, this.mThumbnailImage);
         values.put(StoCountContract.ProductEntry.LARGE_IMAGE, this.mLargeImage);
-        values.put(StoCountContract.ProductEntry.CATEGORY, this.mCategory);
+        values.put(StoCountContract.ProductEntry.ADDITIONAL_INFO, this.mAdditionalInfo);
         values.put(StoCountContract.ProductEntry.BARCODE, this.mBarcode);
         values.put(StoCountContract.ProductEntry.BARCODE_FORMAT, this.mBarcodeFormat);
 
@@ -235,7 +235,6 @@ public class Product implements Parcelable {
         {
             contentResolver.insert(StoCountContract.ProductEntry.CONTENT_URI, values);
         }
-
 
     }
 }

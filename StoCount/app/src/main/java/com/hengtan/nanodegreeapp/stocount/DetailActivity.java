@@ -25,34 +25,68 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+
 /**
  * Created by Eric on 15/6/1.
  */
 public class DetailActivity extends AppCompatActivity {
 
     private KeyListener nameListener;
-    private KeyListener categoryListener;
+    private KeyListener additionalInfoListener;
     private KeyListener descriptionListener;
-    private TextInputLayout nameTextInputLayout;
-    private TextInputLayout categoryTextInputLayout;
-    private TextInputLayout descriptionTextInputLayout;
+
     private Drawable nameDrawable;
-    private Drawable categoryDrawable;
+    private Drawable additionalInfoDrawable;
     private Drawable descriptionDrawable;
 
-    private EditText name;
-    private EditText category;
-    private EditText description;
-    private TextView descriptionTextView;
-    private ImageView image;
+
+    @InjectView(R.id.et_name)
+    protected EditText name;
+
+    @InjectView(R.id.et_additionalinfo)
+    protected EditText additionalInfo;
+
+    @InjectView(R.id.et_description)
+    protected EditText description;
+
+    @InjectView(R.id.description)
+    protected TextView descriptionTextView;
+
+    @InjectView(R.id.photo)
+    protected ImageView image;
+
+    @InjectView(R.id.til_name)
+    protected TextInputLayout nameTextInputLayout;
+
+    @InjectView(R.id.til_additionalinfo)
+    protected TextInputLayout additionalInfoTextInputLayout;
+
+    @InjectView(R.id.til_description)
+    protected TextInputLayout descriptionTextInputLayout;
+
+    @InjectView(R.id.toolbar)
+    protected Toolbar toolbar;
+
+    @InjectView(R.id.collapsing_toolbar)
+    protected CollapsingToolbarLayout mCollapsingToolbar;
+
+    @InjectView(R.id.famDetailButton)
+    protected FloatingActionsMenu famButton;
+
+    @InjectView(R.id.fabPhotoButton)
+    protected FloatingActionButton photoFabButton;
+
+    @InjectView(R.id.fabEditButton)
+    protected FloatingActionButton editFabButton;
 
     private String nameOriginalText;
-    private String categoryOriginalText;
+    private String additionalInfoOriginalText;
     private String descriptionOriginalText;
 
     private boolean mIsEditable = false;
-
-    private CollapsingToolbarLayout mCollapsingToolbar;
 
     public static final String PRODUCT_PARCELABLE = "PRODUCTPARCELABLE";
 
@@ -62,6 +96,8 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ButterKnife.inject(this);
+
         initToolbar();
 
         if (savedInstanceState != null && savedInstanceState.containsKey(PRODUCT_PARCELABLE)) {
@@ -80,120 +116,38 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
-        image = (ImageView)findViewById(R.id.photo);
-        name = (EditText)findViewById(R.id.et_name);
-        category = (EditText)findViewById(R.id.et_category);
-        description = (EditText)findViewById(R.id.et_description);
-        descriptionTextView = (TextView)findViewById(R.id.description);
 
         if(mProduct != null) {
             name.setText(mProduct.getName());
             mCollapsingToolbar.setTitle(mProduct.getName());
-            category.setText(mProduct.getCategory());
+            additionalInfo.setText(mProduct.getAdditionalInfo());
             description.setText(mProduct.getDescription());
             descriptionTextView.setText(mProduct.getDescription());
             Glide.with(this).load(mProduct.getLargeImage()).fitCenter().into(image);
         }
 
         nameOriginalText = name.getText().toString();
-        categoryOriginalText = category.getText().toString();
+        additionalInfoOriginalText = additionalInfo.getText().toString();
         descriptionOriginalText = description.getText().toString();
 
         nameDrawable = name.getBackground();
-        categoryDrawable = category.getBackground();
+        additionalInfoDrawable = additionalInfo.getBackground();
         descriptionDrawable = description.getBackground();
 
-        nameTextInputLayout = (TextInputLayout) findViewById(R.id.til_name);
-        categoryTextInputLayout = (TextInputLayout) findViewById(R.id.til_category);
-        descriptionTextInputLayout = (TextInputLayout) findViewById(R.id.til_description);
         description.setVisibility(View.GONE);
         descriptionTextInputLayout.setVisibility(View.GONE);
 
-        nameListener = category.getKeyListener();
-        categoryListener = category.getKeyListener();
+        nameListener = additionalInfo.getKeyListener();
+        additionalInfoListener = additionalInfo.getKeyListener();
         descriptionListener = description.getKeyListener();
 
         name.setKeyListener(null);
-        category.setKeyListener(null);
+        additionalInfo.setKeyListener(null);
         description.setKeyListener(null);
 
         name.setBackgroundResource(R.color.transparent);
-        category.setBackgroundResource(R.color.transparent);
+        additionalInfo.setBackgroundResource(R.color.transparent);
         description.setBackgroundResource(R.color.transparent);
-
-        final FloatingActionsMenu famButton = (FloatingActionsMenu) findViewById(R.id.famDetailButton);
-
-        final FloatingActionButton photoFabButton = (FloatingActionButton) findViewById(R.id.fabPhotoButton);
-
-
-
-
-        final FloatingActionButton editFabButton = (FloatingActionButton) findViewById(R.id.fabEditButton);
-        editFabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mIsEditable) {
-                    mIsEditable = true;
-
-                    name.setKeyListener(nameListener);
-                    nameTextInputLayout.setHint("product name");
-
-                    category.setKeyListener(categoryListener);
-                    categoryTextInputLayout.setHint("category");
-
-                    description.setKeyListener(descriptionListener);
-                    descriptionTextInputLayout.setHint("description");
-
-                    name.setBackground(nameDrawable);
-                    category.setBackground(categoryDrawable);
-                    description.setBackground(descriptionDrawable);
-
-                    description.setVisibility(View.VISIBLE);
-                    descriptionTextInputLayout.setVisibility(View.VISIBLE);
-                    descriptionTextView.setVisibility(View.GONE);
-                    photoFabButton.setVisibility(View.GONE);
-                    editFabButton.setIcon(R.drawable.ic_star);
-
-
-                } else {
-                    nameOriginalText = name.getText().toString();
-                    categoryOriginalText = category.getText().toString();
-                    descriptionOriginalText = description.getText().toString();
-
-                    mProduct.setName(nameOriginalText);
-                    mProduct.setCategory(categoryOriginalText);
-                    mProduct.setDescription(descriptionOriginalText);
-
-                    mProduct.SaveProduct(getContentResolver());
-
-                    Toast.makeText(DetailActivity.this, "Save Detail.........", Toast.LENGTH_LONG).show();
-                    famButton.collapse();
-                    editFabButton.setIcon(android.R.drawable.ic_menu_camera);
-                    mIsEditable = false;
-                    nameTextInputLayout.setHint(null);
-                    categoryTextInputLayout.setHint(null);
-                    descriptionTextInputLayout.setHint(null);
-                    name.setKeyListener(null);
-                    category.setKeyListener(null);
-                    description.setKeyListener(null);
-                    name.setBackgroundResource(R.color.transparent);
-                    category.setBackgroundResource(R.color.transparent);
-                    description.setBackgroundResource(R.color.transparent);
-
-                    mCollapsingToolbar.setTitle(nameOriginalText);
-                    name.setText(nameOriginalText);
-                    category.setText(categoryOriginalText);
-                    description.setText(descriptionOriginalText);
-                    descriptionTextView.setText(descriptionOriginalText);
-
-                    photoFabButton.setVisibility(View.VISIBLE);
-                    description.setVisibility(View.GONE);
-                    descriptionTextInputLayout.setVisibility(View.GONE);
-                    descriptionTextView.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-        );
 
         famButton.setOnFloatingActionsMenuUpdateListener(
                 new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
@@ -205,16 +159,16 @@ public class DetailActivity extends AppCompatActivity {
                             photoFabButton.setIcon(android.R.drawable.ic_menu_gallery);
                             mIsEditable = false;
                             nameTextInputLayout.setHint(null);
-                            categoryTextInputLayout.setHint(null);
+                            additionalInfoTextInputLayout.setHint(null);
                             descriptionTextInputLayout.setHint(null);
                             name.setKeyListener(null);
-                            category.setKeyListener(null);
+                            additionalInfo.setKeyListener(null);
                             description.setKeyListener(null);
                             name.setBackgroundResource(R.color.transparent);
-                            category.setBackgroundResource(R.color.transparent);
+                            additionalInfo.setBackgroundResource(R.color.transparent);
                             description.setBackgroundResource(R.color.transparent);
                             name.setText(nameOriginalText);
-                            category.setText(categoryOriginalText);
+                            additionalInfo.setText(additionalInfoOriginalText);
                             description.setText(descriptionOriginalText);
                             editFabButton.setVisibility(View.VISIBLE);
                             photoFabButton.setVisibility(View.VISIBLE);
@@ -230,9 +184,71 @@ public class DetailActivity extends AppCompatActivity {
                     }
                 }
         );
-
-
     }
+
+    @OnClick(R.id.fabEditButton)
+    public void onEditButtonClick(View v) {
+
+            if (!mIsEditable) {
+                mIsEditable = true;
+
+                name.setKeyListener(nameListener);
+                nameTextInputLayout.setHint("product name");
+
+                additionalInfo.setKeyListener(additionalInfoListener);
+                additionalInfoTextInputLayout.setHint("additional info");
+
+                description.setKeyListener(descriptionListener);
+                descriptionTextInputLayout.setHint("description");
+
+                name.setBackground(nameDrawable);
+                additionalInfo.setBackground(additionalInfoDrawable);
+                description.setBackground(descriptionDrawable);
+
+                description.setVisibility(View.VISIBLE);
+                descriptionTextInputLayout.setVisibility(View.VISIBLE);
+                descriptionTextView.setVisibility(View.GONE);
+                photoFabButton.setVisibility(View.GONE);
+                editFabButton.setIcon(R.drawable.ic_star);
+
+            } else {
+                nameOriginalText = name.getText().toString();
+                additionalInfoOriginalText = additionalInfo.getText().toString();
+                descriptionOriginalText = description.getText().toString();
+
+                mProduct.setName(nameOriginalText);
+                mProduct.setAdditionalInfo(additionalInfoOriginalText);
+                mProduct.setDescription(descriptionOriginalText);
+
+                mProduct.SaveProduct(getContentResolver());
+
+                Toast.makeText(DetailActivity.this, "Save Detail.........", Toast.LENGTH_LONG).show();
+                famButton.collapse();
+                editFabButton.setIcon(android.R.drawable.ic_menu_camera);
+                mIsEditable = false;
+                nameTextInputLayout.setHint(null);
+                additionalInfoTextInputLayout.setHint(null);
+                descriptionTextInputLayout.setHint(null);
+                name.setKeyListener(null);
+                additionalInfo.setKeyListener(null);
+                description.setKeyListener(null);
+                name.setBackgroundResource(R.color.transparent);
+                additionalInfo.setBackgroundResource(R.color.transparent);
+                description.setBackgroundResource(R.color.transparent);
+
+                mCollapsingToolbar.setTitle(nameOriginalText);
+                name.setText(nameOriginalText);
+                additionalInfo.setText(additionalInfoOriginalText);
+                description.setText(descriptionOriginalText);
+                descriptionTextView.setText(descriptionOriginalText);
+
+                photoFabButton.setVisibility(View.VISIBLE);
+                description.setVisibility(View.GONE);
+                descriptionTextInputLayout.setVisibility(View.GONE);
+                descriptionTextView.setVisibility(View.VISIBLE);
+            }
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -245,13 +261,10 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
-       final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
       //  toolbar.
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mCollapsingToolbar =
-             (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
         mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
         mCollapsingToolbar.setCollapsedTitleTextColor(getResources().getColor(android.R.color.white));

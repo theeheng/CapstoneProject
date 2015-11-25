@@ -79,7 +79,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.inject(this);
-
     }
 
     @Override
@@ -161,34 +160,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 String formatNameResult = result.getFormatName();
                 String formatTypeResult = result.getType();
 
-                //SearchProductFromTescoAPI(null, barcodeScanResult);
-
-                Cursor cursor = getContentResolver().query(
-                        StoCountContract.ProductEntry.CONTENT_URI,
-                        null, // leaving "columns" null just returns all the columns.
-                        StoCountContract.ProductEntry.BARCODE+" = ? ", // cols for "where" clause
-                        new String[] { barcodeScanResult }, // values for "where" clause
-                        null  // sort order
-                );
-
-                if(cursor.getCount() > 0) {
-
-                    cursor.moveToFirst();
-
-                    Product prod = new Product(cursor);
-
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
-                    Intent intent = new Intent(this, DetailActivity.class);
-                    intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-                    this.startActivity(intent);
-                }
-                else
-                {
-                    Toast.makeText(this, "No product found for barcode: "+barcodeScanResult, Toast.LENGTH_LONG).show();
-                }
-
-
+                searchProductFromDB(barcodeScanResult, null);
             }
         } else {
             Log.d(TAG, "Weird");
@@ -211,15 +183,54 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
             cur.moveToPosition(position);
             int suggestionItemId = cur.getInt(0);
 
-            //SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
-
-            //SearchProductFromTescoAPI(null, Integer.toString(suggestionItemId));
+            searchProductFromDB(null, suggestionItemId);
 
             return true;
         }
         else
         {
             return false;
+        }
+    }
+
+    private void searchProductFromDB(String barcodeScanResult, Integer suggestionItemId)
+    {
+        Cursor cursor = null;
+
+        if(barcodeScanResult != null && !barcodeScanResult.isEmpty()) {
+            cursor = getContentResolver().query(
+                    StoCountContract.ProductEntry.CONTENT_URI,
+                    null, // leaving "columns" null just returns all the columns.
+                    StoCountContract.ProductEntry.BARCODE + " = ? ", // cols for "where" clause
+                    new String[]{barcodeScanResult}, // values for "where" clause
+                    null  // sort order
+            );
+        }
+        else if (suggestionItemId != null) {
+            cursor = getContentResolver().query(
+                    StoCountContract.ProductEntry.buildProductUri(suggestionItemId),
+                    null, // leaving "columns" null just returns all the columns.
+                    null, // cols for "where" clause
+                    null, // values for "where" clause
+                    null  // sort order
+            );
+        }
+
+        if(cursor != null && cursor.getCount() > 0) {
+
+            cursor.moveToFirst();
+
+            Product prod = new Product(cursor);
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+            this.startActivity(intent);
+        }
+        else
+        {
+            Toast.makeText(this, "No product found for id: "+suggestionItemId, Toast.LENGTH_LONG).show();
         }
     }
 }

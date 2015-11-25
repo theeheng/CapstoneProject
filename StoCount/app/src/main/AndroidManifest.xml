@@ -60,12 +60,12 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
         <provider
-            android:name=".SearchByApiNameSuggestionProvider"
-            android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByApiNameSuggestionProvider" >
+            android:name=".SearchByApiSuggestionProvider"
+            android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByApiSuggestionProvider" >
         </provider>
         <provider
-            android:name=".SearchByNameSuggestionProvider"
-            android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider" >
+            android:name=".SearchByProductNameSuggestionProvider"
+            android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByProductNameSuggestionProvider" >
         </provider>
         <provider
             android:name=".data.StoCountProvider"

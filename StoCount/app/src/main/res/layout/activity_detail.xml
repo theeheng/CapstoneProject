@@ -56,7 +56,6 @@
                     android:paddingLeft="@dimen/keyline_content_start"
                     android:paddingRight="@dimen/keyline_margin"
                     android:paddingBottom="@dimen/keyline_margin"
-                    android:layout_gravity="center_horizontal"
                     android:fitsSystemWindows="true">
 
 
@@ -75,7 +74,9 @@
                             android:textColor="@color/white"
                             android:fitsSystemWindows="true"
                             android:inputType="textMultiLine"
-                            android:lines="2" />
+                            android:lines="2"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                            />
 
                     </android.support.design.widget.TextInputLayout>
 

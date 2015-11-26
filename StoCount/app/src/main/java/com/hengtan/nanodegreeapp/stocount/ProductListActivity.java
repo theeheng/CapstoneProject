@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import com.amazon.webservices.awsecommerceservice.ItemLookupRequest;
 import com.amazon.webservices.awsecommerceservice.ItemLookupResponse;
 import com.amazon.webservices.awsecommerceservice.Items;
 import com.amazon.webservices.awsecommerceservice.client.AWSECommerceServicePortType_SOAPClient;
+import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -589,6 +591,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             if(mProductCursor != null) {
                 mProductCursor.moveToPosition(position);
                 holder.dataTextView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
+                holder.dataTextInfoView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO)));
+                Glide.with(this.mContext).load(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE))).fitCenter().into(holder.dataImageView);
             }
         }
 
@@ -626,10 +630,15 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         }
         static class MyViewHolder extends RecyclerView.ViewHolder {
 
+            ImageView dataImageView;
             TextView dataTextView;
+            TextView dataTextInfoView;
+
             MyViewHolder(View view) {
                 super(view);
                 dataTextView = ((TextView) view.findViewById(R.id.txt_data));
+                dataTextInfoView = ((TextView) view.findViewById(R.id.txt_datainfo));
+                dataImageView =  ((ImageView) view.findViewById(R.id.img_data));
             }
         }
     }

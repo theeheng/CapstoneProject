@@ -149,6 +149,13 @@ public class DetailActivity extends AppCompatActivity {
         additionalInfo.setBackgroundResource(R.color.transparent);
         description.setBackgroundResource(R.color.transparent);
 
+        //Only update for editing at after getting all previous state of editText control
+        if(mProduct!= null && mProduct.getProductId() == null)
+        {
+            famButton.expand();
+            updateUIForEditing();
+        }
+
         famButton.setOnFloatingActionsMenuUpdateListener(
                 new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
                     @Override
@@ -190,26 +197,8 @@ public class DetailActivity extends AppCompatActivity {
     public void onEditButtonClick(View v) {
 
             if (!mIsEditable) {
-                mIsEditable = true;
 
-                name.setKeyListener(nameListener);
-                nameTextInputLayout.setHint("product name");
-
-                additionalInfo.setKeyListener(additionalInfoListener);
-                additionalInfoTextInputLayout.setHint("additional info");
-
-                description.setKeyListener(descriptionListener);
-                descriptionTextInputLayout.setHint("description");
-
-                name.setBackground(nameDrawable);
-                additionalInfo.setBackground(additionalInfoDrawable);
-                description.setBackground(descriptionDrawable);
-
-                description.setVisibility(View.VISIBLE);
-                descriptionTextInputLayout.setVisibility(View.VISIBLE);
-                descriptionTextView.setVisibility(View.GONE);
-                photoFabButton.setVisibility(View.GONE);
-                editFabButton.setIcon(R.drawable.ic_star);
+                updateUIForEditing();
 
             } else {
                 nameOriginalText = name.getText().toString();
@@ -247,6 +236,29 @@ public class DetailActivity extends AppCompatActivity {
                 descriptionTextInputLayout.setVisibility(View.GONE);
                 descriptionTextView.setVisibility(View.VISIBLE);
             }
+    }
+
+    private void updateUIForEditing() {
+        mIsEditable = true;
+
+        name.setKeyListener(nameListener);
+        nameTextInputLayout.setHint("product name");
+
+        additionalInfo.setKeyListener(additionalInfoListener);
+        additionalInfoTextInputLayout.setHint("additional info");
+
+        description.setKeyListener(descriptionListener);
+        descriptionTextInputLayout.setHint("description");
+
+        name.setBackground(nameDrawable);
+        additionalInfo.setBackground(additionalInfoDrawable);
+        description.setBackground(descriptionDrawable);
+
+        description.setVisibility(View.VISIBLE);
+        descriptionTextInputLayout.setVisibility(View.VISIBLE);
+        descriptionTextView.setVisibility(View.GONE);
+        photoFabButton.setVisibility(View.GONE);
+        editFabButton.setIcon(R.drawable.ic_star);
     }
 
 

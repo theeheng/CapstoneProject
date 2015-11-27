@@ -1,6 +1,7 @@
 package com.hengtan.nanodegreeapp.stocount;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -100,6 +101,8 @@ public class StockPeriodActivity extends AppCompatActivity {
 
 }
 =======
+=======
+>>>>>>> origin/master
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -228,5 +231,9 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
+<<<<<<< HEAD
+}
+>>>>>>> origin/master
+=======
 }
 >>>>>>> origin/master

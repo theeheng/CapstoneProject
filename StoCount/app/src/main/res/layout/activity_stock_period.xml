@@ -11,9 +11,12 @@
 
         <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
 <<<<<<< HEAD
+<<<<<<< HEAD
             android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary" app:popupTheme="@style/AppTheme.PopupOverlay" />
 =======
+=======
+>>>>>>> origin/master
             android:layout_width="match_parent" android:layout_height="@dimen/app_bar_height"
             android:background="?attr/colorPrimary" app:popupTheme="@style/AppTheme.PopupOverlay">
 
@@ -60,6 +63,9 @@
 
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 
     </android.support.design.widget.AppBarLayout>

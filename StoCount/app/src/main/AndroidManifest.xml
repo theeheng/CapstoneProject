@@ -80,8 +80,12 @@
             android:name=".StockPeriodActivity"
             android:screenOrientation="portrait"
 <<<<<<< HEAD
+<<<<<<< HEAD
             android:theme="@style/AppTheme.NoActionBar"
              >
+=======
+            android:theme="@style/AppTheme.NoActionBar" >
+>>>>>>> origin/master
 =======
             android:theme="@style/AppTheme.NoActionBar" >
 >>>>>>> origin/master

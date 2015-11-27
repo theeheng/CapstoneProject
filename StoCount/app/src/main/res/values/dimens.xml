@@ -7,7 +7,7 @@
     <dimen name="list_item_padding_sides">16dp</dimen>
     <dimen name="list_item_height">80dp</dimen>
 
-
+    <dimen name="app_bar_height">144dp</dimen>
     <!-- detail -->
     <dimen name="toolbar_content_insertStart">0dp</dimen>
     <dimen name="toolbar_collapsed_height">144dp</dimen>

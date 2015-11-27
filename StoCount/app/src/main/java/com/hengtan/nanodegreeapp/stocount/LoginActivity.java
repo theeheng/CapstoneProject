@@ -158,7 +158,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @OnClick(R.id.fab)
     protected void GoToHome()
     {
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, StockPeriodActivity.class);
         startActivity(intent);
     }
 
@@ -178,7 +178,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+
+            User usr = new User(acct);
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(StockPeriodActivity.USER_PARCELABLE, usr);
+            Intent intent = new Intent(this, StockPeriodActivity.class);
+            intent.putExtra(StockPeriodActivity.USER_PARCELABLE, bundle);
+            this.startActivity(intent);
+
+            /*mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             Glide.with(this).load(acct.getPhotoUrl()).asBitmap().into(new BitmapImageViewTarget(mGoogleIcon) {
                 @Override
                 protected void setResource(Bitmap resource) {
@@ -191,6 +200,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
             });
             updateUI(true);
+            */
         } else {
             // Signed out, show unauthenticated UI.
             updateUI(false);

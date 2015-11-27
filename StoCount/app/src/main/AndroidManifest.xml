@@ -10,12 +10,11 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
+        android:name=".Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="Application">
-
+        android:theme="@style/AppTheme" >
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -27,10 +26,11 @@
         <activity
             android:name=".HomeActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -42,22 +42,27 @@
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProductListActivity"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleTop">
+        <activity
+            android:name=".ProductListActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchableapi" />
         </activity>
-        <activity android:name=".DetailActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".DetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
         <provider
             android:name=".SearchByApiSuggestionProvider"
             android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByApiSuggestionProvider" >
@@ -70,6 +75,17 @@
             android:name=".data.StoCountProvider"
             android:authorities="com.hengtan.nanodegreeapp.stocount"
             android:exported="false" />
+
+        <activity
+            android:name=".StockPeriodActivity"
+            android:screenOrientation="portrait"
+<<<<<<< HEAD
+            android:theme="@style/AppTheme.NoActionBar"
+             >
+=======
+            android:theme="@style/AppTheme.NoActionBar" >
+>>>>>>> origin/master
+        </activity>
     </application>
 
 </manifest>

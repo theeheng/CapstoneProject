@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_width="@dimen/widget_width"
+    android:background="@drawable/widget_item_background"
+    android:id="@+id/widget_linear_layout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:height="@dimen/list_item_height"
+        >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="26.17"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:height="@dimen/list_item_height"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="left|bottom"
+                android:id="@+id/txt_data"
+                android:text="list item product name"
+                android:textStyle="bold"
+                android:paddingLeft="@dimen/list_item_padding_sides"
+                android:paddingRight="@dimen/list_item_padding_sides"
+                android:ellipsize="end"
+                android:maxLines="10"
+                android:singleLine="true"
+                android:textColor="@android:color/holo_blue_dark"
+                android:background="@android:color/white"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="left|top"
+                android:id="@+id/txt_datainfo"
+                android:text="additional info"
+                android:paddingLeft="@dimen/list_item_padding_sides"
+                android:paddingRight="@dimen/list_item_padding_sides"
+                android:ellipsize="end"
+                android:maxLines="10"
+                android:singleLine="true"
+                android:textColor="@android:color/holo_blue_dark"
+                android:background="@android:color/white"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="8"
+            android:layout_height="match_parent"
+            android:gravity="right|center_vertical"
+            android:id="@+id/txt_datacount"
+            android:text="25.234"
+            android:paddingRight="@dimen/list_item_padding_sides"
+            android:ellipsize="end"
+            android:maxLines="9"
+            android:singleLine="true"
+            android:textColor="@android:color/holo_blue_dark"
+            android:background="@android:color/white"/>
+
+        <ImageView
+            android:id="@+id/img_data"
+            android:layout_gravity="left"
+            android:layout_width="@dimen/list_item_height"
+            android:layout_height="@dimen/list_item_height"
+            />
+    </LinearLayout>
+
+</LinearLayout>
+
+

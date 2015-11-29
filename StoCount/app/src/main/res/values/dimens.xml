@@ -34,4 +34,10 @@
     <dimen name="keyline_content_start">56dp</dimen>
     <dimen name="keyline_content_end_with_fab">32dp</dimen>
 
+
+    <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_width">320dp</dimen>
+    <dimen name="widget_height">80dp</dimen>
+    <dimen name="WidgetTeamNames">8.5sp</dimen>
+    <dimen name="WidgetScore">15sp</dimen>
 </resources>

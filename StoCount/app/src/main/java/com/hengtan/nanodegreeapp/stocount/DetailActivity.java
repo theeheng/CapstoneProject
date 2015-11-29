@@ -209,9 +209,9 @@ public class DetailActivity extends AppCompatActivity {
                 mProduct.setAdditionalInfo(additionalInfoOriginalText);
                 mProduct.setDescription(descriptionOriginalText);
 
-                mProduct.SaveProduct(getContentResolver());
+                SaveToDBAsyncTask saveProductAsyncTask = new SaveToDBAsyncTask(this, getContentResolver(), SaveToDBAsyncTask.SaveType.PRODUCT);
+                saveProductAsyncTask.execute(mProduct);
 
-                Toast.makeText(DetailActivity.this, "Save Detail.........", Toast.LENGTH_LONG).show();
                 famButton.collapse();
                 editFabButton.setIcon(android.R.drawable.ic_menu_camera);
                 mIsEditable = false;

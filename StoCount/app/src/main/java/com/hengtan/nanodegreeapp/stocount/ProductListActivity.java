@@ -38,6 +38,10 @@ import com.amazon.webservices.awsecommerceservice.client.AWSECommerceServicePort
 import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
@@ -72,7 +76,7 @@ import android.app.LoaderManager;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
-public class ProductListActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class ProductListActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = ProductListActivity.class.getSimpleName();
 
@@ -93,7 +97,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     private MyBaseAdapter adapter;
 
     // Identifies a particular Loader being used in this component
-    private static final int URL_LOADER = 0;
+    private static final int PRODUCT_LOADER = 0;
+
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,17 +107,20 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         setContentView(R.layout.product_list_activity);
         ButterKnife.inject(this);
         init();
-        getLoaderManager().restartLoader(URL_LOADER, null, this);
+        getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
 
-        /*Cursor cursor = getContentResolver().query(
-                StoCountContract.ProductEntry.CONTENT_URI,
-                null, // leaving "columns" null just returns all the columns.
-                null, // cols for "where" clause
-                null, // values for "where" clause
-                null  // sort order
-        );
-        */
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
 
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
     }
 
     @OnClick(R.id.fabSearchButton)
@@ -164,7 +173,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            Application.Logout(mGoogleApiClient, this);
             return true;
         }
 
@@ -204,7 +214,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     protected void onResume()
     {
         super.onResume();
-        getLoaderManager().restartLoader(URL_LOADER, null, this);
+        getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
     }
     
     private void init() {
@@ -261,7 +271,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
      * Takes action based on the ID of the Loader that's being created
      */
         switch (id) {
-            case URL_LOADER:
+            case PRODUCT_LOADER:
                 // Returns a new CursorLoader
                 return new CursorLoader(
                         this,
@@ -560,6 +570,11 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             }
 
         });
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     static class MyBaseAdapter extends RecyclerView.Adapter<MyBaseAdapter.MyViewHolder> {

@@ -49,9 +49,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @InjectView(R.id.google_icon)
     protected ImageView mGoogleIcon;
 
-    @InjectView(R.id.fab)
-    protected FloatingActionButton mFabButton;
-
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -86,12 +83,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .build();
 
         // Customize sign-in button. The sign-in button can be displayed in
-// multiple sizes and color schemes. It can also be contextually
-// rendered based on the requested scopes. For example. a red button may
-// be displayed when Google+ scopes are requested, but a white button
-// may be displayed when only basic profile is requested. Try adding the
-// Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
-// difference.
+        // multiple sizes and color schemes. It can also be contextually
+        // rendered based on the requested scopes. For example. a red button may
+        // be displayed when Google+ scopes are requested, but a white button
+        // may be displayed when only basic profile is requested. Try adding the
+        // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
+        // difference.
 
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setScopes(gso.getScopeArray());
@@ -142,6 +139,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 });
     }
 
+    /*
     @OnClick(R.id.disconnect_button)
     protected void revokeAccess() {
         Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
@@ -154,13 +152,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     }
                 });
     }
-
-    @OnClick(R.id.fab)
-    protected void GoToHome()
-    {
-        Intent intent = new Intent(this, StockPeriodActivity.class);
-        startActivity(intent);
-    }
+    */
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -176,6 +168,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
+
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
 

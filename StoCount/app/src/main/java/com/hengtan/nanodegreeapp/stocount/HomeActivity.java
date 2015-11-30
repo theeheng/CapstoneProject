@@ -120,23 +120,12 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
+        mStockPeriod = Application.getCurrentStockPeriod();
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(STOCK_PERIOD_PARCELABLE)) {
-            mStockPeriod = savedInstanceState.getParcelable(STOCK_PERIOD_PARCELABLE);
-        }
-        else
-        {
-            //Bundle arguments = getArguments();
-            Intent intent = getIntent();
-            Bundle bundle = intent.getExtras();
+        if (mStockPeriod != null) {
 
-            if(bundle.get(STOCK_PERIOD_PARCELABLE) != null)
-            {
-                bundle = (Bundle) bundle.get(STOCK_PERIOD_PARCELABLE);
-                mStockPeriod = bundle.getParcelable(STOCK_PERIOD_PARCELABLE);
+            txtStockPeriodDate.setText("Stock Period Date : "+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
 
-                txtStockPeriodDate.setText("Stock Period Date"+mStockPeriod.getStartDate().toString());
-            }
         }
 
     }

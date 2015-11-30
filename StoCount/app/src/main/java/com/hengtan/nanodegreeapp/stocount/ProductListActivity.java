@@ -44,6 +44,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountProvider;
 import com.hudomju.swipe.OnItemClickListener;
@@ -101,6 +102,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private GoogleApiClient mGoogleApiClient;
 
+    private ApiCall mApiCall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +124,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
+        mApiCall = Application.GetApiCallFromPreference();
     }
 
     @OnClick(R.id.fabSearchButton)
@@ -197,10 +202,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 String formatNameResult = result.getFormatName();
                 String formatTypeResult = result.getType();
 
-                SearchProductFromTescoAPI(barcodeScanResult);
+                mApiCall.SearchProduct(barcodeScanResult, formatNameResult, null, this);
 
                 //SearchProductFromAmazonApi(barcodeScanResult, formatNameResult, formatTypeResult);
-
                 // SearchProductFromWalmartAPI(barcodeScanResult,null);
             }
         } else {
@@ -316,9 +320,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             Cursor cur = c.getCursor();
             cur.moveToPosition(position);
             int suggestionItemId = cur.getInt(0);
-            //SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
 
-            SearchProductFromTescoAPI(Integer.toString(suggestionItemId));
+            mApiCall.SearchProduct(null, null, Integer.toString(suggestionItemId), this);
+            //SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
 
             return true;
         }
@@ -326,250 +330,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         {
             return false;
         }
-    }
-
-    public void SearchProductFromTescoAPI(final String searchText)
-    {
-        TescoApi testApi = new TescoApi();
-
-        final TescoService testService = testApi.getService();
-
-
-        testService.productSearch(searchText, new retrofit.Callback<TescoProductSearch>() {
-            @Override
-            public void success(final TescoProductSearch result, Response response) {
-
-
-                if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0)
-                {
-                    final Product prod = new Product(result.getProducts().get(0));
-
-                    TescoApi descriptionApi = new TescoApi();
-                    TescoService descriptionService = descriptionApi.getService();
-
-                    testService.productExtendedInfo(result.getProducts().get(0).getProductId(), new retrofit.Callback<Response>() {
-
-                        @Override
-                        public void success(final Response result, Response response) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    String test = new String(((TypedByteArray) result.getBody()).getBytes());
-
-                                    String divTag = "<div class=\"content\">";
-                                    String divEndTag = "</div>" ;
-
-                                    if(test.indexOf(divTag) > -1) {
-
-                                        int divIndex = test.indexOf(divTag) + divTag.length();
-
-                                        if(test.substring(divIndex).indexOf(divEndTag) > -1) {
-                                            int divEndIndex = test.substring(divIndex).indexOf(divEndTag) + divIndex;
-                                            prod.setDescription(Jsoup.parse(test.substring(divIndex, divEndIndex)).text().replaceAll("\\<.*?\\>", ""));
-                                        }
-                                    }
-                                    Bundle bundle = new Bundle();
-                                    bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
-                                    Intent intent = new Intent(ProductListActivity.this, DetailActivity.class);
-                                    intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-                                    startActivity(intent);
-
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void failure(final RetrofitError error) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String msg = error.getMessage();
-                                    Toast.makeText(ProductListActivity.this, msg, Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                    });
-
-                } else {
-                    Toast.makeText(ProductListActivity.this, "Product not found for : " + searchText, Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void failure(final RetrofitError error) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String msg = error.getMessage();
-                        Toast.makeText(ProductListActivity.this, msg, Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
-    }
-
-    public void SearchProductFromWalmartAPI(String barcodeScanResult, String itemId)
-    {
-        WalmartApi testApi = new WalmartApi();
-
-        WalmartService testService = testApi.getService();
-
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        Resources res = getResources();
-
-        params.put("apiKey", res.getString(R.string.walmart_apiKey));
-
-        if(barcodeScanResult != null) {
-            params.put("upc", barcodeScanResult);
-        }
-        else if(itemId != null)
-        {
-            params.put("itemId", itemId);
-            barcodeScanResult = itemId;
-        }
-
-        final String searchCriteria = barcodeScanResult;
-
-        testService.getProduct(params, new retrofit.Callback<WalmartItemList>() {
-            @Override
-            public void success(final WalmartItemList result, Response response) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        if (result != null && result.items != null && result.items.size() > 0) {
-                            String name = result.items.get(0).name;
-                            String description = (result.items.get(0).shortDescription == null) ? result.items.get(0).longDescription : result.items.get(0).shortDescription;
-
-                            //UpdateUI(name, description, result.items.get(0).largeImage);
-
-                        } else {
-                            Toast.makeText(ProductListActivity.this, "Product not found for : " + searchCriteria, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void failure(final RetrofitError error) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String msg = error.getMessage();
-                        Toast.makeText(ProductListActivity.this, msg, Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
-    }
-
-    public void SearchProductFromAmazonApi(String barcodeScanResult, String formatName, String formatType)
-    {
-        Resources res = getResources();
-
-        // Get shared client
-        AWSECommerceServicePortType_SOAPClient client = AWSECommerceClient.getSharedClient(res.getString(R.string.aws_accesskeyid), res.getString(R.string.aws_securekeyid));
-
-        client.setDebug(true);
-
-        // Build request
-        ItemLookup request = new ItemLookup();
-        request.associateTag = "tag"; // seems any tag is ok
-        request.shared = new ItemLookupRequest();
-        request.shared.searchIndex = "All";
-        request.shared.responseGroup = new ArrayList<String>();
-        request.shared.responseGroup.add("Images");
-        request.shared.responseGroup.add("ItemAttributes");
-        request.shared.responseGroup.add("EditorialReview");
-        List<String> itemLookup = new ArrayList<String>();
-        itemLookup.add(barcodeScanResult);
-        request.shared.itemId = itemLookup;
-
-        if(formatName.indexOf("EAN")> -1) {
-
-            if(formatType.indexOf("ISBN") > -1) {
-                request.shared.idType = "ISBN";
-            }
-            else {
-                request.shared.idType = "EAN";
-            }
-        }else if(formatName.indexOf("UPC")> -1) {
-            request.shared.idType = "UPC";
-        }
-
-        // authenticate the request
-        // http://docs.aws.amazon.com/AWSECommerceService/latest/DG/NotUsingWSSecurity.html
-        AWSECommerceClient.authenticateRequest("ItemLookup");
-
-        // make API call
-        client.itemLookup(request, new SOAPServiceCallback<ItemLookupResponse>() {
-
-            @Override
-            public void onSuccess(ItemLookupResponse responseObject) { // handle successful response
-
-                // success handling logic
-                if (responseObject.items != null && responseObject.items.size() > 0) {
-                    Items items = responseObject.items.get(0);
-                    if (items.item != null && items.item.size() > 0) {
-
-                        String name = items.item.get(0).itemAttributes.title;
-                        String description = null;
-                        String thumbnailUrl = null;
-
-                        if(items.item.get(0).editorialReviews !=  null && items.item.get(0).editorialReviews.editorialReview != null && items.item.get(0).editorialReviews.editorialReview.size() > 0) {
-                            description = items.item.get(0).editorialReviews.editorialReview.get(0).content;
-                        }
-
-                        if(items.item.get(0).imageSets !=  null && items.item.get(0).imageSets.size()  > 0 && items.item.get(0).imageSets.get(0).imageSet.size() > 0 && items.item.get(0).imageSets.get(0).imageSet.get(0).thumbnailImage != null) {
-
-                            for(ImageSet imgset : items.item.get(0).imageSets.get(0).imageSet)
-                                if(imgset.category.equals("primary"))
-                                {
-                                    thumbnailUrl = imgset.mediumImage.url; //imgset.thumbnailImage.url;
-                                }
-                        }
-
-                        //UpdateUI(name, description, thumbnailUrl);
-
-                    } else {
-                        Toast.makeText(ProductListActivity.this, "No result", Toast.LENGTH_LONG).show();
-                    }
-                } else { // response resident error
-                    if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
-                        Errors errors = responseObject.operationRequest.errors;
-                        if (errors.error != null && errors.error.size() > 0) {
-                            com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
-                            Toast.makeText(ProductListActivity.this, error.message, Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(ProductListActivity.this, "No result", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(ProductListActivity.this, "No result", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable error, String errorMessage) { // HTTP or parsing error
-
-                ALog.e(TAG, errorMessage);
-                Toast.makeText(ProductListActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onSOAPFault(Object soapFault) { // soap fault
-
-                com.leansoft.nano.soap11.Fault fault = (com.leansoft.nano.soap11.Fault) soapFault;
-
-                ALog.e(TAG, fault.faultstring);
-
-                Toast.makeText(ProductListActivity.this, fault.faultstring, Toast.LENGTH_LONG).show();
-
-            }
-
-        });
     }
 
     @Override

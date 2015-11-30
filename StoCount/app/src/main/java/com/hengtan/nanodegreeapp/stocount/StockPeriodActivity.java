@@ -69,21 +69,7 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
 
         mFabButton.setVisibility(View.GONE);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(USER_PARCELABLE)) {
-            mUser = savedInstanceState.getParcelable(USER_PARCELABLE);
-        }
-        else
-        {
-            //Bundle arguments = getArguments();
-            Intent intent = getIntent();
-            Bundle bundle = intent.getExtras();
-
-            if(bundle.get(USER_PARCELABLE) != null)
-            {
-                bundle = (Bundle) bundle.get(USER_PARCELABLE);
-                mUser = bundle.getParcelable(USER_PARCELABLE);
-            }
-        }
+        mUser = Application.getCurrentLoginUser();
 
         if(mUser != null) {
             userName.setText(mUser.getDisplayName());
@@ -131,6 +117,8 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
         StockPeriod stockPeriod = new StockPeriod();
         stockPeriod.setStartDate(widgetSelectedDate.getDate());
         stockPeriod.SaveStockPeriod(getContentResolver());
+
+        Application.setCurrentStockPeriod(stockPeriod);
 
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);

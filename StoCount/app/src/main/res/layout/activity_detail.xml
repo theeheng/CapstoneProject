@@ -22,8 +22,8 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginStart="@dimen/keyline_content_start"
-            app:expandedTitleMarginBottom="@dimen/detail_backdrop_height"
+            app:expandedTitleMarginStart="70dp"
+            app:expandedTitleMarginBottom="@dimen/detail_image_height"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
             >
 

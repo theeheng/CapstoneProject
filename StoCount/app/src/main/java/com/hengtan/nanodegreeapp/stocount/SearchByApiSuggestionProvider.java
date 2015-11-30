@@ -10,6 +10,8 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +39,7 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
 
     List<SearchSuggestion> searchResult = null;
     private String previousQuery;
+    private ApiCall mApiCall = null;
 
     private static final String[] COLUMNS = {
             "_id",  // must include this column
@@ -69,11 +72,15 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
         return matcher;
     }
 
+
     @Override
     public boolean onCreate() {
 
         //lets not do anything in particular
         Log.d(tag, "onCreate called");
+
+        mApiCall = Application.GetApiCallFromPreference();
+
         return true;
     }
 
@@ -111,8 +118,12 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
         }
         else if(!query.equals(previousQuery) || (query.equals(previousQuery) &&  (searchResult == null || (searchResult != null && searchResult.size() == 0))))
         {
+            previousQuery = query;
+
+            searchResult = mApiCall.GetSuggestedItemName(query, getContext());
+
             //result = getSuggestedItemNameFromDB(query);
-            getSuggestedItemNameFromTescoAPI(query);
+            //getSuggestedItemNameFromTescoAPI(query);
             //result.add("Orange juice");
             //result.add("Apple juice");
             //result.add("Mango juice");
@@ -197,86 +208,4 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
                       String[] selectionArgs) {
         throw new UnsupportedOperationException();
     }
-
-    private void getSuggestedItemNameFromWalmartAPI(String query)
-    {
-
-        WalmartApi testApi = new WalmartApi();
-
-        WalmartService testService = testApi.getService();
-
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        Resources res = getContext().getResources();
-
-        params.put("apiKey",res.getString(R.string.walmart_apiKey));
-        params.put("format", "json");
-        params.put("query", query);
-
-        try {
-            WalmartItemList result = testService.searchProduct(params);
-
-            if (result != null && result.items != null && result.items.size() > 0) {
-
-                searchResult = new ArrayList<SearchSuggestion>();
-
-                for (WalmartItems s : result.items) {
-
-                    SearchSuggestion ss = new SearchSuggestion();
-                    ss.id = s.itemId;
-                    ss.name = s.name;
-                    ss.additionalInfo = s.categoryPath;
-
-                    searchResult.add(ss);
-                }
-
-            } else {
-                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
-            }
-        }
-        catch(Exception ex)
-        {
-            String err = ex.getMessage();
-        }
-    }
-
-
-    private void getSuggestedItemNameFromTescoAPI(String query)
-    {
-
-        previousQuery = query;
-
-        TescoApi testApi = new TescoApi();
-
-        TescoService testService = testApi.getService();
-
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        try {
-            TescoProductSearch result = testService.productSearch(query);
-
-            if (result != null && result.getStatusCode() != null && result.getStatusCode() == 0 && result.getTotalProductCount() != null && result.getTotalProductCount() > 0 && result.getProducts() != null && result.getProducts().size() > 0) {
-
-                searchResult = new ArrayList<SearchSuggestion>();
-
-                for (TescoProduct s : result.getProducts()) {
-
-                    SearchSuggestion ss = new SearchSuggestion();
-                    ss.id = Integer.parseInt(s.getProductId());
-                    ss.name = s.getName();
-                    ss.additionalInfo = s.getPriceDescription();
-
-                    searchResult.add(ss);
-                }
-
-            } else {
-                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
-            }
-        }
-        catch(Exception ex)
-        {
-            String err = ex.getMessage();
-        }
-    }
-
 }

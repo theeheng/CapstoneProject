@@ -25,7 +25,7 @@ public class StockPeriod implements Parcelable {
 
     private List<String> mParcelableString;
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    public final SimpleDateFormat DateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     public StockPeriod()
     {}
@@ -34,8 +34,8 @@ public class StockPeriod implements Parcelable {
 
         try {
             this.mStockPeriodId = cursor.getInt(cursor.getColumnIndex(StoCountContract.StockPeriodEntry._ID));
-            this.mStartDate = dateFormat.parse(cursor.getString(cursor.getColumnIndex(StoCountContract.StockPeriodEntry.START_DATE)));
-            this.mEndDate = dateFormat.parse(cursor.getString(cursor.getColumnIndex(StoCountContract.StockPeriodEntry.END_DATE)));
+            this.mStartDate = DateFormat.parse(cursor.getString(cursor.getColumnIndex(StoCountContract.StockPeriodEntry.START_DATE)));
+            this.mEndDate = DateFormat.parse(cursor.getString(cursor.getColumnIndex(StoCountContract.StockPeriodEntry.END_DATE)));
         }
         catch (Exception ex)
         {
@@ -75,12 +75,12 @@ public class StockPeriod implements Parcelable {
         try {
 
             if(!mParcelableString.get(StockPeriodIndex.START_DATE.ordinal()).isEmpty())
-                this.mStartDate = dateFormat.parse(mParcelableString.get(StockPeriodIndex.START_DATE.ordinal()));
+                this.mStartDate = DateFormat.parse(mParcelableString.get(StockPeriodIndex.START_DATE.ordinal()));
             else
                 this.mStartDate = null;
 
             if(!mParcelableString.get(StockPeriodIndex.END_DATE.ordinal()).isEmpty())
-                this.mEndDate = dateFormat.parse(mParcelableString.get(StockPeriodIndex.END_DATE.ordinal()));
+                this.mEndDate = DateFormat.parse(mParcelableString.get(StockPeriodIndex.END_DATE.ordinal()));
             else
                 this.mEndDate = null;
 
@@ -134,8 +134,8 @@ public class StockPeriod implements Parcelable {
         {
             values.add(StockPeriodIndex.STOCK_PERIOD_ID.ordinal(),this.mStockPeriodId.toString());
         }
-        values.add(StockPeriodIndex.START_DATE.ordinal(), (this.mStartDate != null) ? dateFormat.format(this.mStartDate) : "");
-        values.add(StockPeriodIndex.END_DATE.ordinal(), (this.mEndDate != null) ? dateFormat.format(this.mEndDate): "");
+        values.add(StockPeriodIndex.START_DATE.ordinal(), (this.mStartDate != null) ? DateFormat.format(this.mStartDate) : "");
+        values.add(StockPeriodIndex.END_DATE.ordinal(), (this.mEndDate != null) ? DateFormat.format(this.mEndDate): "");
 
 
         dest.writeStringList(values);
@@ -160,10 +160,10 @@ public class StockPeriod implements Parcelable {
         ContentValues values = new ContentValues();
 
         if(mStartDate != null)
-            values.put(StoCountContract.StockPeriodEntry.START_DATE, dateFormat.format(this.mStartDate));
+            values.put(StoCountContract.StockPeriodEntry.START_DATE, DateFormat.format(this.mStartDate));
 
         if(mEndDate != null)
-            values.put(StoCountContract.StockPeriodEntry.END_DATE, dateFormat.format(this.mEndDate));
+            values.put(StoCountContract.StockPeriodEntry.END_DATE, DateFormat.format(this.mEndDate));
 
         if(this.mStockPeriodId != null)
         {

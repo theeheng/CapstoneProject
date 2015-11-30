@@ -230,9 +230,3 @@ public class SearchByProductNameSuggestionProvider  extends ContentProvider {
     }
 }
 
-class SearchSuggestion
-{
-    String name;
-    String additionalInfo;
-    int id;
-}

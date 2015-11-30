@@ -52,9 +52,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " INTEGER," +
                 StoCountContract.ProductCountEntry.PRODUCT_ID + " INTEGER," +
                 StoCountContract.ProductCountEntry.QUANTITY + " DOUBLE," +
-                StoCountContract.ProductCountEntry.COUNT_DATE + " DATETIME," +
-                " FOREIGN KEY (" + StoCountContract.ProductCountEntry._ID + ") REFERENCES " +
-                StoCountContract.ProductCountEntry.TABLE_NAME + " (" + StoCountContract.ProductCountEntry._ID + "))";
+                StoCountContract.ProductCountEntry.COUNT_DATE + " DATETIME, " +
+                "UNIQUE ("+ StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + ", "+ StoCountContract.ProductCountEntry.PRODUCT_ID  +") ON CONFLICT IGNORE)";
 
         Log.d("sql-statments", SQL_CREATE_USER_TABLE);
         Log.d("sql-statments", SQL_CREATE_PRODUCT_TABLE);

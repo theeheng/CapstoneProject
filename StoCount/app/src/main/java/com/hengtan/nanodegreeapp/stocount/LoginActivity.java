@@ -306,18 +306,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     cursor.moveToFirst();
                     mStockPeriod = new StockPeriod(cursor);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable(HomeActivity.STOCK_PERIOD_PARCELABLE, mStockPeriod);
+                    Application.setCurrentStockPeriod(mStockPeriod);
+
                     Intent intent = new Intent(this, HomeActivity.class);
-                    intent.putExtra(HomeActivity.STOCK_PERIOD_PARCELABLE, bundle);
                     this.startActivity(intent);
 
                 } else if (mUser != null) {
 
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable(StockPeriodActivity.USER_PARCELABLE, mUser);
+                    Application.setCurrentLoginUser(mUser);
+
                     Intent intent = new Intent(this, StockPeriodActivity.class);
-                    intent.putExtra(StockPeriodActivity.USER_PARCELABLE, bundle);
                     this.startActivity(intent);
                 }
 

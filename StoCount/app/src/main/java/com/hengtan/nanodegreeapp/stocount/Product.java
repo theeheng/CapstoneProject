@@ -13,6 +13,7 @@ import java.util.List;
 
 import tesco.webapi.android.TescoProduct;
 import tesco.webapi.android.TescoProductSearch;
+import walmart.webapi.android.WalmartItems;
 
 /**
  * Created by htan on 24/11/2015.
@@ -71,6 +72,19 @@ public class Product implements Parcelable {
         this.mBarcode = tescoProduct.getEANBarcode();
         this.mBarcodeFormat = "EAN13";
     }
+
+    public Product(WalmartItems walmartProduct)
+    {
+        this.mProductId = null;
+        this.mName = walmartProduct.name;
+        this.mDescription = (walmartProduct.shortDescription == null) ? walmartProduct.longDescription : walmartProduct.shortDescription;
+        this.mThumbnailImage = walmartProduct.thumbnailImage;
+        this.mLargeImage = walmartProduct.largeImage;
+        this.mAdditionalInfo = walmartProduct.categoryPath;
+        this.mBarcode = walmartProduct.upc;
+        this.mBarcodeFormat = "UPC";
+    }
+
 
     public Product(Parcel in)
     {

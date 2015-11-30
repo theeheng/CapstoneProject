@@ -1,7 +1,11 @@
 package com.hengtan.nanodegreeapp.stocount;
 
+import android.app.LoaderManager;
 import android.app.ProgressDialog;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
@@ -27,12 +32,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private final String TAG = LoginActivity.class.getSimpleName();
 
@@ -50,6 +56,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected ImageView mGoogleIcon;
 
     private ProgressDialog mProgressDialog;
+
+    private GoogleSignInAccount mAccount;
+
+    private User mUser;
+
+    private StockPeriod mStockPeriod;
+
+    // Identifies a particular Loader being used in this component
+    private static final int USER_LOADER = 0;
+
+    private static final int STOCK_PERIOD_LOADER = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,15 +187,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if (result.isSuccess()) {
 
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
+            mAccount = result.getSignInAccount();
 
-            User usr = new User(acct);
+            getLoaderManager().restartLoader(USER_LOADER, null, this);
 
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(StockPeriodActivity.USER_PARCELABLE, usr);
-            Intent intent = new Intent(this, StockPeriodActivity.class);
-            intent.putExtra(StockPeriodActivity.USER_PARCELABLE, bundle);
-            this.startActivity(intent);
 
             /*mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             Glide.with(this).load(acct.getPhotoUrl()).asBitmap().into(new BitmapImageViewTarget(mGoogleIcon) {
@@ -236,4 +248,86 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+        /*
+         * Takes action based on the ID of the Loader that's being created
+         */
+        switch (id) {
+            case USER_LOADER:
+                // Returns a new CursorLoader
+                return new CursorLoader(
+                        this,
+                        StoCountContract.UserEntry.CONTENT_URI,
+                        null,
+                        StoCountContract.UserEntry.GOOGLE_ID + " = ? ",
+                        new String[]{mAccount.getId()},
+                        null
+                );
+            case STOCK_PERIOD_LOADER:
+                // Returns a new CursorLoader
+                return new CursorLoader(
+                        this,
+                        StoCountContract.StockPeriodEntry.CONTENT_URI,
+                        null,
+                        StoCountContract.StockPeriodEntry.END_DATE + " IS NULL ",
+                        null,
+                        null
+                );
+            default:
+                // An invalid id was passed in
+                return null;
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+
+        switch (loader.getId()) {
+            case USER_LOADER:
+
+                if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToFirst();
+                    mUser = new User(cursor);
+                } else {
+                    mUser = new User(mAccount);
+                    mUser.SaveUser(getContentResolver());
+                }
+
+                //Load current stock period
+                getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
+
+                break;
+
+            case STOCK_PERIOD_LOADER:
+
+                if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToFirst();
+                    mStockPeriod = new StockPeriod(cursor);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable(HomeActivity.STOCK_PERIOD_PARCELABLE, mStockPeriod);
+                    Intent intent = new Intent(this, HomeActivity.class);
+                    intent.putExtra(HomeActivity.STOCK_PERIOD_PARCELABLE, bundle);
+                    this.startActivity(intent);
+
+                } else if (mUser != null) {
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable(StockPeriodActivity.USER_PARCELABLE, mUser);
+                    Intent intent = new Intent(this, StockPeriodActivity.class);
+                    intent.putExtra(StockPeriodActivity.USER_PARCELABLE, bundle);
+                    this.startActivity(intent);
+                }
+
+                break;
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }

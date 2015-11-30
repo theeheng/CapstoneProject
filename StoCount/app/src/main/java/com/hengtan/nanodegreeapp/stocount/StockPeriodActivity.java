@@ -126,6 +126,12 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
     @OnClick(R.id.fab)
     protected void GoToHome()
     {
+        CalendarDay widgetSelectedDate = widget.getSelectedDate();
+
+        StockPeriod stockPeriod = new StockPeriod();
+        stockPeriod.setStartDate(widgetSelectedDate.getDate());
+        stockPeriod.SaveStockPeriod(getContentResolver());
+
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }

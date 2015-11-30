@@ -263,7 +263,7 @@ public class StoCountProvider extends ContentProvider {
             case STOCK_PERIOD: {
                 long _id = db.insert(StoCountContract.StockPeriodEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = StoCountContract.StockPeriodEntry.buildStockPeriodUri(values.getAsLong("_id"));
+                    returnUri = StoCountContract.StockPeriodEntry.buildStockPeriodUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -271,7 +271,7 @@ public class StoCountProvider extends ContentProvider {
             case PRODUCT_COUNT: {
                 long _id = db.insert(StoCountContract.ProductCountEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = StoCountContract.ProductCountEntry.buildProductCountUri(values.getAsLong("_id"));
+                    returnUri = StoCountContract.ProductCountEntry.buildProductCountUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;

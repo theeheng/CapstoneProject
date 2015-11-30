@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazon.webservices.awsecommerceservice.ImageSet;
@@ -80,6 +81,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @InjectView(R.id.viewButton)
     protected Button btnView;
 
+    @InjectView(R.id.stockPeriodDate)
+    protected TextView txtStockPeriodDate;
+
     private SearchView searchView;
 
     // Identifies a particular Loader being used in this component
@@ -92,6 +96,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     private Integer mSearchResultId;
 
     private GoogleApiClient mGoogleApiClient;
+
+    public static final String STOCK_PERIOD_PARCELABLE = "STOCKPERIODPARCELABLE";
+
+    private StockPeriod mStockPeriod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +119,26 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(STOCK_PERIOD_PARCELABLE)) {
+            mStockPeriod = savedInstanceState.getParcelable(STOCK_PERIOD_PARCELABLE);
+        }
+        else
+        {
+            //Bundle arguments = getArguments();
+            Intent intent = getIntent();
+            Bundle bundle = intent.getExtras();
+
+            if(bundle.get(STOCK_PERIOD_PARCELABLE) != null)
+            {
+                bundle = (Bundle) bundle.get(STOCK_PERIOD_PARCELABLE);
+                mStockPeriod = bundle.getParcelable(STOCK_PERIOD_PARCELABLE);
+
+                txtStockPeriodDate.setText("Stock Period Date"+mStockPeriod.getStartDate().toString());
+            }
+        }
+
     }
 
     @Override

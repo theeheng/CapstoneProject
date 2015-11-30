@@ -13,8 +13,7 @@ import com.amazon.webservices.awsecommerceservice.ItemLookupResponse;
 import com.amazon.webservices.awsecommerceservice.Items;
 import com.amazon.webservices.awsecommerceservice.client.AWSECommerceServicePortType_SOAPClient;
 import com.hengtan.nanodegreeapp.stocount.R;
-import com.hengtan.nanodegreeapp.stocount.SearchSuggestion;
-import com.leansoft.nano.log.ALog;
+import com.hengtan.nanodegreeapp.stocount.search.SearchSuggestion;
 import com.leansoft.nano.ws.SOAPServiceCallback;
 
 import java.util.ArrayList;

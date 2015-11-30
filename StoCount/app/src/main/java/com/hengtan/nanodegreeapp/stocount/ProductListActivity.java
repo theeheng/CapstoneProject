@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -23,18 +22,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazon.service.ecommerce.AWSECommerceClient;
-import com.amazon.webservices.awsecommerceservice.Errors;
-import com.amazon.webservices.awsecommerceservice.ImageSet;
-import com.amazon.webservices.awsecommerceservice.ItemLookup;
-import com.amazon.webservices.awsecommerceservice.ItemLookupRequest;
-import com.amazon.webservices.awsecommerceservice.ItemLookupResponse;
-import com.amazon.webservices.awsecommerceservice.Items;
-import com.amazon.webservices.awsecommerceservice.client.AWSECommerceServicePortType_SOAPClient;
 import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -45,37 +35,18 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
+import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
-import com.hengtan.nanodegreeapp.stocount.data.StoCountProvider;
 import com.hudomju.swipe.OnItemClickListener;
 import com.hudomju.swipe.SwipeToDismissTouchListener;
 import com.hudomju.swipe.SwipeableItemClickListener;
 import com.hudomju.swipe.adapter.RecyclerViewAdapter;
-import com.leansoft.nano.log.ALog;
-import com.leansoft.nano.ws.SOAPServiceCallback;
-
-import org.jsoup.Jsoup;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.mime.TypedByteArray;
-import tesco.webapi.android.TescoApi;
-import tesco.webapi.android.TescoProductSearch;
-import tesco.webapi.android.TescoService;
-import walmart.webapi.android.WalmartApi;
-import walmart.webapi.android.WalmartItemList;
-import walmart.webapi.android.WalmartService;
-import android.app.LoaderManager;
 
-import static android.widget.Toast.LENGTH_SHORT;
+import android.app.LoaderManager;
 
 public class ProductListActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener {
 

@@ -1,4 +1,4 @@
-package com.hengtan.nanodegreeapp.stocount;
+package com.hengtan.nanodegreeapp.stocount.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.RemoteViews;
+
+import com.hengtan.nanodegreeapp.stocount.DetailActivity;
+import com.hengtan.nanodegreeapp.stocount.R;
 
 public class WidgetProvider extends AppWidgetProvider {
 

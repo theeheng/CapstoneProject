@@ -1,13 +1,10 @@
-package com.hengtan.nanodegreeapp.stocount;
+package com.hengtan.nanodegreeapp.stocount.data;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

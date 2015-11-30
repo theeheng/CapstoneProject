@@ -1,4 +1,4 @@
-package com.hengtan.nanodegreeapp.stocount;
+package com.hengtan.nanodegreeapp.stocount.search;
 
 public class SearchSuggestion
 {

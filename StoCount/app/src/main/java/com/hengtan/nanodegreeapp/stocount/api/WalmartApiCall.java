@@ -6,11 +6,10 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.Api;
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
-import com.hengtan.nanodegreeapp.stocount.Product;
+import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.R;
-import com.hengtan.nanodegreeapp.stocount.SearchSuggestion;
+import com.hengtan.nanodegreeapp.stocount.search.SearchSuggestion;
 
 import java.util.ArrayList;
 import java.util.HashMap;

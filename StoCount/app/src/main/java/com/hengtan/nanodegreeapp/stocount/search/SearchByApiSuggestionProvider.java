@@ -1,37 +1,25 @@
-package com.hengtan.nanodegreeapp.stocount;
+package com.hengtan.nanodegreeapp.stocount.search;
 
 import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.hengtan.nanodegreeapp.stocount.Application;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import tesco.webapi.android.TescoApi;
-import tesco.webapi.android.TescoProduct;
-import tesco.webapi.android.TescoProductSearch;
-import tesco.webapi.android.TescoService;
-import walmart.webapi.android.WalmartApi;
-import walmart.webapi.android.WalmartItemList;
-import walmart.webapi.android.WalmartItems;
-import walmart.webapi.android.WalmartService;
 
 /**
  * Created by hengtan on 25/11/2015.
  */
 public class SearchByApiSuggestionProvider  extends ContentProvider {
     private static final String tag = "SuggestUrlProvider";
-    public static String AUTHORITY = "com.hengtan.nanodegreeapp.stocount.SearchByApiSuggestionProvider";
+    public static String AUTHORITY = "com.hengtan.nanodegreeapp.stocount.search.SearchByApiSuggestionProvider";
 
     private static final int SEARCH_SUGGEST = 0;
     private static final int SHORTCUT_REFRESH = 1;

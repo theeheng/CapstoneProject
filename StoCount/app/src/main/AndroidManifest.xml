@@ -65,7 +65,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
-        <receiver android:name="WidgetProvider">
+        <receiver android:name=".widget.WidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -73,17 +73,17 @@
                 android:resource="@xml/widgetinfo" />
         </receiver>
 
-        <service android:name=".WidgetService"
+        <service android:name=".widget.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"
             android:exported="false" />
 
         <provider
-            android:name=".SearchByApiSuggestionProvider"
-            android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByApiSuggestionProvider" >
+            android:name=".search.SearchByApiSuggestionProvider"
+            android:authorities="com.hengtan.nanodegreeapp.stocount.search.SearchByApiSuggestionProvider" >
         </provider>
         <provider
-            android:name=".SearchByProductNameSuggestionProvider"
-            android:authorities="com.hengtan.nanodegreeapp.stocount.SearchByProductNameSuggestionProvider" >
+            android:name=".search.SearchByProductNameSuggestionProvider"
+            android:authorities="com.hengtan.nanodegreeapp.stocount.search.SearchByProductNameSuggestionProvider" >
         </provider>
         <provider
             android:name=".data.StoCountProvider"

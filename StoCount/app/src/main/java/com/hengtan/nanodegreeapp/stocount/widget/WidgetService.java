@@ -1,4 +1,4 @@
-package com.hengtan.nanodegreeapp.stocount;
+package com.hengtan.nanodegreeapp.stocount.widget;
 
 import android.content.Intent;
 import android.widget.RemoteViewsService;

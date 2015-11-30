@@ -1,29 +1,24 @@
 package com.hengtan.nanodegreeapp.stocount;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.KeyListener;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
+import com.hengtan.nanodegreeapp.stocount.data.Product;
+import com.hengtan.nanodegreeapp.stocount.data.SaveToDBAsyncTask;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

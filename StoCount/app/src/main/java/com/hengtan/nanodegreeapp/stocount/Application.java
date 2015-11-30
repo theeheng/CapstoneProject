@@ -3,8 +3,6 @@ package com.hengtan.nanodegreeapp.stocount;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -13,12 +11,8 @@ import com.google.android.gms.common.api.Status;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.TescoApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.WalmartApiCall;
-
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import tesco.webapi.android.TescoApi;
-import tesco.webapi.android.TescoService;
-import tesco.webapi.android.TescoSessionKey;
+import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
+import com.hengtan.nanodegreeapp.stocount.data.User;
 
 /**
  * Created by htan on 17/11/2015.
@@ -62,8 +56,8 @@ public class Application extends android.app.Application {
 
     public static ApiCall GetApiCallFromPreference()
     {
-        //return (ApiCall) new TescoApiCall();
-        return (ApiCall) new WalmartApiCall();
+        return (ApiCall) new TescoApiCall();
+        //return (ApiCall) new WalmartApiCall();
     }
 
     public static void Logout(GoogleApiClient googleApiClient, final Activity activity)

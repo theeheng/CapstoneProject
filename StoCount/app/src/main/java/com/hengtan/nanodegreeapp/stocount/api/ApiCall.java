@@ -2,7 +2,7 @@ package com.hengtan.nanodegreeapp.stocount.api;
 
 import android.content.Context;
 
-import com.hengtan.nanodegreeapp.stocount.SearchSuggestion;
+import com.hengtan.nanodegreeapp.stocount.search.SearchSuggestion;
 
 import java.util.List;
 

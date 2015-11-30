@@ -1,11 +1,12 @@
-package com.hengtan.nanodegreeapp.stocount;
+package com.hengtan.nanodegreeapp.stocount.data;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import java.util.List;
+import com.hengtan.nanodegreeapp.stocount.data.Product;
+import com.hengtan.nanodegreeapp.stocount.data.User;
 
 /**
  * Created by hengtan on 28/11/2015.

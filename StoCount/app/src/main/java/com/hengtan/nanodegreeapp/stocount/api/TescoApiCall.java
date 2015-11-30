@@ -6,9 +6,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
-import com.hengtan.nanodegreeapp.stocount.Product;
-import com.hengtan.nanodegreeapp.stocount.ProductListActivity;
-import com.hengtan.nanodegreeapp.stocount.SearchSuggestion;
+import com.hengtan.nanodegreeapp.stocount.data.Product;
+import com.hengtan.nanodegreeapp.stocount.search.SearchSuggestion;
 
 import org.jsoup.Jsoup;
 

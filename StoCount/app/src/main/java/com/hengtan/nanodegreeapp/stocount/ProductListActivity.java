@@ -1,5 +1,6 @@
 package com.hengtan.nanodegreeapp.stocount;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -354,7 +355,19 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
         public void remove(int position) {
             //mProductCursor.remove(position);
-            //notifyItemRemoved(position);
+
+            mProductCursor.moveToPosition(position);
+
+            Product prod = new Product(mProductCursor);
+
+            mContext.getContentResolver().delete(
+                    StoCountContract.ProductEntry.CONTENT_URI,
+                    StoCountContract.ProductEntry._ID + " = ? ",
+                    new String[] { prod.getProductId().toString() }
+            );
+
+            ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, (ProductListActivity)mContext);
+            notifyItemRemoved(position);
         }
 
         public void swapCursor(Cursor cursor)

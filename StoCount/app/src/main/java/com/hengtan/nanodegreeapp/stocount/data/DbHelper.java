@@ -41,14 +41,14 @@ public class DbHelper extends SQLiteOpenHelper {
                 StoCountContract.ProductCountEntry.TABLE_NAME + " (" + StoCountContract.ProductCountEntry._ID + "))";
 
         final String SQL_CREATE_STOCK_PERIOD_TABLE = "CREATE TABLE " + StoCountContract.StockPeriodEntry.TABLE_NAME + " ("+
-                StoCountContract.StockPeriodEntry._ID + " INTEGER," +
+                StoCountContract.StockPeriodEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 StoCountContract.StockPeriodEntry.START_DATE + " DATE," +
                 StoCountContract.StockPeriodEntry.END_DATE + " DATE," +
                 " FOREIGN KEY (" + StoCountContract.StockPeriodEntry._ID + ") REFERENCES " +
                 StoCountContract.ProductCountEntry.TABLE_NAME + " (" + StoCountContract.ProductCountEntry._ID + "))";
 
         final String SQL_CREATE_PRODUCT_COUNT_TABLE = "CREATE TABLE " + StoCountContract.ProductCountEntry.TABLE_NAME + " ("+
-                StoCountContract.ProductCountEntry._ID + " INTEGER," +
+                StoCountContract.ProductCountEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " INTEGER," +
                 StoCountContract.ProductCountEntry.PRODUCT_ID + " INTEGER," +
                 StoCountContract.ProductCountEntry.QUANTITY + " DOUBLE," +

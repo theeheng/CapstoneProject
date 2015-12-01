@@ -36,6 +36,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
+import com.hengtan.nanodegreeapp.stocount.data.DBAsyncTask;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
@@ -73,6 +74,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     // Identifies a particular Loader being used in this component
     private static final int PRODUCT_LOADER = 0;
+
+    private static final int PRODUCT_COUNT_LOADER = 1;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -316,11 +319,13 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     }
 
-    static class MyBaseAdapter extends RecyclerView.Adapter<MyBaseAdapter.MyViewHolder> {
+    static class MyBaseAdapter extends RecyclerView.Adapter<MyBaseAdapter.MyViewHolder> implements LoaderManager.LoaderCallbacks<Cursor> {
 
         private Cursor mProductCursor;
         private Context mContext;
         private StockPeriod mStockPeriod;
+        private Product mProduct;
+        private ProductCount mProductCount;
 
         MyBaseAdapter(Context context, StockPeriod stockPeriod) {
             this.mProductCursor = null;
@@ -354,20 +359,18 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         }
 
         public void remove(int position) {
-            //mProductCursor.remove(position);
 
             mProductCursor.moveToPosition(position);
 
             Product prod = new Product(mProductCursor);
 
-            mContext.getContentResolver().delete(
-                    StoCountContract.ProductEntry.CONTENT_URI,
-                    StoCountContract.ProductEntry._ID + " = ? ",
-                    new String[] { prod.getProductId().toString() }
-            );
+            DBAsyncTask deleteAsyncTask = new DBAsyncTask(mContext, mContext.getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.DELETE);
+            deleteAsyncTask.execute(prod);
 
-            ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, (ProductListActivity)mContext);
+            ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
+
             notifyItemRemoved(position);
+
         }
 
         public void swapCursor(Cursor cursor)
@@ -380,35 +383,97 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             if(mProductCursor != null) {
                 mProductCursor.moveToPosition(position);
 
-                Product prod = new Product(mProductCursor);
-                ProductCount prodCount = null;
+                mProduct = new Product(mProductCursor);
 
-                Cursor countCursor;
+                ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_COUNT_LOADER, null, this);
 
-                countCursor= mContext.getContentResolver().query(
+                //ProductCount prodCount = null;
+
+                //Cursor countCursor;
+
+                /*countCursor= mContext.getContentResolver().query(
                         StoCountContract.ProductCountEntry.CONTENT_URI,
                         null, // leaving "columns" null just returns all the columns.
                         StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = ? AND "+StoCountContract.ProductCountEntry.PRODUCT_ID + " = ? ",
                         new String[] {mStockPeriod.getStockPeriodId().toString(), prod.getProductId().toString()},
                         null  // sort order
                 );
+                */
 
-                if(countCursor.getCount() > 0) {
-                    countCursor.moveToFirst();
-                    prodCount = new ProductCount(countCursor);
-                }
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
-
-                if(prodCount != null)
-                    bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE,prodCount);
-
-                Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-                mContext.startActivity(intent);
             }
         }
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+            /*
+             * Takes action based on the ID of the Loader that's being created
+             */
+            switch (id) {
+                case PRODUCT_LOADER:
+                    // Returns a new CursorLoader
+                    return new CursorLoader(
+                            mContext,
+                            StoCountContract.ProductEntry.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                case PRODUCT_COUNT_LOADER:
+                    // Returns a new CursorLoader
+                    return new CursorLoader(
+                            mContext,
+                            StoCountContract.ProductCountEntry.CONTENT_URI,
+                            null,
+                            StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = ? AND "+StoCountContract.ProductCountEntry.PRODUCT_ID + " = ? ",
+                            new String[] {mStockPeriod.getStockPeriodId().toString(), mProduct.getProductId().toString()},
+                            null
+                    );
+
+                default:
+                    // An invalid id was passed in
+                    return null;
+            }
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+            switch(loader.getId())
+            {
+                case PRODUCT_LOADER :
+
+                    swapCursor(cursor);
+                    notifyDataSetChanged();
+
+                    break;
+
+                case PRODUCT_COUNT_LOADER :
+
+                    if(cursor.getCount() > 0) {
+                        cursor.moveToFirst();
+                        mProductCount = new ProductCount(cursor);
+                    }
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, mProduct);
+
+                    if(mProductCount != null)
+                        bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE,mProductCount);
+
+                    Intent intent = new Intent(mContext, DetailActivity.class);
+                    intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                    mContext.startActivity(intent);
+
+                    break;
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+
         static class MyViewHolder extends RecyclerView.ViewHolder {
 
             ImageView dataImageView;

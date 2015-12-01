@@ -77,7 +77,7 @@ public class TescoApiCall implements ApiCall {
 
         final TescoService testService = testApi.getService();
 
-        final String searchText = (barcodeScanResult != null && barcodeScanResult.isEmpty()) ? barcodeScanResult : itemId ;
+        final String searchText = (barcodeScanResult != null && !barcodeScanResult.isEmpty()) ? barcodeScanResult : itemId ;
 
         testService.productSearch(searchText, new retrofit.Callback<TescoProductSearch>() {
             @Override

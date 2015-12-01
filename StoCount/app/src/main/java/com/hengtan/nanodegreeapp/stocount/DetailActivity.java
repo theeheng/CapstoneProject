@@ -17,9 +17,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.hengtan.nanodegreeapp.stocount.data.DBAsyncTask;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
-import com.hengtan.nanodegreeapp.stocount.data.SaveToDBAsyncTask;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 
 import java.util.Date;
@@ -249,7 +249,7 @@ public class DetailActivity extends AppCompatActivity {
                 mProduct.setAdditionalInfo(additionalInfoOriginalText);
                 mProduct.setDescription(descriptionOriginalText);
 
-                SaveToDBAsyncTask saveProductAsyncTask = new SaveToDBAsyncTask(this, getContentResolver(), SaveToDBAsyncTask.SaveType.PRODUCT);
+                DBAsyncTask saveProductAsyncTask = new DBAsyncTask(this, getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.SAVE);
                 saveProductAsyncTask.execute(mProduct);
 
                 if(!productCountOriginalText.isEmpty())
@@ -268,7 +268,7 @@ public class DetailActivity extends AppCompatActivity {
                         mProductCount.setCountDate(new Date());
                     }
 
-                    saveProductAsyncTask = new SaveToDBAsyncTask(this, getContentResolver(), SaveToDBAsyncTask.SaveType.PRODUCT_COUNT);
+                    saveProductAsyncTask = new DBAsyncTask(this, getContentResolver(), DBAsyncTask.ObjectType.PRODUCT_COUNT, DBAsyncTask.OperationType.SAVE);
                     saveProductAsyncTask.execute(mProductCount);
                 }
                 else

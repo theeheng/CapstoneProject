@@ -250,6 +250,15 @@ public class Product implements Parcelable {
         }
     }
 
+    public int DeleteProduct(ContentResolver contentResolver) {
+
+        return contentResolver.delete(
+                StoCountContract.ProductEntry.CONTENT_URI,
+                StoCountContract.ProductEntry._ID + " = ? ",
+                new String[] { this.mProductId.toString() }
+        );
+    }
+
     public boolean IsAddingNewProduct()
     {
         return this.mProductId == null;

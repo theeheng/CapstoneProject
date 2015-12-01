@@ -16,15 +16,28 @@ import com.hengtan.nanodegreeapp.stocount.data.User;
 /**
  * Created by hengtan on 28/11/2015.
  */
-public class SaveToDBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
+public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
-    public enum SaveType
+    public enum OperationType
+    {
+        SAVE(0), DELETE(1);
+
+        private int value;
+
+        private OperationType(int value)
+        {
+            this.value = value;
+        }
+    };
+
+
+    public enum ObjectType
     {
         PRODUCT(0), USER(1), STOCK_PERIOD(2), PRODUCT_COUNT(3);
 
         private int value;
 
-        private SaveType(int value)
+        private ObjectType(int value)
         {
             this.value = value;
         }
@@ -32,15 +45,17 @@ public class SaveToDBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
     private Context mContext;
     private ContentResolver mContentResolver;
-    private SaveType mSaveType;
+    private ObjectType mSaveType;
+    private OperationType mOperationType;
 
     final private Integer SUCCESSFUL = 1;
     final private Integer FAILED = 0;
 
-    public SaveToDBAsyncTask(Context c, ContentResolver contentResolver, SaveType saveType) {
+    public DBAsyncTask(Context c, ContentResolver contentResolver, ObjectType saveType, OperationType operationType) {
         this.mContext = c;
         this.mContentResolver = contentResolver;
         this.mSaveType = saveType;
+        this.mOperationType = operationType;
     }
 
     @Override
@@ -49,14 +64,21 @@ public class SaveToDBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
         try {
             // get all locations
 
-            if(mSaveType == SaveType.PRODUCT)
-                ((Product)params[0]).SaveProduct(mContentResolver);
-            else if(mSaveType == SaveType.USER)
-                ((User)params[0]).SaveUser(mContentResolver);
-            else if(mSaveType == SaveType.STOCK_PERIOD)
-                ((StockPeriod)params[0]).SaveStockPeriod(mContentResolver);
-            else if(mSaveType == SaveType.PRODUCT_COUNT)
-                ((ProductCount)params[0]).SaveProductCount(mContentResolver);
+            if(mOperationType == OperationType.SAVE) {
+                if (mSaveType == ObjectType.PRODUCT)
+                    ((Product) params[0]).SaveProduct(mContentResolver);
+                else if (mSaveType == ObjectType.USER)
+                    ((User) params[0]).SaveUser(mContentResolver);
+                else if (mSaveType == ObjectType.STOCK_PERIOD)
+                    ((StockPeriod) params[0]).SaveStockPeriod(mContentResolver);
+                else if (mSaveType == ObjectType.PRODUCT_COUNT)
+                    ((ProductCount) params[0]).SaveProductCount(mContentResolver);
+            }
+            else if(mOperationType == OperationType.DELETE)
+            {
+                if (mSaveType == ObjectType.PRODUCT)
+                    ((Product) params[0]).DeleteProduct(mContentResolver);
+            }
 
             return SUCCESSFUL;
 
@@ -77,7 +99,7 @@ public class SaveToDBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
             Toast.makeText(this.mContext, "Save Successful..........",
                     Toast.LENGTH_SHORT).show();
 
-            if(mSaveType == SaveType.PRODUCT)
+            if(mSaveType == ObjectType.PRODUCT && mOperationType == OperationType.SAVE)
             {
                 EditText productCount = (EditText) ((Activity)mContext).getWindow().getDecorView().findViewById(R.id.et_productcount);
                 TextInputLayout productCountTextInputLayout = (TextInputLayout) ((Activity)mContext).getWindow().getDecorView().findViewById(R.id.til_productcount);

@@ -36,7 +36,9 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
+import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
+import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 import com.hudomju.swipe.OnItemClickListener;
 import com.hudomju.swipe.SwipeToDismissTouchListener;
 import com.hudomju.swipe.SwipeableItemClickListener;
@@ -75,12 +77,19 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private ApiCall mApiCall;
 
+    private StockPeriod mStockPeriod;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_list_activity);
         ButterKnife.inject(this);
+
+        mApiCall = Application.GetApiCallFromPreference();
+        mStockPeriod = Application.getCurrentStockPeriod();
+
         init();
+
         getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
 
         // Configure sign-in to request the user's ID, email address, and basic
@@ -95,8 +104,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
-        mApiCall = Application.GetApiCallFromPreference();
     }
 
     @OnClick(R.id.fabSearchButton)
@@ -196,7 +203,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        adapter = new MyBaseAdapter(this);
+        adapter = new MyBaseAdapter(this, mStockPeriod);
         mRecyclerView.setAdapter(adapter);
         final SwipeToDismissTouchListener<RecyclerViewAdapter> touchListener =
                 new SwipeToDismissTouchListener<>(
@@ -274,7 +281,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.swapCursor(null);
+        //adapter.swapCursor(null);
     }
 
 
@@ -312,17 +319,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
         private Cursor mProductCursor;
         private Context mContext;
+        private StockPeriod mStockPeriod;
 
-        //private final List<String> mDataSet = new ArrayList<>();
-
-        MyBaseAdapter(Context context) {
-
+        MyBaseAdapter(Context context, StockPeriod stockPeriod) {
             this.mProductCursor = null;
             this.mContext = context;
-            /*
-            for (int i = 0; i < SIZE; i++)
-                mDataSet.add(i, "This is row number " + i);
-                */
+            this.mStockPeriod = stockPeriod;
         }
 
         @Override
@@ -351,7 +353,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         }
 
         public void remove(int position) {
-            //mProductCursor..remove(position);
+            //mProductCursor.remove(position);
             //notifyItemRemoved(position);
         }
 
@@ -366,9 +368,29 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 mProductCursor.moveToPosition(position);
 
                 Product prod = new Product(mProductCursor);
+                ProductCount prodCount = null;
+
+                Cursor countCursor;
+
+                countCursor= mContext.getContentResolver().query(
+                        StoCountContract.ProductCountEntry.CONTENT_URI,
+                        null, // leaving "columns" null just returns all the columns.
+                        StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = ? AND "+StoCountContract.ProductCountEntry.PRODUCT_ID + " = ? ",
+                        new String[] {mStockPeriod.getStockPeriodId().toString(), prod.getProductId().toString()},
+                        null  // sort order
+                );
+
+                if(countCursor.getCount() > 0) {
+                    countCursor.moveToFirst();
+                    prodCount = new ProductCount(countCursor);
+                }
 
                 Bundle bundle = new Bundle();
                 bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+
+                if(prodCount != null)
+                    bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE,prodCount);
+
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
                 mContext.startActivity(intent);

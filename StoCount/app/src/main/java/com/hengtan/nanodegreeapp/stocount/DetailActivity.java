@@ -18,7 +18,11 @@ import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
+import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.SaveToDBAsyncTask;
+import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
+
+import java.util.Date;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -31,10 +35,12 @@ public class DetailActivity extends AppCompatActivity {
 
     private KeyListener nameListener;
     private KeyListener additionalInfoListener;
+    private KeyListener productCountListener;
     private KeyListener descriptionListener;
 
     private Drawable nameDrawable;
     private Drawable additionalInfoDrawable;
+    private Drawable productCountDrawable;
     private Drawable descriptionDrawable;
 
 
@@ -43,6 +49,9 @@ public class DetailActivity extends AppCompatActivity {
 
     @InjectView(R.id.et_additionalinfo)
     protected EditText additionalInfo;
+
+    @InjectView(R.id.et_productcount)
+    protected EditText productCount;
 
     @InjectView(R.id.et_description)
     protected EditText description;
@@ -58,6 +67,9 @@ public class DetailActivity extends AppCompatActivity {
 
     @InjectView(R.id.til_additionalinfo)
     protected TextInputLayout additionalInfoTextInputLayout;
+
+    @InjectView(R.id.til_productcount)
+    protected TextInputLayout productCountTextInputLayout;
 
     @InjectView(R.id.til_description)
     protected TextInputLayout descriptionTextInputLayout;
@@ -79,13 +91,18 @@ public class DetailActivity extends AppCompatActivity {
 
     private String nameOriginalText;
     private String additionalInfoOriginalText;
+    private String productCountOriginalText;
     private String descriptionOriginalText;
 
     private boolean mIsEditable = false;
-
+    private boolean mIsStockCountEntry = false;
     public static final String PRODUCT_PARCELABLE = "PRODUCTPARCELABLE";
+    public static final String PRODUCT_COUNT_PARCELABLE = "PRODUCTCOUNTPARCELABLE";
+    public static final String IS_STOCK_ENTRY_EXTRA = "ISSTOCKENTRYEXTRA";
 
     private Product mProduct;
+    private ProductCount mProductCount;
+    private StockPeriod mStockPeriod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +111,8 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.inject(this);
 
         initToolbar();
+
+        mStockPeriod = Application.getCurrentStockPeriod();
 
         if (savedInstanceState != null && savedInstanceState.containsKey(PRODUCT_PARCELABLE)) {
             mProduct = savedInstanceState.getParcelable(PRODUCT_PARCELABLE);
@@ -108,9 +127,11 @@ public class DetailActivity extends AppCompatActivity {
             {
                 bundle = (Bundle) bundle.get(PRODUCT_PARCELABLE);
                 mProduct = bundle.getParcelable(PRODUCT_PARCELABLE);
+                mProductCount = bundle.getParcelable(PRODUCT_COUNT_PARCELABLE);
             }
-        }
 
+            mIsStockCountEntry = intent.getBooleanExtra(IS_STOCK_ENTRY_EXTRA, false);
+        }
 
         if(mProduct != null) {
             name.setText(mProduct.getName());
@@ -121,12 +142,19 @@ public class DetailActivity extends AppCompatActivity {
             Glide.with(this).load(mProduct.getLargeImage()).fitCenter().into(image);
         }
 
+        if(mProductCount != null)
+        {
+            productCount.setText(mProductCount.getQuantity().toString());
+        }
+
         nameOriginalText = name.getText().toString();
         additionalInfoOriginalText = additionalInfo.getText().toString();
+        productCountOriginalText = productCount.getText().toString();
         descriptionOriginalText = description.getText().toString();
 
         nameDrawable = name.getBackground();
         additionalInfoDrawable = additionalInfo.getBackground();
+        productCountDrawable = productCount.getBackground();
         descriptionDrawable = description.getBackground();
 
         description.setVisibility(View.GONE);
@@ -134,18 +162,27 @@ public class DetailActivity extends AppCompatActivity {
 
         nameListener = additionalInfo.getKeyListener();
         additionalInfoListener = additionalInfo.getKeyListener();
+        productCountListener = productCount.getKeyListener();
         descriptionListener = description.getKeyListener();
 
         name.setKeyListener(null);
         additionalInfo.setKeyListener(null);
+        productCount.setKeyListener(null);
         description.setKeyListener(null);
 
         name.setBackgroundResource(R.color.transparent);
         additionalInfo.setBackgroundResource(R.color.transparent);
+        productCount.setBackgroundResource(R.color.transparent);
         description.setBackgroundResource(R.color.transparent);
 
+        additionalInfoTextInputLayout.setHint("additional info");
+        productCountTextInputLayout.setHint("product count");
+        descriptionTextInputLayout.setHint("description");
+
+        showHideProductCount();
+
         //Only update for editing at after getting all previous state of editText control
-        if(mProduct!= null && mProduct.getProductId() == null)
+        if(mProduct!= null && (mProduct.IsAddingNewProduct()|| mIsStockCountEntry))
         {
             famButton.expand();
             updateUIForEditing();
@@ -157,20 +194,27 @@ public class DetailActivity extends AppCompatActivity {
                     public void onMenuCollapsed() {
 
                         if (mIsEditable) {
+
+                            showHideProductCount();
+
                             editFabButton.setIcon(android.R.drawable.ic_menu_camera);
                             photoFabButton.setIcon(android.R.drawable.ic_menu_gallery);
                             mIsEditable = false;
                             nameTextInputLayout.setHint(null);
-                            additionalInfoTextInputLayout.setHint(null);
-                            descriptionTextInputLayout.setHint(null);
+                            //additionalInfoTextInputLayout.setHint(null);
+                            //productCountTextInputLayout.setHint(null);
+                            //descriptionTextInputLayout.setHint(null);
                             name.setKeyListener(null);
                             additionalInfo.setKeyListener(null);
+                            productCount.setKeyListener(null);
                             description.setKeyListener(null);
                             name.setBackgroundResource(R.color.transparent);
                             additionalInfo.setBackgroundResource(R.color.transparent);
+                            productCount.setBackgroundResource(R.color.transparent);
                             description.setBackgroundResource(R.color.transparent);
                             name.setText(nameOriginalText);
                             additionalInfo.setText(additionalInfoOriginalText);
+                            productCount.setText(productCountOriginalText);
                             description.setText(descriptionOriginalText);
                             editFabButton.setVisibility(View.VISIBLE);
                             photoFabButton.setVisibility(View.VISIBLE);
@@ -198,6 +242,7 @@ public class DetailActivity extends AppCompatActivity {
             } else {
                 nameOriginalText = name.getText().toString();
                 additionalInfoOriginalText = additionalInfo.getText().toString();
+                productCountOriginalText = productCount.getText().toString().trim();
                 descriptionOriginalText = description.getText().toString();
 
                 mProduct.setName(nameOriginalText);
@@ -207,17 +252,48 @@ public class DetailActivity extends AppCompatActivity {
                 SaveToDBAsyncTask saveProductAsyncTask = new SaveToDBAsyncTask(this, getContentResolver(), SaveToDBAsyncTask.SaveType.PRODUCT);
                 saveProductAsyncTask.execute(mProduct);
 
+                if(!productCountOriginalText.isEmpty())
+                {
+                    if(mProductCount != null && mProductCount.getProductCountId() != null)
+                    {
+                        mProductCount.setQuantity(Double.parseDouble(productCountOriginalText));
+                        mProductCount.setCountDate(new Date());
+                    }
+                    else
+                    {
+                        mProductCount = new ProductCount();
+                        mProductCount.setStockPeriodId(mStockPeriod.getStockPeriodId());
+                        mProductCount.setProductId(mProduct.getProductId());
+                        mProductCount.setQuantity(Double.parseDouble(productCountOriginalText));
+                        mProductCount.setCountDate(new Date());
+                    }
+
+                    saveProductAsyncTask = new SaveToDBAsyncTask(this, getContentResolver(), SaveToDBAsyncTask.SaveType.PRODUCT_COUNT);
+                    saveProductAsyncTask.execute(mProductCount);
+                }
+                else
+                {
+                    if(mProductCount != null && mProductCount.getProductCountId() != null)
+                    {
+                        mProductCount.setQuantity(null);
+                        mProductCount.setCountDate(new Date());
+                    }
+                }
+
                 famButton.collapse();
                 editFabButton.setIcon(android.R.drawable.ic_menu_camera);
                 mIsEditable = false;
                 nameTextInputLayout.setHint(null);
-                additionalInfoTextInputLayout.setHint(null);
-                descriptionTextInputLayout.setHint(null);
+                //additionalInfoTextInputLayout.setHint(null);
+                //productCountTextInputLayout.setHint(null);
+                //descriptionTextInputLayout.setHint(null);
                 name.setKeyListener(null);
                 additionalInfo.setKeyListener(null);
+                productCount.setKeyListener(null);
                 description.setKeyListener(null);
                 name.setBackgroundResource(R.color.transparent);
                 additionalInfo.setBackgroundResource(R.color.transparent);
+                productCount.setBackgroundResource(R.color.transparent);
                 description.setBackgroundResource(R.color.transparent);
 
                 mCollapsingToolbar.setTitle(nameOriginalText);
@@ -226,11 +302,29 @@ public class DetailActivity extends AppCompatActivity {
                 description.setText(descriptionOriginalText);
                 descriptionTextView.setText(descriptionOriginalText);
 
+                //should only set visibility of product count after setting the text value
+                if(productCountOriginalText.isEmpty()) {
+                    productCount.setText(" ");
+                    productCount.setVisibility(View.GONE);
+                    productCountTextInputLayout.setVisibility(View.GONE);
+                }
+                else
+                {
+                    productCount.setText(productCountOriginalText);
+                }
+
                 photoFabButton.setVisibility(View.VISIBLE);
                 description.setVisibility(View.GONE);
                 descriptionTextInputLayout.setVisibility(View.GONE);
                 descriptionTextView.setVisibility(View.VISIBLE);
             }
+    }
+
+    private void showHideProductCount() {
+        if(mProduct.IsAddingNewProduct() || mProductCount ==  null || (mProductCount !=  null && mProductCount.getQuantity() == null)) {
+            productCount.setVisibility(View.GONE);
+            productCountTextInputLayout.setVisibility(View.GONE);
+        }
     }
 
     private void updateUIForEditing() {
@@ -240,13 +334,24 @@ public class DetailActivity extends AppCompatActivity {
         nameTextInputLayout.setHint("product name");
 
         additionalInfo.setKeyListener(additionalInfoListener);
-        additionalInfoTextInputLayout.setHint("additional info");
+        //additionalInfoTextInputLayout.setHint("additional info");
+
+        productCount.setVisibility(View.VISIBLE);
+        productCount.setKeyListener(additionalInfoListener);
+        productCountTextInputLayout.setVisibility(View.VISIBLE);
+        //productCountTextInputLayout.setHint("product count");
+
+        if(productCount.getText().toString().equals(""))
+        {
+            productCount.setText(" ");
+        }
 
         description.setKeyListener(descriptionListener);
-        descriptionTextInputLayout.setHint("description");
+        //descriptionTextInputLayout.setHint("description");
 
         name.setBackground(nameDrawable);
         additionalInfo.setBackground(additionalInfoDrawable);
+        productCount.setBackground(productCountDrawable);
         description.setBackground(descriptionDrawable);
 
         description.setVisibility(View.VISIBLE);
@@ -255,7 +360,6 @@ public class DetailActivity extends AppCompatActivity {
         photoFabButton.setVisibility(View.GONE);
         editFabButton.setIcon(R.drawable.ic_star);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

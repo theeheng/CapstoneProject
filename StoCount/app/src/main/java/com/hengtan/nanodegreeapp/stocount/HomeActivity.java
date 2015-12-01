@@ -33,6 +33,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 import com.hengtan.nanodegreeapp.stocount.data.Product;
+import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 
@@ -59,6 +60,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
     private static final int PRODUCT_BARCODE_LOADER = 1;
 
+    private static final int PRODUCT_COUNT_LOADER = 2;
+
     private String mBarcodeResult;
 
     private Integer mSearchResultId;
@@ -68,6 +71,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     public static final String STOCK_PERIOD_PARCELABLE = "STOCKPERIODPARCELABLE";
 
     private StockPeriod mStockPeriod;
+
+    private Product mProduct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,7 +259,16 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                         null,
                         null
                 );
-
+            case PRODUCT_COUNT_LOADER:
+                // Returns a new CursorLoader
+                return new CursorLoader(
+                        this,
+                        StoCountContract.ProductCountEntry.CONTENT_URI,
+                        null,
+                        StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = ? AND "+StoCountContract.ProductCountEntry.PRODUCT_ID + " = ? ",
+                        new String[] {mStockPeriod.getStockPeriodId().toString(), mProduct.getProductId().toString()},
+                        null
+                );
             default:
                 // An invalid id was passed in
                 return null;
@@ -264,22 +278,45 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
+        ProductCount productCount = null;
+
         if(cursor != null && cursor.getCount() > 0) {
 
             cursor.moveToFirst();
 
-            Product prod = new Product(cursor);
+            if(loader.getId() == PRODUCT_BARCODE_LOADER || loader.getId() == PRODUCT_ID_LOADER) {
 
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
-            Intent intent = new Intent(this, DetailActivity.class);
-            intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-            this.startActivity(intent);
+                mProduct = new Product(cursor);
+
+                getLoaderManager().restartLoader(PRODUCT_COUNT_LOADER, null, this);
+            }
+            else if(loader.getId() == PRODUCT_COUNT_LOADER)
+            {
+                productCount = new ProductCount(cursor);
+
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, mProduct);
+                bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE,productCount);
+                Intent intent = new Intent(this, DetailActivity.class);
+                intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                intent.putExtra(DetailActivity.IS_STOCK_ENTRY_EXTRA, true);
+                this.startActivity(intent);
+
+            }
         }
-        else
-        {
-            String searchCriteria = (loader.getId() == PRODUCT_BARCODE_LOADER) ? mBarcodeResult : Integer.toString(mSearchResultId) ;
-            Toast.makeText(this, "No product found for id: "+ searchCriteria, Toast.LENGTH_LONG).show();
+        else {
+
+            if (loader.getId() == PRODUCT_BARCODE_LOADER || loader.getId() == PRODUCT_ID_LOADER) {
+                String searchCriteria = (loader.getId() == PRODUCT_BARCODE_LOADER) ? "barcode : " + mBarcodeResult : "product id : " + Integer.toString(mSearchResultId);
+                Toast.makeText(this, "No product found for " + searchCriteria, Toast.LENGTH_LONG).show();
+            } else if (loader.getId() == PRODUCT_COUNT_LOADER && mProduct != null) {
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, mProduct);
+                Intent intent = new Intent(this, DetailActivity.class);
+                intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                intent.putExtra(DetailActivity.IS_STOCK_ENTRY_EXTRA, true);
+                this.startActivity(intent);
+            }
         }
     }
 

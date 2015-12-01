@@ -3,6 +3,7 @@ package com.hengtan.nanodegreeapp.stocount.data;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -28,6 +29,11 @@ public class ProductCount implements Parcelable {
     public final SimpleDateFormat DateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     private List<String> mParcelableString;
+
+    public ProductCount()
+    {
+
+    }
 
     public ProductCount(Cursor cursor) {
 
@@ -236,6 +242,8 @@ public class ProductCount implements Parcelable {
 
         if(this.mQuantity != null)
             values.put(StoCountContract.ProductCountEntry.QUANTITY, this.mQuantity);
+        else if(this.getProductCountId() != null && this.mQuantity == null)
+            values.put(StoCountContract.ProductCountEntry.QUANTITY, "");
 
         if(mCountDate !=  null)
             values.put(StoCountContract.ProductCountEntry.COUNT_DATE, DateFormat.format(this.mCountDate));
@@ -246,7 +254,8 @@ public class ProductCount implements Parcelable {
         }
         else
         {
-            contentResolver.insert(StoCountContract.ProductCountEntry.CONTENT_URI, values);
+            Uri result = contentResolver.insert(StoCountContract.ProductCountEntry.CONTENT_URI, values);
+            mProductCountId = Integer.parseInt(result.getLastPathSegment());
         }
 
     }

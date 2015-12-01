@@ -3,6 +3,7 @@ package com.hengtan.nanodegreeapp.stocount.data;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -163,7 +164,8 @@ public class User implements Parcelable {
         }
         else
         {
-            contentResolver.insert(StoCountContract.UserEntry.CONTENT_URI, values);
+            Uri result = contentResolver.insert(StoCountContract.UserEntry.CONTENT_URI, values);
+            mUserId = Integer.parseInt(result.getLastPathSegment());
         }
 
     }

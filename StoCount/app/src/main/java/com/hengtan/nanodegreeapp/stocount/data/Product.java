@@ -3,6 +3,7 @@ package com.hengtan.nanodegreeapp.stocount.data;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -238,14 +239,19 @@ public class Product implements Parcelable {
         values.put(StoCountContract.ProductEntry.BARCODE, this.mBarcode);
         values.put(StoCountContract.ProductEntry.BARCODE_FORMAT, this.mBarcodeFormat);
 
-        if(this.mProductId != null)
+        if(IsAddingNewProduct())
         {
-            contentResolver.update(StoCountContract.ProductEntry.CONTENT_URI, values, StoCountContract.ProductEntry._ID + " = ? ", new String[] { this.mProductId.toString() } );
+            Uri result = contentResolver.insert(StoCountContract.ProductEntry.CONTENT_URI, values);
+            mProductId = Integer.parseInt(result.getLastPathSegment());
         }
         else
         {
-            contentResolver.insert(StoCountContract.ProductEntry.CONTENT_URI, values);
+            contentResolver.update(StoCountContract.ProductEntry.CONTENT_URI, values, StoCountContract.ProductEntry._ID + " = ? ", new String[] { this.mProductId.toString() } );
         }
+    }
 
+    public boolean IsAddingNewProduct()
+    {
+        return this.mProductId == null;
     }
 }

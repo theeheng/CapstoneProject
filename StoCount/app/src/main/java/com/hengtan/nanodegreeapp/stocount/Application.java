@@ -11,6 +11,7 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.hengtan.nanodegreeapp.stocount.api.AmazonApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.TescoApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.WalmartApiCall;
@@ -67,6 +68,10 @@ public class Application extends android.app.Application {
         else if(preferenceApiCode.equals("WALMART"))
         {
             return (ApiCall) new WalmartApiCall();
+        }
+        else if(preferenceApiCode.equals("AMAZON"))
+        {
+            return (ApiCall) new AmazonApiCall();
         }
         else
         {

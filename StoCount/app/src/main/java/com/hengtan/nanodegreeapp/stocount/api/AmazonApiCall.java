@@ -1,7 +1,9 @@
 package com.hengtan.nanodegreeapp.stocount.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import com.amazon.service.ecommerce.AWSECommerceClient;
@@ -12,7 +14,9 @@ import com.amazon.webservices.awsecommerceservice.ItemLookupRequest;
 import com.amazon.webservices.awsecommerceservice.ItemLookupResponse;
 import com.amazon.webservices.awsecommerceservice.Items;
 import com.amazon.webservices.awsecommerceservice.client.AWSECommerceServicePortType_SOAPClient;
+import com.hengtan.nanodegreeapp.stocount.DetailActivity;
 import com.hengtan.nanodegreeapp.stocount.R;
+import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.search.SearchSuggestion;
 import com.leansoft.nano.ws.SOAPServiceCallback;
 
@@ -29,7 +33,7 @@ public class AmazonApiCall implements ApiCall {
     }
 
     @Override
-    public void SearchProduct(String barcodeScanResult, String barcodeFormatName, String itemId, final Context ctx)
+    public void SearchProduct(final String barcodeScanResult, final String barcodeFormatName, String itemId, final Context ctx)
     {
         Resources res = ctx.getResources();
 
@@ -52,13 +56,7 @@ public class AmazonApiCall implements ApiCall {
         request.shared.itemId = itemLookup;
 
         if(barcodeFormatName.indexOf("EAN")> -1) {
-
-            if(barcodeFormatName.indexOf("ISBN") > -1) {
-                request.shared.idType = "ISBN";
-            }
-            else {
-                request.shared.idType = "EAN";
-            }
+            request.shared.idType = "EAN";
         }else if(barcodeFormatName.indexOf("UPC")> -1) {
             request.shared.idType = "UPC";
         }
@@ -78,24 +76,16 @@ public class AmazonApiCall implements ApiCall {
                     Items items = responseObject.items.get(0);
                     if (items.item != null && items.item.size() > 0) {
 
-                        String name = items.item.get(0).itemAttributes.title;
-                        String description = null;
-                        String thumbnailUrl = null;
+                        Product prod = new Product(items.item.get(0));
 
-                        if(items.item.get(0).editorialReviews !=  null && items.item.get(0).editorialReviews.editorialReview != null && items.item.get(0).editorialReviews.editorialReview.size() > 0) {
-                            description = items.item.get(0).editorialReviews.editorialReview.get(0).content;
-                        }
+                        prod.setBarcode(barcodeScanResult);
+                        prod.setBarcodeFormat(barcodeFormatName);
 
-                        if(items.item.get(0).imageSets !=  null && items.item.get(0).imageSets.size()  > 0 && items.item.get(0).imageSets.get(0).imageSet.size() > 0 && items.item.get(0).imageSets.get(0).imageSet.get(0).thumbnailImage != null) {
-
-                            for(ImageSet imgset : items.item.get(0).imageSets.get(0).imageSet)
-                                if(imgset.category.equals("primary"))
-                                {
-                                    thumbnailUrl = imgset.mediumImage.url; //imgset.thumbnailImage.url;
-                                }
-                        }
-
-                        //UpdateUI(name, description, thumbnailUrl);
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+                        Intent intent = new Intent(ctx, DetailActivity.class);
+                        intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                        ctx.startActivity(intent);
 
                     } else {
                         Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();

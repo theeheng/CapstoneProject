@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.amazon.webservices.awsecommerceservice.ImageSet;
+import com.amazon.webservices.awsecommerceservice.Item;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +84,57 @@ public class Product implements Parcelable {
         this.mBarcodeFormat = "UPC_A";
     }
 
+    public Product(Item amazonItem)
+    {
+        this.mProductId = null;
+        this.mName = amazonItem.itemAttributes.title;
+
+        //String name =
+        //String description = null;
+        //String thumbnailUrl = null;
+
+        if(amazonItem.editorialReviews !=  null && amazonItem.editorialReviews.editorialReview != null && amazonItem.editorialReviews.editorialReview.size() > 0) {
+            this.mDescription = amazonItem.editorialReviews.editorialReview.get(0).content;
+        }
+        else
+        {
+            this.mDescription = "";
+        }
+
+        if(amazonItem.imageSets !=  null && amazonItem.imageSets.size()  > 0 && amazonItem.imageSets.get(0).imageSet.size() > 0 && amazonItem.imageSets.get(0).imageSet.get(0).thumbnailImage != null) {
+
+            for(ImageSet imgset : amazonItem.imageSets.get(0).imageSet) {
+                if (imgset.category.equals("primary")) {
+                    this.mThumbnailImage = imgset.mediumImage.url; //imgset.thumbnailImage.url;
+                    this.mLargeImage = imgset.largeImage.url;
+                }
+            }
+        }
+        else
+        {
+            this.mThumbnailImage = ""; //imgset.thumbnailImage.url;
+            this.mLargeImage = "";
+        }
+
+        if(amazonItem.itemAttributes != null && amazonItem.itemAttributes.category != null)
+        {
+            this.mAdditionalInfo = "";
+            for(String str : amazonItem.itemAttributes.category)
+            {
+                if(this.mAdditionalInfo.isEmpty())
+                {
+                    this.mAdditionalInfo = str;
+                }
+                else
+                {
+                    this.mAdditionalInfo = this.mAdditionalInfo + ", " + str;
+                }
+            }
+        }
+
+
+        //UpdateUI(name, description, thumbnailUrl);
+    }
 
     public Product(Parcel in)
     {

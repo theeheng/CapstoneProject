@@ -16,4 +16,8 @@
 
     <string name="preference_walmart_api_code">WALMART</string>
 
+    <string name="preference_amazon_api_name">Amazon Advertising API</string>
+
+    <string name="preference_amazon_api_code">AMAZON</string>
+
 </resources>

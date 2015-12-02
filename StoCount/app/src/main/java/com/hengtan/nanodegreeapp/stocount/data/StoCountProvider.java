@@ -183,13 +183,33 @@ public class StoCountProvider extends ContentProvider {
                 String[] bf_projection ={
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID,
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.PRODUCT_NAME,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.DESCRIPTION,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.ADDITIONAL_INFO,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.THUMBNAIL_IMAGE,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.LARGE_IMAGE,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.BARCODE,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.BARCODE_FORMAT,
                         StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry._ID,
-                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.QUANTITY,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.COUNT_DATE
                         //"group_concat(DISTINCT " + StoCountContract.ProductCountEntry.TABLE_NAME+ "."+ StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + ") as " + StoCountContract.AuthorEntry.AUTHOR
                 };
+
+                String bf_selection = null;
+
+                if(selection != null && !selection.isEmpty())
+                {
+                    bf_selection = "("+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = '" + ContentUris.parseId(uri) + "' OR "+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID+" is null) AND "+selection;
+                }
+                else
+                {
+                    bf_selection = StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = '" + ContentUris.parseId(uri) + "' OR "+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID+" is null ";
+                }
+
                 retCursor = productFull.query(dbHelper.getReadableDatabase(),
-                        null,
-                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = '" + ContentUris.parseId(uri) + "' OR "+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID+" is null ",
+                        bf_projection,
+                        bf_selection,
                         selectionArgs,
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID,
                         null,

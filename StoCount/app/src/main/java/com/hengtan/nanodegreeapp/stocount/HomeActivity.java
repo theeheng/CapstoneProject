@@ -60,19 +60,15 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
     private static final int PRODUCT_BARCODE_LOADER = 1;
 
-    private static final int PRODUCT_COUNT_LOADER = 2;
-
     private String mBarcodeResult;
+    private String mBarcodeFormat;
 
     private Integer mSearchResultId;
 
     private GoogleApiClient mGoogleApiClient;
 
-    public static final String STOCK_PERIOD_PARCELABLE = "STOCKPERIODPARCELABLE";
-
     private StockPeriod mStockPeriod;
 
-    private Product mProduct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,12 +134,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
     @OnClick(R.id.scanButton)
     public void onScanBtnClick(View v) {
-        // This is the callback method that the system will invoke when your button is
-        // clicked. You might do this by launching another app or by including the
-        //functionality directly in this app.
-        // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
-        // are using an external app.
-        //when you're done, remove the toast below.
         try {
             IntentIntegrator intentIntegrator = new IntentIntegrator(HomeActivity.this);
             //intentIntegrator.setOrientationLocked(false);
@@ -177,12 +167,12 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
             if (mBarcodeResult == null) {
                 Log.d(TAG, "Cancelled scan");
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Cancelled Scanning Barcode", Toast.LENGTH_LONG).show();
             } else {
                 Log.d(TAG, "Scanned : " + mBarcodeResult);
 
-                String formatNameResult = result.getFormatName();
-                String formatTypeResult = result.getType();
+                mBarcodeFormat = result.getFormatName(); // EAN_13 | UPC_A
+                String formatTypeResult = result.getType(); // PRODUCT | ISBN
                 searchProductFromDB();
             }
         } else {
@@ -242,10 +232,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 // Returns a new CursorLoader
                 return new CursorLoader(
                         this,
-                        StoCountContract.ProductEntry.CONTENT_URI,
+                        StoCountContract.ProductEntry.buildFullProductUri(mStockPeriod.getStockPeriodId()),
                         null,
-                        StoCountContract.ProductEntry.BARCODE + " = ? ",
-                        new String[]{mBarcodeResult},
+                        StoCountContract.ProductEntry.BARCODE + " = ? AND " + StoCountContract.ProductEntry.BARCODE_FORMAT + " = ? ",
+                        new String[]{mBarcodeResult, mBarcodeFormat},
                         null
                 );
 
@@ -253,20 +243,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 // Returns a new CursorLoader
                 return new CursorLoader(
                         this,
-                        StoCountContract.ProductEntry.buildProductUri(mSearchResultId),
+                        StoCountContract.ProductEntry.buildFullProductUri(mStockPeriod.getStockPeriodId()),
                         null,
-                        null,
-                        null,
-                        null
-                );
-            case PRODUCT_COUNT_LOADER:
-                // Returns a new CursorLoader
-                return new CursorLoader(
-                        this,
-                        StoCountContract.ProductCountEntry.CONTENT_URI,
-                        null,
-                        StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = ? AND "+StoCountContract.ProductCountEntry.PRODUCT_ID + " = ? ",
-                        new String[] {mStockPeriod.getStockPeriodId().toString(), mProduct.getProductId().toString()},
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID +" = ?",
+                        new String[] {mSearchResultId.toString()},
                         null
                 );
             default:
@@ -278,45 +258,36 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
-        ProductCount productCount = null;
-
         if(cursor != null && cursor.getCount() > 0) {
 
             cursor.moveToFirst();
 
             if(loader.getId() == PRODUCT_BARCODE_LOADER || loader.getId() == PRODUCT_ID_LOADER) {
 
-                mProduct = new Product(cursor);
-
-                getLoaderManager().restartLoader(PRODUCT_COUNT_LOADER, null, this);
-            }
-            else if(loader.getId() == PRODUCT_COUNT_LOADER)
-            {
-                productCount = new ProductCount(cursor);
+                Product prod = new Product(cursor);
+                ProductCount prodCount = new ProductCount(cursor);
 
                 Bundle bundle = new Bundle();
-                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, mProduct);
-                bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE,productCount);
+                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+
+                if(prodCount.getProductCountId() != null)
+                    bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE, prodCount);
+
                 Intent intent = new Intent(this, DetailActivity.class);
                 intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
                 intent.putExtra(DetailActivity.IS_STOCK_ENTRY_EXTRA, true);
                 this.startActivity(intent);
-
             }
+
         }
         else {
+            String searchCriteria = "";
 
-            if (loader.getId() == PRODUCT_BARCODE_LOADER || loader.getId() == PRODUCT_ID_LOADER) {
-                String searchCriteria = (loader.getId() == PRODUCT_BARCODE_LOADER) ? "barcode : " + mBarcodeResult : "product id : " + Integer.toString(mSearchResultId);
-                Toast.makeText(this, "No product found for " + searchCriteria, Toast.LENGTH_LONG).show();
-            } else if (loader.getId() == PRODUCT_COUNT_LOADER && mProduct != null) {
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, mProduct);
-                Intent intent = new Intent(this, DetailActivity.class);
-                intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-                intent.putExtra(DetailActivity.IS_STOCK_ENTRY_EXTRA, true);
-                this.startActivity(intent);
-            }
+            if(loader.getId() == PRODUCT_BARCODE_LOADER)
+                searchCriteria = "barcode :" + mBarcodeResult;
+            else if(loader.getId() == PRODUCT_ID_LOADER)
+                searchCriteria = "productid :" + mSearchResultId.toString();
+            Toast.makeText(this, "No product found for " + searchCriteria, Toast.LENGTH_LONG).show();
         }
     }
 

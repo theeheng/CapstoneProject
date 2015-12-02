@@ -9,16 +9,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.method.KeyListener;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.hengtan.nanodegreeapp.stocount.data.DBAsyncTask;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
@@ -34,6 +38,8 @@ import butterknife.OnClick;
  * Created by Eric on 15/6/1.
  */
 public class DetailActivity extends AppCompatActivity {
+
+    private static final String TAG = DetailActivity.class.getSimpleName();
 
     private KeyListener nameListener;
     private KeyListener additionalInfoListener;
@@ -85,8 +91,8 @@ public class DetailActivity extends AppCompatActivity {
     @InjectView(R.id.famDetailButton)
     protected FloatingActionsMenu famButton;
 
-    @InjectView(R.id.fabPhotoButton)
-    protected FloatingActionButton photoFabButton;
+    @InjectView(R.id.fabScanButton)
+    protected FloatingActionButton scanFabButton;
 
     @InjectView(R.id.fabEditButton)
     protected FloatingActionButton editFabButton;
@@ -200,7 +206,7 @@ public class DetailActivity extends AppCompatActivity {
                             showHideProductCount();
 
                             editFabButton.setIcon(android.R.drawable.ic_menu_camera);
-                            photoFabButton.setIcon(android.R.drawable.ic_menu_gallery);
+                            scanFabButton.setIcon(android.R.drawable.ic_menu_gallery);
                             mIsEditable = false;
                             nameTextInputLayout.setHint(null);
                             //additionalInfoTextInputLayout.setHint(null);
@@ -219,7 +225,7 @@ public class DetailActivity extends AppCompatActivity {
                             productCount.setText(productCountOriginalText);
                             description.setText(descriptionOriginalText);
                             editFabButton.setVisibility(View.VISIBLE);
-                            photoFabButton.setVisibility(View.VISIBLE);
+                            scanFabButton.setVisibility(View.VISIBLE);
                             description.setVisibility(View.GONE);
                             descriptionTextInputLayout.setVisibility(View.GONE);
                             descriptionTextView.setVisibility(View.VISIBLE);
@@ -320,11 +326,22 @@ public class DetailActivity extends AppCompatActivity {
                     productCount.setText(productCountOriginalText);
                 }
 
-                photoFabButton.setVisibility(View.VISIBLE);
+                scanFabButton.setVisibility(View.VISIBLE);
                 description.setVisibility(View.GONE);
                 descriptionTextInputLayout.setVisibility(View.GONE);
                 descriptionTextView.setVisibility(View.VISIBLE);
             }
+    }
+
+    @OnClick(R.id.fabScanButton)
+    public void onScanBtnClick(View v) {
+        try {
+            IntentIntegrator intentIntegrator = new IntentIntegrator(DetailActivity.this);
+            //intentIntegrator.setOrientationLocked(false);
+            intentIntegrator.initiateScan();
+        } catch (Exception ex) {
+            Log.e(TAG, "Error loading barcode scanning :" + ex.getMessage());
+        }
     }
 
     private void showHideProductCount() {
@@ -370,7 +387,7 @@ public class DetailActivity extends AppCompatActivity {
         description.setVisibility(View.VISIBLE);
         descriptionTextInputLayout.setVisibility(View.VISIBLE);
         descriptionTextView.setVisibility(View.GONE);
-        photoFabButton.setVisibility(View.GONE);
+        scanFabButton.setVisibility(View.GONE);
         editFabButton.setIcon(R.drawable.ic_star);
     }
 
@@ -394,4 +411,31 @@ public class DetailActivity extends AppCompatActivity {
         mCollapsingToolbar.setCollapsedTitleTextColor(getResources().getColor(android.R.color.white));
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+
+            String barcodeResult = result.getContents();
+
+            if (barcodeResult == null) {
+                Log.d(TAG, "Cancelled scan");
+                Toast.makeText(this, "Cancelled Scanning Barcode", Toast.LENGTH_LONG).show();
+            } else {
+                Log.d(TAG, "Scanned : " + barcodeResult);
+
+                mProduct.setBarcode(barcodeResult);
+                mProduct.setBarcodeFormat(result.getFormatName());
+
+                DBAsyncTask saveProductAsyncTask = new DBAsyncTask(this, getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.SAVE);
+                saveProductAsyncTask.execute(mProduct);
+
+                famButton.collapse();
+            }
+        } else {
+            Log.d(TAG, "Weird");
+            // This is important, otherwise the result will not be passed to the fragment
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }

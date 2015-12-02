@@ -29,28 +29,9 @@ public class Product implements Parcelable {
 
     private List<String> mParcelableString;
 
-    private ProductCount mProductCount;
-
     public Product(Cursor cursor) {
-        InitialiseWithCursor(cursor, false);
-    }
 
-    public Product(Cursor cursor, boolean withProductCount) {
-        InitialiseWithCursor(cursor, withProductCount);
-    }
-
-    public void InitialiseWithCursor(Cursor cursor, boolean withProductCount) {
-
-        if(withProductCount) {
-            this.mProductId = cursor.getInt(0);
-            mProductCount = new ProductCount(cursor, true);
-        }
-        else
-        {
-            this.mProductId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductEntry._ID));
-        }
-
-
+        this.mProductId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductEntry._ID));
         this.mName = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME));
         this.mDescription = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.DESCRIPTION));
         this.mAdditionalInfo = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO));
@@ -58,8 +39,6 @@ public class Product implements Parcelable {
         this.mLargeImage = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.LARGE_IMAGE));
         this.mBarcode = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.BARCODE));
         this.mBarcodeFormat = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.BARCODE_FORMAT));
-
-
     }
 
     private enum ProductIndex
@@ -87,7 +66,7 @@ public class Product implements Parcelable {
 
         this.mAdditionalInfo = tescoProduct.getPriceDescription();
         this.mBarcode = tescoProduct.getEANBarcode();
-        this.mBarcodeFormat = "EAN13";
+        this.mBarcodeFormat = "EAN_13";
     }
 
     public Product(WalmartItems walmartProduct)
@@ -99,7 +78,7 @@ public class Product implements Parcelable {
         this.mLargeImage = walmartProduct.largeImage;
         this.mAdditionalInfo = walmartProduct.categoryPath;
         this.mBarcode = walmartProduct.upc;
-        this.mBarcodeFormat = "UPC";
+        this.mBarcodeFormat = "UPC_A";
     }
 
 
@@ -204,11 +183,6 @@ public class Product implements Parcelable {
     public void setProductId(Integer productId)
     {
         this.mProductId = productId;
-    }
-
-    public ProductCount getProductCount()
-    {
-        return mProductCount;
     }
 
     @Override

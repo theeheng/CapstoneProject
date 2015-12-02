@@ -70,12 +70,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private SearchView searchView;
 
-    private MyBaseAdapter adapter;
+    private ProductListAdapter adapter;
 
     // Identifies a particular Loader being used in this component
     private static final int PRODUCT_LOADER = 0;
-
-    private static final int PRODUCT_COUNT_LOADER = 1;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -207,7 +205,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        adapter = new MyBaseAdapter(this, mStockPeriod);
+        adapter = new ProductListAdapter(this, mStockPeriod);
         mRecyclerView.setAdapter(adapter);
         final SwipeToDismissTouchListener<RecyclerViewAdapter> touchListener =
                 new SwipeToDismissTouchListener<>(
@@ -319,15 +317,13 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     }
 
-    static class MyBaseAdapter extends RecyclerView.Adapter<MyBaseAdapter.MyViewHolder> implements LoaderManager.LoaderCallbacks<Cursor> {
+    static class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.MyViewHolder> {
 
         private Cursor mProductCursor;
         private Context mContext;
         private StockPeriod mStockPeriod;
-        private Product mProduct;
-        private ProductCount mProductCount;
 
-        MyBaseAdapter(Context context, StockPeriod stockPeriod) {
+        ProductListAdapter(Context context, StockPeriod stockPeriod) {
             this.mProductCursor = null;
             this.mContext = context;
             this.mStockPeriod = stockPeriod;
@@ -346,6 +342,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 mProductCursor.moveToPosition(position);
                 holder.dataTextView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
                 holder.dataTextInfoView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO)));
+                holder.dataTextCount.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY)));
                 Glide.with(this.mContext).load(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE))).fitCenter().into(holder.dataImageView);
             }
         }
@@ -367,7 +364,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             DBAsyncTask deleteAsyncTask = new DBAsyncTask(mContext, mContext.getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.DELETE);
             deleteAsyncTask.execute(prod);
 
-            ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
+            ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, ((ProductListActivity)mContext));
 
             notifyItemRemoved(position);
 
@@ -383,121 +380,35 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             if(mProductCursor != null) {
                 mProductCursor.moveToPosition(position);
 
-                mProduct = new Product(mProductCursor, true);
+                Product prod = new Product(mProductCursor);
+                ProductCount prodCount = new ProductCount(mProductCursor);
 
                 Bundle bundle = new Bundle();
-                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, mProduct);
+                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
 
-                if(mProduct.getProductCount() != null && mProduct.getProductCount().getProductId() == 0)
-                    bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE,mProduct.getProductCount());
+                if(prodCount.getProductCountId() != null)
+                    bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE, prodCount);
 
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
                 mContext.startActivity(intent);
 
-                //((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_COUNT_LOADER, null, this);
-
-                //ProductCount prodCount = null;
-
-                //Cursor countCursor;
-
-                /*countCursor= mContext.getContentResolver().query(
-                        StoCountContract.ProductCountEntry.CONTENT_URI,
-                        null, // leaving "columns" null just returns all the columns.
-                        StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = ? AND "+StoCountContract.ProductCountEntry.PRODUCT_ID + " = ? ",
-                        new String[] {mStockPeriod.getStockPeriodId().toString(), prod.getProductId().toString()},
-                        null  // sort order
-                );
-                */
-
             }
         }
 
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-            /*
-             * Takes action based on the ID of the Loader that's being created
-             */
-            switch (id) {
-                case PRODUCT_LOADER:
-                    // Returns a new CursorLoader
-                    return new CursorLoader(
-                            mContext,
-                            StoCountContract.ProductEntry.CONTENT_URI,
-                            null,
-                            null,
-                            null,
-                            null
-                    );
-                case PRODUCT_COUNT_LOADER:
-                    // Returns a new CursorLoader
-                    return new CursorLoader(
-                            mContext,
-                            StoCountContract.ProductCountEntry.CONTENT_URI,
-                            null,
-                            StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = ? AND "+StoCountContract.ProductCountEntry.PRODUCT_ID + " = ? ",
-                            new String[] {mStockPeriod.getStockPeriodId().toString(), mProduct.getProductId().toString()},
-                            null
-                    );
-
-                default:
-                    // An invalid id was passed in
-                    return null;
-            }
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-
-            switch(loader.getId())
-            {
-                case PRODUCT_LOADER :
-
-                    swapCursor(cursor);
-                    notifyDataSetChanged();
-
-                    break;
-
-                case PRODUCT_COUNT_LOADER :
-
-                    if(cursor.getCount() > 0) {
-                        cursor.moveToFirst();
-                        mProductCount = new ProductCount(cursor);
-                    }
-                    else
-                    {
-                        mProductCount = null;
-                    }
-
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, mProduct);
-
-                    if(mProductCount != null)
-                        bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE,mProductCount);
-
-                    Intent intent = new Intent(mContext, DetailActivity.class);
-                    intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-                    mContext.startActivity(intent);
-
-                    break;
-            }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-
-        }
 
         static class MyViewHolder extends RecyclerView.ViewHolder {
 
             ImageView dataImageView;
             TextView dataTextView;
             TextView dataTextInfoView;
+            TextView dataTextCount;
 
             MyViewHolder(View view) {
                 super(view);
                 dataTextView = ((TextView) view.findViewById(R.id.txt_data));
                 dataTextInfoView = ((TextView) view.findViewById(R.id.txt_datainfo));
+                dataTextCount = ((TextView) view.findViewById(R.id.txt_datacount));
                 dataImageView =  ((ImageView) view.findViewById(R.id.img_data));
             }
         }

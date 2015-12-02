@@ -108,14 +108,14 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
         if(result != null && result.equals(SUCCESSFUL)) {
 
-            if(mObjectType == ObjectType.PRODUCT && mOperationType == OperationType.SAVE)
+            if((mObjectType == ObjectType.PRODUCT || mObjectType == ObjectType.PRODUCT_COUNT) && mOperationType == OperationType.SAVE)
             {
                 EditText productCount = (EditText) ((Activity)mContext).getWindow().getDecorView().findViewById(R.id.et_productcount);
                 TextInputLayout productCountTextInputLayout = (TextInputLayout) ((Activity)mContext).getWindow().getDecorView().findViewById(R.id.til_productcount);
                 productCount.setVisibility(View.VISIBLE);
                 productCountTextInputLayout.setVisibility(View.VISIBLE);
 
-                //Toast.makeText(this.mContext, "Save Successful..........", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.mContext, "Save Successful..........", Toast.LENGTH_SHORT).show();
             }
         }
         else

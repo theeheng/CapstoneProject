@@ -32,6 +32,8 @@ public class StoCountContract {
 
         public static final String TABLE_NAME = "users";
 
+        public static final String _ID = "userid";
+
         public static final String DISPLAY_NAME = "displayname";
 
         public static final String EMAIL = "email";
@@ -58,6 +60,8 @@ public class StoCountContract {
                 "vnd.android.cursor.item/" + CONTENT_AUTHORITY + "/" + PATH_PRODUCTS;
 
         public static final String TABLE_NAME = "products";
+
+        public static final String _ID = "productid";
 
         public static final String PRODUCT_NAME = "name";
 
@@ -92,6 +96,8 @@ public class StoCountContract {
 
         public static final String TABLE_NAME = "stockperiods";
 
+        public static final String _ID = "stockperiodid";
+
         public static final String START_DATE = "startdate";
 
         public static final String END_DATE = "enddate";
@@ -111,6 +117,8 @@ public class StoCountContract {
                 "vnd.android.cursor.item/" + CONTENT_AUTHORITY + "/" + PATH_PRODUCT_COUNTS;
 
         public static final String TABLE_NAME = "productcounts";
+
+        public static final String _ID = "productcountid";
 
         public static final String STOCK_PERIOD_ID = "stockperiodid";
 

@@ -56,8 +56,8 @@ public class Application extends android.app.Application {
 
     public static ApiCall GetApiCallFromPreference()
     {
-        return (ApiCall) new TescoApiCall();
-        //return (ApiCall) new WalmartApiCall();
+        //return (ApiCall) new TescoApiCall();
+        return (ApiCall) new WalmartApiCall();
     }
 
     public static void Logout(GoogleApiClient googleApiClient, final Activity activity)

@@ -26,21 +26,20 @@ public class StoCountProvider extends ContentProvider {
     private static final int PRODUCT_COUNT_ID = 400;
     private static final int PRODUCT_COUNT = 401;
 
-    //private static final int BOOK_FULL = 500;
-    //private static final int BOOK_FULLDETAIL = 501;
+    private static final int PRODUCT_FULL = 500;
+    //private static final int PRODUCT_FULLDETAIL = 501;
 
     private static final UriMatcher uriMatcher = buildUriMatcher();
 
     private DbHelper dbHelper;
 
-    private static final SQLiteQueryBuilder bookFull;
+    private static final SQLiteQueryBuilder productFull;
 
     static{
-        bookFull = new SQLiteQueryBuilder();
-        //bookFull.setTables(
-        //        StoCountContract.BookEntry.TABLE_NAME + " LEFT OUTER JOIN " +
-        //        StoCountContract.AuthorEntry.TABLE_NAME + " USING (" + StoCountContract.BookEntry._ID + ")" +
-        //        " LEFT OUTER JOIN " +  StoCountContract.CategoryEntry.TABLE_NAME + " USING (" + StoCountContract.BookEntry._ID + ")");
+        productFull = new SQLiteQueryBuilder();
+        productFull.setTables(
+                StoCountContract.ProductEntry.TABLE_NAME + " LEFT OUTER JOIN " +
+                StoCountContract.ProductCountEntry.TABLE_NAME + " ON (" + StoCountContract.ProductEntry.TABLE_NAME+"."+StoCountContract.ProductEntry._ID + " = "+ StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.PRODUCT_ID  +")");
     }
 
 
@@ -59,8 +58,8 @@ public class StoCountProvider extends ContentProvider {
         matcher.addURI(authority, StoCountContract.PATH_STOCK_PERIODS, STOCK_PERIOD);
         matcher.addURI(authority, StoCountContract.PATH_PRODUCT_COUNTS, PRODUCT_COUNT);
 
-        //matcher.addURI(authority, StoCountContract.PATH_FULLBOOK +"/#", BOOK_FULLDETAIL);
-        //matcher.addURI(authority, StoCountContract.PATH_FULLBOOK, BOOK_FULL);
+        matcher.addURI(authority, StoCountContract.PATH_FULLPRODUCT +"/#", PRODUCT_FULL);
+        //matcher.addURI(authority, StoCountContract.PATH_FULLPRODUCT, PRODUCT_FULL);
 
         return matcher;
     }
@@ -164,14 +163,13 @@ public class StoCountProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
-            /*case BOOK_FULLDETAIL:
+            /*case PRODUCT_FULLDETAIL:
                 String[] bfd_projection ={
                     StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry.TITLE,
                     StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry.SUBTITLE,
                     StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry.IMAGE_URL,
                     StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry.DESC,
-                    "group_concat(DISTINCT " + StoCountContract.AuthorEntry.TABLE_NAME+ "."+ StoCountContract.AuthorEntry.AUTHOR +") as " + StoCountContract.AuthorEntry.AUTHOR,
-                    "group_concat(DISTINCT " + StoCountContract.CategoryEntry.TABLE_NAME+ "."+ StoCountContract.CategoryEntry.CATEGORY +") as " + StoCountContract.CategoryEntry.CATEGORY
+                    "group_concat(DISTINCT " + StoCountContract.AuthorEntry.TABLE_NAME+ "."+ StoCountContract.AuthorEntry.AUTHOR +") as " + StoCountContract.AuthorEntry.AUTHOR
                 };
                 retCursor = bookFull.query(dbHelper.getReadableDatabase(),
                         bfd_projection,
@@ -180,23 +178,24 @@ public class StoCountProvider extends ContentProvider {
                         StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry._ID,
                         null,
                         sortOrder);
-                break;
-            case BOOK_FULL:
+                break;*/
+            case PRODUCT_FULL:
                 String[] bf_projection ={
-                        StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry.TITLE,
-                        StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry.IMAGE_URL,
-                        "group_concat(DISTINCT " + StoCountContract.AuthorEntry.TABLE_NAME+ "."+ StoCountContract.AuthorEntry.AUTHOR + ") as " + StoCountContract.AuthorEntry.AUTHOR,
-                        "group_concat(DISTINCT " + StoCountContract.CategoryEntry.TABLE_NAME+ "."+ StoCountContract.CategoryEntry.CATEGORY +") as " + StoCountContract.CategoryEntry.CATEGORY
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.PRODUCT_NAME,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry._ID,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID
+                        //"group_concat(DISTINCT " + StoCountContract.ProductCountEntry.TABLE_NAME+ "."+ StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + ") as " + StoCountContract.AuthorEntry.AUTHOR
                 };
-                retCursor = bookFull.query(dbHelper.getReadableDatabase(),
-                        bf_projection,
+                retCursor = productFull.query(dbHelper.getReadableDatabase(),
                         null,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = '" + ContentUris.parseId(uri) + "' OR "+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID+" is null ",
                         selectionArgs,
-                        StoCountContract.BookEntry.TABLE_NAME + "." + StoCountContract.BookEntry._ID,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID,
                         null,
                         sortOrder);
                 break;
-                */
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

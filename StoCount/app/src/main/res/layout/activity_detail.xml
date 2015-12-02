@@ -24,8 +24,7 @@
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginStart="70dp"
             app:expandedTitleMarginBottom="@dimen/detail_image_height"
-            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
-            >
+            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title">
 
 
             <LinearLayout
@@ -64,8 +63,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:focusable="true"
-                        android:focusableInTouchMode="true"
-                       >
+                        android:focusableInTouchMode="true">
 
                         <EditText
                             android:id="@+id/et_name"
@@ -108,8 +106,7 @@
             android:orientation="vertical"
             android:paddingBottom="16dp"
             android:paddingLeft="@dimen/keyline_content_start"
-            android:paddingRight="16dp"
-            >
+            android:paddingRight="16dp">
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_additionalinfo"
@@ -117,8 +114,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
-                >
+                android:focusableInTouchMode="true">
 
                 <EditText
                     android:id="@+id/et_additionalinfo"
@@ -134,14 +130,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
-                >
+                android:focusableInTouchMode="true">
 
                 <EditText
                     android:id="@+id/et_productcount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
+                    android:layout_marginTop="16dp"
+                    android:digits="0123456789."
+                    android:inputType="numberDecimal"/>
 
             </android.support.design.widget.TextInputLayout>
 

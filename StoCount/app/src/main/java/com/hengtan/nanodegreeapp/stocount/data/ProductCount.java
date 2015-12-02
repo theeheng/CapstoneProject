@@ -35,6 +35,22 @@ public class ProductCount implements Parcelable {
 
     }
 
+    public ProductCount(Cursor cursor, boolean withProductCount) {
+
+        this.mProductCountId = cursor.getInt(8);
+        this.mStockPeriodId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductCountEntry.STOCK_PERIOD_ID));
+        this.mProductId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductCountEntry.PRODUCT_ID));
+        this.mQuantity = cursor.getDouble(cursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY));
+
+        try {
+            this.mCountDate = DateFormat.parse(cursor.getString(cursor.getColumnIndex(StoCountContract.ProductCountEntry.COUNT_DATE)));
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
     public ProductCount(Cursor cursor) {
 
         this.mProductCountId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductCountEntry._ID));

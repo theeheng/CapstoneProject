@@ -45,7 +45,7 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
     private Context mContext;
     private ContentResolver mContentResolver;
-    private ObjectType mSaveType;
+    private ObjectType mObjectType;
     private OperationType mOperationType;
 
     final private Integer SUCCESSFUL = 1;
@@ -54,8 +54,18 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
     public DBAsyncTask(Context c, ContentResolver contentResolver, ObjectType saveType, OperationType operationType) {
         this.mContext = c;
         this.mContentResolver = contentResolver;
-        this.mSaveType = saveType;
+        this.mObjectType = saveType;
         this.mOperationType = operationType;
+    }
+
+    public void setObjectType(ObjectType objType)
+    {
+        this.mObjectType = objType;
+    }
+
+    public void setOperationType(OperationType opType)
+    {
+        this.mOperationType = opType;
     }
 
     @Override
@@ -65,18 +75,20 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
             // get all locations
 
             if(mOperationType == OperationType.SAVE) {
-                if (mSaveType == ObjectType.PRODUCT)
+                if (mObjectType == ObjectType.PRODUCT)
                     ((Product) params[0]).SaveProduct(mContentResolver);
-                else if (mSaveType == ObjectType.USER)
+                else if (mObjectType == ObjectType.USER)
                     ((User) params[0]).SaveUser(mContentResolver);
-                else if (mSaveType == ObjectType.STOCK_PERIOD)
+                else if (mObjectType == ObjectType.STOCK_PERIOD)
                     ((StockPeriod) params[0]).SaveStockPeriod(mContentResolver);
-                else if (mSaveType == ObjectType.PRODUCT_COUNT)
-                    ((ProductCount) params[0]).SaveProductCount(mContentResolver);
+                else if (mObjectType == ObjectType.PRODUCT_COUNT) {
+                    ((Product) params[0]).SaveProduct(mContentResolver);
+                    ((ProductCount) params[1]).SaveProductCount(mContentResolver);
+                }
             }
             else if(mOperationType == OperationType.DELETE)
             {
-                if (mSaveType == ObjectType.PRODUCT)
+                if (mObjectType == ObjectType.PRODUCT)
                     ((Product) params[0]).DeleteProduct(mContentResolver);
             }
 
@@ -96,15 +108,14 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
         if(result != null && result.equals(SUCCESSFUL)) {
 
-            Toast.makeText(this.mContext, "Save Successful..........",
-                    Toast.LENGTH_SHORT).show();
-
-            if(mSaveType == ObjectType.PRODUCT && mOperationType == OperationType.SAVE)
+            if(mObjectType == ObjectType.PRODUCT && mOperationType == OperationType.SAVE)
             {
                 EditText productCount = (EditText) ((Activity)mContext).getWindow().getDecorView().findViewById(R.id.et_productcount);
                 TextInputLayout productCountTextInputLayout = (TextInputLayout) ((Activity)mContext).getWindow().getDecorView().findViewById(R.id.til_productcount);
                 productCount.setVisibility(View.VISIBLE);
                 productCountTextInputLayout.setVisibility(View.VISIBLE);
+
+                //Toast.makeText(this.mContext, "Save Successful..........", Toast.LENGTH_SHORT).show();
             }
         }
         else

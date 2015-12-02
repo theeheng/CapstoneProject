@@ -261,7 +261,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 // Returns a new CursorLoader
                 return new CursorLoader(
                         this,
-                        StoCountContract.ProductEntry.CONTENT_URI,
+                        StoCountContract.ProductEntry.buildFullProductUri(1),
                         null,
                         null,
                         null,
@@ -383,9 +383,19 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             if(mProductCursor != null) {
                 mProductCursor.moveToPosition(position);
 
-                mProduct = new Product(mProductCursor);
+                mProduct = new Product(mProductCursor, true);
 
-                ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_COUNT_LOADER, null, this);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, mProduct);
+
+                if(mProduct.getProductCount() != null && mProduct.getProductCount().getProductId() == 0)
+                    bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE,mProduct.getProductCount());
+
+                Intent intent = new Intent(mContext, DetailActivity.class);
+                intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                mContext.startActivity(intent);
+
+                //((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_COUNT_LOADER, null, this);
 
                 //ProductCount prodCount = null;
 
@@ -453,6 +463,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     if(cursor.getCount() > 0) {
                         cursor.moveToFirst();
                         mProductCount = new ProductCount(cursor);
+                    }
+                    else
+                    {
+                        mProductCount = null;
                     }
 
                     Bundle bundle = new Bundle();

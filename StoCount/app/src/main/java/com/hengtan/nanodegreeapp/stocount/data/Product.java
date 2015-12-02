@@ -29,9 +29,28 @@ public class Product implements Parcelable {
 
     private List<String> mParcelableString;
 
-    public Product(Cursor cursor) {
+    private ProductCount mProductCount;
 
-        this.mProductId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductEntry._ID));
+    public Product(Cursor cursor) {
+        InitialiseWithCursor(cursor, false);
+    }
+
+    public Product(Cursor cursor, boolean withProductCount) {
+        InitialiseWithCursor(cursor, withProductCount);
+    }
+
+    public void InitialiseWithCursor(Cursor cursor, boolean withProductCount) {
+
+        if(withProductCount) {
+            this.mProductId = cursor.getInt(0);
+            mProductCount = new ProductCount(cursor, true);
+        }
+        else
+        {
+            this.mProductId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductEntry._ID));
+        }
+
+
         this.mName = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME));
         this.mDescription = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.DESCRIPTION));
         this.mAdditionalInfo = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO));
@@ -185,6 +204,11 @@ public class Product implements Parcelable {
     public void setProductId(Integer productId)
     {
         this.mProductId = productId;
+    }
+
+    public ProductCount getProductCount()
+    {
+        return mProductCount;
     }
 
     @Override

@@ -7,9 +7,11 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.text.method.KeyListener;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -250,7 +252,6 @@ public class DetailActivity extends AppCompatActivity {
                 mProduct.setDescription(descriptionOriginalText);
 
                 DBAsyncTask saveProductAsyncTask = new DBAsyncTask(this, getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.SAVE);
-                saveProductAsyncTask.execute(mProduct);
 
                 if(!productCountOriginalText.isEmpty())
                 {
@@ -268,8 +269,8 @@ public class DetailActivity extends AppCompatActivity {
                         mProductCount.setCountDate(new Date());
                     }
 
-                    saveProductAsyncTask = new DBAsyncTask(this, getContentResolver(), DBAsyncTask.ObjectType.PRODUCT_COUNT, DBAsyncTask.OperationType.SAVE);
-                    saveProductAsyncTask.execute(mProductCount);
+                    saveProductAsyncTask.setObjectType(DBAsyncTask.ObjectType.PRODUCT_COUNT);
+                    saveProductAsyncTask.execute(mProduct,mProductCount);
                 }
                 else
                 {
@@ -277,6 +278,12 @@ public class DetailActivity extends AppCompatActivity {
                     {
                         mProductCount.setQuantity(null);
                         mProductCount.setCountDate(new Date());
+                        saveProductAsyncTask.setObjectType(DBAsyncTask.ObjectType.PRODUCT_COUNT);
+                        saveProductAsyncTask.execute(mProduct, mProductCount);
+                    }
+                    else
+                    {
+                        saveProductAsyncTask.execute(mProduct);
                     }
                 }
 
@@ -336,9 +343,15 @@ public class DetailActivity extends AppCompatActivity {
         additionalInfo.setKeyListener(additionalInfoListener);
         //additionalInfoTextInputLayout.setHint("additional info");
 
-        productCount.setVisibility(View.VISIBLE);
+        if(!mProduct.IsAddingNewProduct())
+        {
+            productCount.setVisibility(View.VISIBLE);
+            productCountTextInputLayout.setVisibility(View.VISIBLE);
+        }
+
         productCount.setKeyListener(additionalInfoListener);
-        productCountTextInputLayout.setVisibility(View.VISIBLE);
+        productCount.setInputType(EditorInfo.TYPE_CLASS_NUMBER | EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
+
         //productCountTextInputLayout.setHint("product count");
 
         if(productCount.getText().toString().equals(""))

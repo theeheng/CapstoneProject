@@ -1,0 +1,13 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <ListPreference
+        android:key="api_endpoint_list"
+        android:title="@string/pref_title_api_endpoint"
+        android:defaultValue="@string/preference_tesco_api_code"
+        android:entries="@array/api_endpoint_name_list"
+        android:entryValues="@array/api_endpoint_code"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+</PreferenceScreen>

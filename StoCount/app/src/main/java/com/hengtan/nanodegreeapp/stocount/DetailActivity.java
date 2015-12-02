@@ -188,6 +188,7 @@ public class DetailActivity extends AppCompatActivity {
         descriptionTextInputLayout.setHint("description");
 
         showHideProductCount();
+        showHideScanButton();
 
         //Only update for editing at after getting all previous state of editText control
         if(mProduct!= null && (mProduct.IsAddingNewProduct()|| mIsStockCountEntry))
@@ -230,6 +231,8 @@ public class DetailActivity extends AppCompatActivity {
                             descriptionTextInputLayout.setVisibility(View.GONE);
                             descriptionTextView.setVisibility(View.VISIBLE);
                         }
+
+                        showHideScanButton();
                     }
 
                     @Override
@@ -348,6 +351,16 @@ public class DetailActivity extends AppCompatActivity {
         if(mProduct.IsAddingNewProduct() || mProductCount ==  null || (mProductCount !=  null && mProductCount.getQuantity() == null)) {
             productCount.setVisibility(View.GONE);
             productCountTextInputLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private void showHideScanButton() {
+        if(mProduct.IsAddingNewProduct()) {
+            scanFabButton.setVisibility(View.GONE);
+        }
+        else
+        {
+            scanFabButton.setVisibility(View.VISIBLE);
         }
     }
 

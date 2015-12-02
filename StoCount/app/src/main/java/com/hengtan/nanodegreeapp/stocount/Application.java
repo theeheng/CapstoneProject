@@ -3,6 +3,9 @@ package com.hengtan.nanodegreeapp.stocount;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.preference.PreferenceManager;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,12 +25,13 @@ public class Application extends android.app.Application {
     private static Context context;
     private static User mCurrentLoginUser;
     private static StockPeriod mCurrentStockPeriod;
-
+    private static String mDefaultApiCode = "TESCO";
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
-
+        Resources resources = context.getResources();
+        mDefaultApiCode  = resources.getString(R.string.preference_tesco_api_code);
     }
 
     public static Context getContext(){
@@ -54,10 +58,20 @@ public class Application extends android.app.Application {
         return mCurrentStockPeriod;
     }
 
-    public static ApiCall GetApiCallFromPreference()
+    public static ApiCall GetApiCallFromPreference(String preferenceApiCode)
     {
-        //return (ApiCall) new TescoApiCall();
-        return (ApiCall) new WalmartApiCall();
+        if(preferenceApiCode.equals("TESCO"))
+        {
+            return (ApiCall) new TescoApiCall();
+        }
+        else if(preferenceApiCode.equals("WALMART"))
+        {
+            return (ApiCall) new WalmartApiCall();
+        }
+        else
+        {
+            return (ApiCall) new TescoApiCall();
+        }
     }
 
     public static void Logout(GoogleApiClient googleApiClient, final Activity activity)
@@ -79,4 +93,22 @@ public class Application extends android.app.Application {
         }
     }
 
+    public static String GetApiCodeFromPreference()
+    {
+        if(context != null)
+        {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            String preferenceApiCode = sharedPrefs.getString(SettingsActivity.API_PREFERENCE_ID, mDefaultApiCode);
+
+            if (preferenceApiCode.length() == 0) {
+                return mDefaultApiCode;
+            } else {
+                return preferenceApiCode;
+            }
+        }
+        else
+        {
+            return mDefaultApiCode;
+        }
+    }
 }

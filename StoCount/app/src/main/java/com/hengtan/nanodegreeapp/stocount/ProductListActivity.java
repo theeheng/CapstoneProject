@@ -70,6 +70,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private SearchView searchView;
 
+    public static final int RESULT_SETTINGS = 1;
+
     private ProductListAdapter adapter;
 
     // Identifies a particular Loader being used in this component
@@ -87,7 +89,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         setContentView(R.layout.product_list_activity);
         ButterKnife.inject(this);
 
-        mApiCall = Application.GetApiCallFromPreference();
+        mApiCall = Application.GetApiCallFromPreference(Application.GetApiCodeFromPreference());
         mStockPeriod = Application.getCurrentStockPeriod();
 
         init();
@@ -157,10 +159,15 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            Application.Logout(mGoogleApiClient, this);
-            return true;
+        switch (id)
+        {
+            case R.id.action_logout:
+                Application.Logout(mGoogleApiClient, this);
+                return true;
+            case R.id.action_settings:
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivityForResult(i, RESULT_SETTINGS);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

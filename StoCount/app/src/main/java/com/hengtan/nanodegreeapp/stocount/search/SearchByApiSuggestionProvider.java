@@ -28,6 +28,7 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
     List<SearchSuggestion> searchResult = null;
     private String previousQuery;
     private ApiCall mApiCall = null;
+    private String mApiCode = null;
 
     private static final String[] COLUMNS = {
             "_id",  // must include this column
@@ -67,7 +68,8 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
         //lets not do anything in particular
         Log.d(tag, "onCreate called");
 
-        mApiCall = Application.GetApiCallFromPreference();
+        mApiCode = Application.GetApiCodeFromPreference();
+        mApiCall = Application.GetApiCallFromPreference(mApiCode);
 
         return true;
     }
@@ -95,6 +97,17 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
         }
     }
 
+    private void RefreshApiPreference()
+    {
+        String tmpApiPreferenceCode = Application.GetApiCodeFromPreference();
+
+        if(!mApiCode.equals(tmpApiPreferenceCode))
+        {
+            mApiCode = tmpApiPreferenceCode;
+            mApiCall = Application.GetApiCallFromPreference(tmpApiPreferenceCode);
+        }
+    }
+
     private Cursor getSuggestions(String query)
     {
         //List<StockCountItemSearchSuggestion> result;
@@ -107,6 +120,8 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
         else if(!query.equals(previousQuery) || (query.equals(previousQuery) &&  (searchResult == null || (searchResult != null && searchResult.size() == 0))))
         {
             previousQuery = query;
+
+            RefreshApiPreference();
 
             searchResult = mApiCall.GetSuggestedItemName(query, getContext());
 

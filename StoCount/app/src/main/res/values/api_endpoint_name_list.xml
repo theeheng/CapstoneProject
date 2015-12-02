@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="api_endpoint_name_list" translatable="false">
+        <item>@string/preference_tesco_api_name</item>
+        <item>@string/preference_walmart_api_name</item>
+    </string-array>
+</resources>

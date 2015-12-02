@@ -1,0 +1,19 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_api_endpoint">API Options for adding product</string>
+
+    <string name="preference_tesco_api_name">Tesco Mobile API</string>
+
+    <string name="preference_tesco_api_code">TESCO</string>
+
+    <string name="preference_walmart_api_name">Walmart API</string>
+
+    <string name="preference_walmart_api_code">WALMART</string>
+
+</resources>

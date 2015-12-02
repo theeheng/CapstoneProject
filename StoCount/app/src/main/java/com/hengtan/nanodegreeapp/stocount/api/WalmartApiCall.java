@@ -84,16 +84,15 @@ public class WalmartApiCall implements ApiCall {
 
         params.put("apiKey", res.getString(R.string.walmart_apiKey));
 
-        if(barcodeScanResult != null) {
+        if(barcodeScanResult != null && !barcodeScanResult.isEmpty()) {
             params.put("upc", barcodeScanResult);
         }
-        else if(itemId != null)
+        else if(itemId != null && !itemId.isEmpty())
         {
             params.put("itemId", itemId);
-            barcodeScanResult = itemId;
         }
 
-        final String searchCriteria = barcodeScanResult;
+        final String searchCriteria = (barcodeScanResult != null && !barcodeScanResult.isEmpty()) ? barcodeScanResult : itemId;
 
         testService.getProduct(params, new retrofit.Callback<WalmartItemList>() {
             @Override

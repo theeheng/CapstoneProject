@@ -24,7 +24,8 @@
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginStart="70dp"
             app:expandedTitleMarginBottom="@dimen/detail_image_height"
-            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title">
+            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
+            >
 
 
             <LinearLayout
@@ -42,8 +43,6 @@
                     android:scaleType="centerCrop"
                     app:layout_collapseMode="parallax"
                     />
-
-
 
                 <LinearLayout
                     android:id="@+id/meta_bar"
@@ -181,21 +180,33 @@
         app:fab_expandDirection="down"
         app:fab_labelsPosition="left"
         app:layout_anchor="@id/appbar"
+        android:layout_marginBottom="250dp"
+        app:fab_labelStyle="@style/menu_labels_style"
         app:layout_anchorGravity="bottom|right|end">
 
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabCameraButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@android:drawable/ic_menu_camera"
+            app:fab_size="mini"
+            app:fab_title="camera"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabScanButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_icon="@android:drawable/ic_menu_gallery"
-            app:fab_title="gallery"/>
+            app:fab_icon="@mipmap/ic_barcode"
+            app:fab_size="mini"
+            app:fab_title="barcode"/>
+
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabEditButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_icon="@android:drawable/ic_menu_camera"
-            app:fab_title="camera"/>
+            app:fab_icon="@android:drawable/ic_menu_edit"
+            app:fab_size="mini"
+            app:fab_title="edit"/>
     </android.support.design.widget.SupportFloatingActionsMenu>
 
 

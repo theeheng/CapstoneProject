@@ -188,7 +188,7 @@ public class DetailActivity extends AppCompatActivity {
         descriptionTextInputLayout.setHint("description");
 
         showHideProductCount();
-        showHideScanButton();
+        ToogleFabButton();
 
         //Only update for editing at after getting all previous state of editText control
         if(mProduct!= null && (mProduct.IsAddingNewProduct()|| mIsStockCountEntry))
@@ -203,11 +203,7 @@ public class DetailActivity extends AppCompatActivity {
                     public void onMenuCollapsed() {
 
                         if (mIsEditable) {
-
                             showHideProductCount();
-
-                            editFabButton.setIcon(android.R.drawable.ic_menu_camera);
-                            scanFabButton.setIcon(android.R.drawable.ic_menu_gallery);
                             mIsEditable = false;
                             nameTextInputLayout.setHint(null);
                             //additionalInfoTextInputLayout.setHint(null);
@@ -225,14 +221,12 @@ public class DetailActivity extends AppCompatActivity {
                             additionalInfo.setText(additionalInfoOriginalText);
                             productCount.setText(productCountOriginalText);
                             description.setText(descriptionOriginalText);
-                            editFabButton.setVisibility(View.VISIBLE);
-                            scanFabButton.setVisibility(View.VISIBLE);
                             description.setVisibility(View.GONE);
                             descriptionTextInputLayout.setVisibility(View.GONE);
                             descriptionTextView.setVisibility(View.VISIBLE);
                         }
 
-                        showHideScanButton();
+                        ToogleFabButton();
                     }
 
                     @Override
@@ -297,7 +291,6 @@ public class DetailActivity extends AppCompatActivity {
                 }
 
                 famButton.collapse();
-                editFabButton.setIcon(android.R.drawable.ic_menu_camera);
                 mIsEditable = false;
                 nameTextInputLayout.setHint(null);
                 //additionalInfoTextInputLayout.setHint(null);
@@ -329,10 +322,11 @@ public class DetailActivity extends AppCompatActivity {
                     productCount.setText(productCountOriginalText);
                 }
 
-                scanFabButton.setVisibility(View.VISIBLE);
                 description.setVisibility(View.GONE);
                 descriptionTextInputLayout.setVisibility(View.GONE);
                 descriptionTextView.setVisibility(View.VISIBLE);
+
+                ToogleFabButton();
             }
     }
 
@@ -354,14 +348,28 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void showHideScanButton() {
-        if(mProduct.IsAddingNewProduct()) {
-            scanFabButton.setVisibility(View.GONE);
-        }
-        else
-        {
-            scanFabButton.setVisibility(View.VISIBLE);
-        }
+    private void ToogleFabButton() {
+
+            if (mProduct.IsAddingNewProduct()) {
+
+                scanFabButton.setEnabled(false);
+
+                if(mIsEditable)
+                    editFabButton.setIcon(android.R.drawable.ic_menu_save);
+                else
+                    editFabButton.setIcon(android.R.drawable.ic_menu_edit);
+
+            } else {
+
+                if(mIsEditable) {
+                    editFabButton.setIcon(android.R.drawable.ic_menu_save);
+                    scanFabButton.setEnabled(false);
+                }
+                else {
+                    editFabButton.setIcon(android.R.drawable.ic_menu_edit);
+                    scanFabButton.setEnabled(true);
+                }
+            }
     }
 
     private void updateUIForEditing() {
@@ -400,8 +408,9 @@ public class DetailActivity extends AppCompatActivity {
         description.setVisibility(View.VISIBLE);
         descriptionTextInputLayout.setVisibility(View.VISIBLE);
         descriptionTextView.setVisibility(View.GONE);
-        scanFabButton.setVisibility(View.GONE);
-        editFabButton.setIcon(R.drawable.ic_star);
+
+        ToogleFabButton();
+
     }
 
     @Override

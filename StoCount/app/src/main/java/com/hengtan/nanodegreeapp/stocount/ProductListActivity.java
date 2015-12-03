@@ -363,7 +363,16 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 holder.dataTextView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
                 holder.dataTextInfoView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO)));
                 holder.dataTextCount.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY)));
-                Glide.with(this.mContext).load(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE))).fitCenter().into(holder.dataImageView);
+
+                String imageUrl = mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE));
+
+                if(imageUrl.isEmpty())
+                {
+                    Glide.with(this.mContext).load(R.mipmap.no_image).fitCenter().into(holder.dataImageView);
+                }
+                else {
+                    Glide.with(this.mContext).load(imageUrl).fitCenter().into(holder.dataImageView);
+                }
             }
         }
 

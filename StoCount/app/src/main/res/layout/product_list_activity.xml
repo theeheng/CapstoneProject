@@ -34,12 +34,22 @@ android:layout_marginBottom="16dp"
 android:layout_marginRight="16dp"
 android:layout_marginEnd="16dp">
 
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabManualButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fab_colorNormal="@color/white"
+        app:fab_title="Add by Manual Input"
+        app:fab_size="mini"
+        app:fab_colorPressed="@color/white_pressed"/>
+
 <com.getbase.floatingactionbutton.FloatingActionButton
     android:id="@+id/fabSearchButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:fab_colorNormal="@color/white"
-    app:fab_title="Add by Product Name"
+    app:fab_title="Add by API Product Name Search"
+    app:fab_size="mini"
     app:fab_colorPressed="@color/white_pressed"/>
 
 <com.getbase.floatingactionbutton.FloatingActionButton
@@ -47,7 +57,8 @@ android:layout_marginEnd="16dp">
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:fab_colorNormal="@color/white"
-    app:fab_title="Add by barcode"
+    app:fab_title="Add by API Barcode Search"
+    app:fab_size="mini"
     app:fab_colorPressed="@color/white_pressed"/>
 
 </com.getbase.floatingactionbutton.FloatingActionsMenu>

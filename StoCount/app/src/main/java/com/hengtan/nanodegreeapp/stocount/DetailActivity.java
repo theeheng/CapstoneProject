@@ -147,7 +147,14 @@ public class DetailActivity extends AppCompatActivity {
             additionalInfo.setText(mProduct.getAdditionalInfo());
             description.setText(mProduct.getDescription());
             descriptionTextView.setText(mProduct.getDescription());
-            Glide.with(this).load(mProduct.getLargeImage()).fitCenter().into(image);
+
+            if(mProduct.getLargeImage().isEmpty())
+            {
+                Glide.with(this).load(R.mipmap.no_image).fitCenter().into(image);
+            }
+            else {
+                Glide.with(this).load(mProduct.getLargeImage()).fitCenter().into(image);
+            }
         }
 
         if(mProductCount != null)
@@ -325,7 +332,6 @@ public class DetailActivity extends AppCompatActivity {
                 description.setVisibility(View.GONE);
                 descriptionTextInputLayout.setVisibility(View.GONE);
                 descriptionTextView.setVisibility(View.VISIBLE);
-
                 ToogleFabButton();
             }
     }
@@ -338,6 +344,14 @@ public class DetailActivity extends AppCompatActivity {
             intentIntegrator.initiateScan();
         } catch (Exception ex) {
             Log.e(TAG, "Error loading barcode scanning :" + ex.getMessage());
+        }
+    }
+
+    @OnClick(R.id.photo)
+    public void onPhotoClick(View v) {
+
+        if (mIsEditable) {
+            Toast.makeText(this, "Photo clicked..........", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -354,15 +368,19 @@ public class DetailActivity extends AppCompatActivity {
 
                 scanFabButton.setEnabled(false);
 
-                if(mIsEditable)
+                if(mIsEditable) {
                     editFabButton.setIcon(android.R.drawable.ic_menu_save);
-                else
+                    editFabButton.setTitle("Save");
+                }
+                else {
                     editFabButton.setIcon(android.R.drawable.ic_menu_edit);
+                }
 
             } else {
 
                 if(mIsEditable) {
                     editFabButton.setIcon(android.R.drawable.ic_menu_save);
+                    editFabButton.setTitle("Save");
                     scanFabButton.setEnabled(false);
                 }
                 else {
@@ -408,7 +426,6 @@ public class DetailActivity extends AppCompatActivity {
         description.setVisibility(View.VISIBLE);
         descriptionTextInputLayout.setVisibility(View.VISIBLE);
         descriptionTextView.setVisibility(View.GONE);
-
         ToogleFabButton();
 
     }

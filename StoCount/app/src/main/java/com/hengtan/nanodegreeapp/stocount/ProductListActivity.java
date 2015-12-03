@@ -59,6 +59,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @InjectView(R.id.famProductListButton)
     protected FloatingActionsMenu famProductListButton;
 
+    @InjectView(R.id.fabManualButton)
+    protected FloatingActionButton fabManualButton;
+
     @InjectView(R.id.fabSearchButton)
     protected FloatingActionButton fabSearchButton;
 
@@ -108,6 +111,16 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+    }
+
+    @OnClick(R.id.fabManualButton)
+    public void onManualClick(View v) {
+        Product prod = new Product();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+        this.startActivity(intent);
     }
 
     @OnClick(R.id.fabSearchButton)

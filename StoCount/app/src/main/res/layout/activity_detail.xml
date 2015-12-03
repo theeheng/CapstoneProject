@@ -179,18 +179,11 @@
         android:clickable="true"
         app:fab_expandDirection="down"
         app:fab_labelsPosition="left"
-        app:layout_anchor="@id/appbar"
-        android:layout_marginBottom="250dp"
+        android:layout_marginBottom="122dp"
         app:fab_labelStyle="@style/menu_labels_style"
+        app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabCameraButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:fab_icon="@android:drawable/ic_menu_camera"
-            app:fab_size="mini"
-            app:fab_title="camera"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabScanButton"

@@ -32,6 +32,18 @@ public class Product implements Parcelable {
 
     private List<String> mParcelableString;
 
+    public Product()
+    {
+        this.mProductId = null;
+        this.mName = "Enter Product Name";
+        this.mDescription = "Enter Description";
+        this.mAdditionalInfo = "Enter Additional Info";
+        this.mThumbnailImage = "";
+        this.mLargeImage = "";
+        this.mBarcode = "";
+        this.mBarcodeFormat = "";
+    }
+
     public Product(Cursor cursor) {
 
         this.mProductId = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductEntry._ID));

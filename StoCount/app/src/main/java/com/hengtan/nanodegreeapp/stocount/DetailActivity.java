@@ -374,6 +374,7 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 else {
                     editFabButton.setIcon(android.R.drawable.ic_menu_edit);
+                    editFabButton.setTitle("Edit");
                 }
 
             } else {
@@ -386,6 +387,7 @@ public class DetailActivity extends AppCompatActivity {
                 else {
                     editFabButton.setIcon(android.R.drawable.ic_menu_edit);
                     scanFabButton.setEnabled(true);
+                    editFabButton.setTitle("Edit");
                 }
             }
     }

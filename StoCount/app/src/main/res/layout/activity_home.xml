@@ -2,45 +2,74 @@
     android:background="@color/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     >
 
 <TextView android:id="@+id/stockPeriodDate"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Stock Period Start Date"
-    />
+    android:layout_centerHorizontal="true"
+    android:padding="16dp"/>
+
+    <RelativeLayout
+        android:background="@color/background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_below="@+id/stockPeriodDate">
 
     <Button
         android:id="@+id/scanButton"
-        android:text="Scan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/stockPeriodDate"
-    />
+        android:text="Scan Product Barcode"
+        android:layout_width="150dp"
+        android:layout_height="120dp"
+        android:padding="16dp"
+        android:layout_margin="16dp"
+        android:drawableTop="@mipmap/ic_barcode"
+        android:background="@color/blue_grey_500"/>
 
 
     <Button
         android:id="@+id/searchButton"
-        android:text="Search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:text="Search Product Name"
+        android:layout_width="150dp"
+        android:layout_height="120dp"
         android:layout_below="@+id/scanButton"
-        android:layout_toRightOf=  "@+id/scanButton"/>
+        android:padding="16dp"
+        android:layout_margin="16dp"
+        android:drawableTop="@android:drawable/ic_menu_search"
+        android:background="@color/blue_grey_500"/>
 
     <Button
         android:id="@+id/viewButton"
-        android:text="View"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:text="View Product List"
+        android:layout_width="150dp"
+        android:layout_height="120dp"
         android:layout_toRightOf=  "@+id/scanButton"
-        android:layout_below="@+id/stockPeriodDate"/>
+        android:drawableTop="@android:drawable/ic_menu_view"
+        android:background="@color/blue_grey_500"
+        android:padding="16dp"
+        android:layout_margin="16dp"/>
+
+        <Button
+            android:id="@+id/closeButton"
+            android:text="Close Stock Period"
+            android:layout_width="150dp"
+            android:layout_height="120dp"
+            android:layout_below="@+id/viewButton"
+            android:layout_toRightOf="@+id/searchButton"
+            android:drawableTop="@android:drawable/ic_menu_view"
+            android:background="@color/blue_grey_500"
+            android:padding="16dp"
+            android:layout_margin="16dp"/>
+
+    </RelativeLayout>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment"
         android:name="com.hengtan.nanodegreeapp.stocount.AdFragment"
-        tools:layout="@layout/fragment_ad" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        tools:layout="@layout/fragment_ad" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

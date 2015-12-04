@@ -18,8 +18,10 @@
     </style>
 
     <style name="menu_labels_style">
-        <item name="android:background">@android:color/white</item>
-        <item name="android:textColor">@color/blue_grey_900</item>
+        <item name="android:background">@color/blue_grey_700</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
     </style>
 
     <style name="Theme.Bacon.Detail.HeaderTitle" parent="@android:style/TextAppearance.DeviceDefault.Large">
@@ -33,4 +35,7 @@
         <item name="android:lineSpacingMultiplier">@fraction/detail_header_line_spacing_multiplier</item>
     </style>
 
+    <style name="toolbar_theme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorControlNormal">@color/blue_grey_500</item>
+    </style>
 </resources>

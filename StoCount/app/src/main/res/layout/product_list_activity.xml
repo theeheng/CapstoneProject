@@ -26,9 +26,6 @@ android:layout_height="wrap_content"
 android:layout_alignParentBottom="true"
 android:layout_alignParentRight="true"
 android:layout_alignParentEnd="true"
-app:fab_addButtonColorNormal="@color/white"
-app:fab_addButtonColorPressed="@color/white_pressed"
-app:fab_addButtonPlusIconColor="@color/half_black"
 app:fab_labelStyle="@style/menu_labels_style"
 android:layout_marginBottom="16dp"
 android:layout_marginRight="16dp"
@@ -38,28 +35,25 @@ android:layout_marginEnd="16dp">
         android:id="@+id/fabManualButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:fab_colorNormal="@color/white"
-        app:fab_title="Add by Manual Input"
-        app:fab_size="mini"
-        app:fab_colorPressed="@color/white_pressed"/>
+        app:fab_title="Manual Product Entry"
+        app:fab_icon="@android:drawable/ic_menu_edit"
+        app:fab_size="mini" />
 
 <com.getbase.floatingactionbutton.FloatingActionButton
     android:id="@+id/fabSearchButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:fab_colorNormal="@color/white"
-    app:fab_title="Add by API Product Name Search"
-    app:fab_size="mini"
-    app:fab_colorPressed="@color/white_pressed"/>
+    app:fab_title="API Product Name Search"
+    app:fab_icon="@android:drawable/ic_menu_search"
+    app:fab_size="mini" />
 
 <com.getbase.floatingactionbutton.FloatingActionButton
     android:id="@+id/fabBarcodeButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:fab_colorNormal="@color/white"
-    app:fab_title="Add by API Barcode Search"
-    app:fab_size="mini"
-    app:fab_colorPressed="@color/white_pressed"/>
+    app:fab_icon="@mipmap/ic_barcode"
+    app:fab_title="API Product Barcode Search"
+    app:fab_size="mini" />
 
 </com.getbase.floatingactionbutton.FloatingActionsMenu>
 

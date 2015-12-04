@@ -33,7 +33,7 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
     public enum ObjectType
     {
-        PRODUCT(0), USER(1), STOCK_PERIOD(2), PRODUCT_COUNT(3);
+        PRODUCT(0), USER(1), STOCK_PERIOD(2), PRODUCT_COUNT(3), CLOSE_STOCK_PERIOD(4);
 
         private int value;
 
@@ -43,19 +43,19 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
         }
     };
 
-    private Context mContext;
     private ContentResolver mContentResolver;
     private ObjectType mObjectType;
     private OperationType mOperationType;
+    private DBAsyncCallBack mDBAsyncCallBack;
 
     final private Integer SUCCESSFUL = 1;
     final private Integer FAILED = 0;
 
-    public DBAsyncTask(Context c, ContentResolver contentResolver, ObjectType saveType, OperationType operationType) {
-        this.mContext = c;
+    public DBAsyncTask(ContentResolver contentResolver, ObjectType saveType, OperationType operationType, DBAsyncCallBack dbAsyncCallBack) {
         this.mContentResolver = contentResolver;
         this.mObjectType = saveType;
         this.mOperationType = operationType;
+        this.mDBAsyncCallBack = dbAsyncCallBack;
     }
 
     public void setObjectType(ObjectType objType)
@@ -75,15 +75,22 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
             // get all locations
 
             if(mOperationType == OperationType.SAVE) {
-                if (mObjectType == ObjectType.PRODUCT)
+                if (mObjectType == ObjectType.PRODUCT) {
                     ((Product) params[0]).SaveProduct(mContentResolver);
-                else if (mObjectType == ObjectType.USER)
+                }
+                else if (mObjectType == ObjectType.USER) {
                     ((User) params[0]).SaveUser(mContentResolver);
-                else if (mObjectType == ObjectType.STOCK_PERIOD)
+                }
+                else if (mObjectType == ObjectType.STOCK_PERIOD) {
                     ((StockPeriod) params[0]).SaveStockPeriod(mContentResolver);
+                }
                 else if (mObjectType == ObjectType.PRODUCT_COUNT) {
                     ((Product) params[0]).SaveProduct(mContentResolver);
                     ((ProductCount) params[1]).SaveProductCount(mContentResolver);
+                }
+                else if (mObjectType == ObjectType.CLOSE_STOCK_PERIOD) {
+                    ((StockPeriod) params[0]).SaveStockPeriod(mContentResolver);
+                    ((StockPeriod) params[1]).SaveStockPeriod(mContentResolver);
                 }
             }
             else if(mOperationType == OperationType.DELETE)
@@ -108,20 +115,11 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
         if(result != null && result.equals(SUCCESSFUL)) {
 
-            if((mObjectType == ObjectType.PRODUCT || mObjectType == ObjectType.PRODUCT_COUNT) && mOperationType == OperationType.SAVE)
-            {
-                EditText productCount = (EditText) ((Activity)mContext).getWindow().getDecorView().findViewById(R.id.et_productcount);
-                TextInputLayout productCountTextInputLayout = (TextInputLayout) ((Activity)mContext).getWindow().getDecorView().findViewById(R.id.til_productcount);
-                productCount.setVisibility(View.VISIBLE);
-                productCountTextInputLayout.setVisibility(View.VISIBLE);
-
-                Toast.makeText(this.mContext, "Save Successful..........", Toast.LENGTH_SHORT).show();
-            }
+            mDBAsyncCallBack.CallBackOnSuccessfull();
         }
         else
         {
-            Toast.makeText(this.mContext, "FAILED To Save ..........",
-                    Toast.LENGTH_SHORT).show();
+            mDBAsyncCallBack.CallBackOnFail();
         }
     }
 }

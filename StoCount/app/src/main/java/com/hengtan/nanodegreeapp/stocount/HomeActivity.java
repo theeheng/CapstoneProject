@@ -50,6 +50,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @InjectView(R.id.viewButton)
     protected Button btnView;
 
+    @InjectView(R.id.closeButton)
+    protected Button btnClose;
+
     @InjectView(R.id.stockPeriodDate)
     protected TextView txtStockPeriodDate;
 
@@ -95,7 +98,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
         if (mStockPeriod != null) {
 
-            txtStockPeriodDate.setText("Stock Period Date : "+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
+            txtStockPeriodDate.setText("Current Stock Period Starting : "+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
 
         }
 
@@ -151,15 +154,25 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @OnClick(R.id.searchButton)
     public void onSearchBtnClick(View v) {
 
-        ActionMenuItemView actionSearch = (ActionMenuItemView) findViewById(R.id.action_search);
-        actionSearch.callOnClick();
-        //super.onSearchRequested();
+        View actionSearch = findViewById(R.id.action_search);
+
+        if(actionSearch instanceof ActionMenuItemView)
+        {
+            ((ActionMenuItemView)actionSearch).callOnClick();
+        }
     }
 
     @OnClick(R.id.viewButton)
     public void onViewBtnClick(View v) {
         Intent intent = new Intent(this, ProductListActivity.class);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.closeButton)
+    public void onCloseBtnClick(View v) {
+        Intent intent = new Intent(this, StockPeriodActivity.class);
+        intent.putExtra(StockPeriodActivity.IS_CLOSE_STOCK_EXTRA, true);
+        this.startActivity(intent);
     }
 
     @Override

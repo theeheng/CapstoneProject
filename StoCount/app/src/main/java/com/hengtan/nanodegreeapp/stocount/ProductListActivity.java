@@ -82,6 +82,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private GoogleApiClient mGoogleApiClient;
 
+    private String mApiCode;
+
     private ApiCall mApiCall;
 
     private StockPeriod mStockPeriod;
@@ -91,8 +93,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_list_activity);
         ButterKnife.inject(this);
-
-        mApiCall = Application.GetApiCallFromPreference(Application.GetApiCodeFromPreference());
+        mApiCode = Application.GetApiCodeFromPreference();
+        mApiCall = Application.GetApiCallFromPreference(mApiCode);
         mStockPeriod = Application.getCurrentStockPeriod();
 
         init();
@@ -126,8 +128,13 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @OnClick(R.id.fabSearchButton)
     public void onSearchClick(View v) {
         famProductListButton.collapse();
-        ActionMenuItemView actionSearch = (ActionMenuItemView) findViewById(R.id.action_search);
-        actionSearch.callOnClick();
+
+        View actionSearch = findViewById(R.id.action_search);
+
+        if(actionSearch instanceof ActionMenuItemView)
+        {
+            ((ActionMenuItemView)actionSearch).callOnClick();
+        }
     }
 
     @OnClick(R.id.fabBarcodeButton)
@@ -218,6 +225,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     protected void onResume()
     {
         super.onResume();
+        RefreshApiPreference();
         getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
     }
     
@@ -268,6 +276,17 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 }));
     }
 
+    private void RefreshApiPreference()
+    {
+        String tmpApiPreferenceCode = Application.GetApiCodeFromPreference();
+
+        if(!mApiCode.equals(tmpApiPreferenceCode))
+        {
+            mApiCode = tmpApiPreferenceCode;
+            mApiCall = Application.GetApiCallFromPreference(tmpApiPreferenceCode);
+        }
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
@@ -279,7 +298,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 // Returns a new CursorLoader
                 return new CursorLoader(
                         this,
-                        StoCountContract.ProductEntry.buildFullProductUri(1),
+                        StoCountContract.ProductEntry.buildFullProductUri(mStockPeriod.getStockPeriodId()),
                         null,
                         null,
                         null,
@@ -368,7 +387,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                 if(imageUrl.isEmpty())
                 {
-                    Glide.with(this.mContext).load(R.mipmap.no_image).fitCenter().into(holder.dataImageView);
+                    Glide.with(this.mContext).load(android.R.drawable.ic_menu_gallery).fitCenter().into(holder.dataImageView);
                 }
                 else {
                     Glide.with(this.mContext).load(imageUrl).fitCenter().into(holder.dataImageView);
@@ -390,7 +409,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
             Product prod = new Product(mProductCursor);
 
-            DBAsyncTask deleteAsyncTask = new DBAsyncTask(mContext, mContext.getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.DELETE);
+            DBAsyncTask deleteAsyncTask = new DBAsyncTask(mContext.getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.DELETE, null);
             deleteAsyncTask.execute(prod);
 
             ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, ((ProductListActivity)mContext));

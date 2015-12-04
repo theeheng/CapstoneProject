@@ -86,7 +86,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                android:theme="@style/toolbar_theme"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -191,7 +192,7 @@
             android:layout_height="wrap_content"
             app:fab_icon="@mipmap/ic_barcode"
             app:fab_size="mini"
-            app:fab_title="barcode"/>
+            app:fab_title="change barcode"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabEditButton"
@@ -200,6 +201,7 @@
             app:fab_icon="@android:drawable/ic_menu_edit"
             app:fab_size="mini"
             app:fab_title="edit"/>
+
     </android.support.design.widget.SupportFloatingActionsMenu>
 
 

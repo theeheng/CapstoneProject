@@ -23,6 +23,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.hengtan.nanodegreeapp.stocount.data.DBAsyncCallBack;
 import com.hengtan.nanodegreeapp.stocount.data.DBAsyncTask;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
@@ -37,7 +38,7 @@ import butterknife.OnClick;
 /**
  * Created by Eric on 15/6/1.
  */
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
 
@@ -261,7 +262,7 @@ public class DetailActivity extends AppCompatActivity {
                 mProduct.setAdditionalInfo(additionalInfoOriginalText);
                 mProduct.setDescription(descriptionOriginalText);
 
-                DBAsyncTask saveProductAsyncTask = new DBAsyncTask(this, getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.SAVE);
+                DBAsyncTask saveProductAsyncTask = new DBAsyncTask(getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.SAVE, this);
 
                 if(!productCountOriginalText.isEmpty())
                 {
@@ -468,7 +469,7 @@ public class DetailActivity extends AppCompatActivity {
                 mProduct.setBarcode(barcodeResult);
                 mProduct.setBarcodeFormat(result.getFormatName());
 
-                DBAsyncTask saveProductAsyncTask = new DBAsyncTask(this, getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.SAVE);
+                DBAsyncTask saveProductAsyncTask = new DBAsyncTask(getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.SAVE, this);
                 saveProductAsyncTask.execute(mProduct);
 
                 famButton.collapse();
@@ -478,5 +479,19 @@ public class DetailActivity extends AppCompatActivity {
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void CallBackOnSuccessfull() {
+        productCount.setVisibility(View.VISIBLE);
+        productCountTextInputLayout.setVisibility(View.VISIBLE);
+
+        Toast.makeText(this, "Save Successful..........", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void CallBackOnFail() {
+        Toast.makeText(this, "FAILED To Save ..........",
+                Toast.LENGTH_SHORT).show();
     }
 }

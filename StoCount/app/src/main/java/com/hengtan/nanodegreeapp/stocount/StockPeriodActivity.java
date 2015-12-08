@@ -165,7 +165,7 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
 
             dbAsyncTask.execute(mStockPeriod, mNewStockPeriod);
         }
-        else if(!mIsClosingStockCount && mStockPeriod != null) {
+        else if(!mIsClosingStockCount && mStockPeriod == null) {
 
             mStockPeriod = new StockPeriod();
             mStockPeriod.setStartDate(widgetSelectedDate.getDate());

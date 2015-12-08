@@ -66,7 +66,8 @@
             android:id="@+id/img_data"
             android:layout_gravity="right"
             android:layout_width="@dimen/list_item_height"
-            android:layout_height="@dimen/list_item_height" />
+            android:layout_height="@dimen/list_item_height"
+            android:background="@android:color/white"/>
     </LinearLayout>
 
     <LinearLayout

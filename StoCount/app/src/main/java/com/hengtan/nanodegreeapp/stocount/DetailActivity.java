@@ -2,6 +2,7 @@ package com.hengtan.nanodegreeapp.stocount;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputLayout;
@@ -28,7 +29,13 @@ import com.hengtan.nanodegreeapp.stocount.data.DBAsyncTask;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
+import com.kbeanie.imagechooser.api.ChooserType;
+import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.api.ImageChooserListener;
+import com.kbeanie.imagechooser.api.ImageChooserManager;
+import com.leansoft.nano.soap11.Detail;
 
+import java.io.File;
 import java.util.Date;
 
 import butterknife.ButterKnife;
@@ -38,7 +45,7 @@ import butterknife.OnClick;
 /**
  * Created by Eric on 15/6/1.
  */
-public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack {
+public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack, ImageChooserListener {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
 
@@ -112,6 +119,11 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     private Product mProduct;
     private ProductCount mProductCount;
     private StockPeriod mStockPeriod;
+
+    private ImageChooserManager imageChooserManager;
+    private int chooserType;
+    private String chooserImageFilePath;
+    private String chooserThumbnailFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -262,6 +274,16 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
                 mProduct.setAdditionalInfo(additionalInfoOriginalText);
                 mProduct.setDescription(descriptionOriginalText);
 
+                if(chooserImageFilePath != null)
+                {
+                    mProduct.setLargeImage(chooserImageFilePath);
+                }
+
+                if(chooserThumbnailFilePath != null)
+                {
+                    mProduct.setThumbnailImage(chooserThumbnailFilePath);
+                }
+
                 DBAsyncTask saveProductAsyncTask = new DBAsyncTask(getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.SAVE, this);
 
                 if(!productCountOriginalText.isEmpty())
@@ -352,7 +374,7 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     public void onPhotoClick(View v) {
 
         if (mIsEditable) {
-            Toast.makeText(this, "Photo clicked..........", Toast.LENGTH_SHORT).show();
+            chooseImage();
         }
     }
 
@@ -474,7 +496,13 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
 
                 famButton.collapse();
             }
-        } else {
+        }else if (resultCode == RESULT_OK && (requestCode == ChooserType.REQUEST_PICK_PICTURE || requestCode == ChooserType.REQUEST_CAPTURE_PICTURE)) {
+            if (imageChooserManager == null) {
+                reinitializeImageChooser();
+            }
+            imageChooserManager.submit(requestCode, data);
+        }
+        else {
             Log.d(TAG, "Weird");
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
@@ -493,5 +521,85 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     public void CallBackOnFail() {
         Toast.makeText(this, "FAILED To Save ..........",
                 Toast.LENGTH_SHORT).show();
+    }
+
+    // Should be called if for some reason the ImageChooserManager is null (Due
+    // to destroying of activity for low memory situations)
+    private void reinitializeImageChooser() {
+        imageChooserManager = new ImageChooserManager(this, chooserType, true);
+        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager.reinitialize(chooserImageFilePath);
+    }
+
+    private void chooseImage() {
+        chooserType = ChooserType.REQUEST_PICK_PICTURE;
+        imageChooserManager = new ImageChooserManager(this,
+                ChooserType.REQUEST_PICK_PICTURE, true);
+        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager.clearOldFiles();
+        try {
+            //progressBar.setVisibility(View.VISIBLE);
+            imageChooserManager.choose();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void takePicture() {
+        chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
+        imageChooserManager = new ImageChooserManager(this,
+                ChooserType.REQUEST_CAPTURE_PICTURE, true);
+        imageChooserManager.setImageChooserListener(this);
+        try {
+            //progressBar.setVisibility(View.VISIBLE);
+            imageChooserManager.choose();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onImageChosen(final ChosenImage chosenImage) {
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                Log.i(TAG, "Chosen Image: O - " + chosenImage.getFilePathOriginal());
+                Log.i(TAG, "Chosen Image: T - " + chosenImage.getFileThumbnail());
+                Log.i(TAG, "Chosen Image: Ts - " + chosenImage.getFileThumbnailSmall());
+                //isActivityResultOver = true;
+                //originalFilePath = image.getFilePathOriginal();
+                //thumbnailFilePath = image.getFileThumbnail();
+                //thumbnailSmallFilePath = image.getFileThumbnailSmall();
+                //progressBar.setVisibility(View.GONE);
+                if (image != null) {
+                    Log.i(TAG, "Chosen Image: Is not null");
+                    chooserImageFilePath = chosenImage.getFilePathOriginal();
+                    chooserThumbnailFilePath = chosenImage.getFileThumbnail();
+                    Glide.with(DetailActivity.this).load(chosenImage.getFilePathOriginal()).fitCenter().into(image);
+
+                } else {
+                    Log.i(TAG, "Chosen Image: Is null");
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onError(final String reason) {
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                Log.i(TAG, "OnError: " + reason);
+                //progressBar.setVisibility(View.GONE);
+                Toast.makeText(DetailActivity.this, reason,
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

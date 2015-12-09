@@ -55,4 +55,6 @@
     <string name="server_client_id">YOUR_SERVER_CLIENT_ID</string>
     <string name="title_activity_stock_period">StockPeriodActivity</string>
 
+    <string name="image_source_camera">camera</string>
+    <string name="image_source_gallery">image gallery</string>
 </resources>

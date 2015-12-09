@@ -1,11 +1,15 @@
 package com.hengtan.nanodegreeapp.stocount;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -45,7 +49,7 @@ import butterknife.OnClick;
 /**
  * Created by Eric on 15/6/1.
  */
-public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack, ImageChooserListener {
+public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack, ImageChooserListener, ImageChooserDialogFragmentCallBack {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
 
@@ -374,7 +378,12 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     public void onPhotoClick(View v) {
 
         if (mIsEditable) {
-            chooseImage();
+
+            ImageChooserDialogFragment dialog = new ImageChooserDialogFragment();
+            dialog.setImageChooserDialogFragmentCallBack(this);
+            dialog.show(getSupportFragmentManager(), "ImageChooserDialogFragment");
+
+            //chooseImage();
         }
     }
 
@@ -531,37 +540,6 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
         imageChooserManager.reinitialize(chooserImageFilePath);
     }
 
-    private void chooseImage() {
-        chooserType = ChooserType.REQUEST_PICK_PICTURE;
-        imageChooserManager = new ImageChooserManager(this,
-                ChooserType.REQUEST_PICK_PICTURE, true);
-        imageChooserManager.setImageChooserListener(this);
-        imageChooserManager.clearOldFiles();
-        try {
-            //progressBar.setVisibility(View.VISIBLE);
-            imageChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void takePicture() {
-        chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
-        imageChooserManager = new ImageChooserManager(this,
-                ChooserType.REQUEST_CAPTURE_PICTURE, true);
-        imageChooserManager.setImageChooserListener(this);
-        try {
-            //progressBar.setVisibility(View.VISIBLE);
-            imageChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onImageChosen(final ChosenImage chosenImage) {
         runOnUiThread(new Runnable() {
@@ -602,4 +580,41 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
             }
         });
     }
+
+
+    @Override
+    public void CallChooseImage() {
+        chooserType = ChooserType.REQUEST_PICK_PICTURE;
+        imageChooserManager = new ImageChooserManager(this,
+                ChooserType.REQUEST_PICK_PICTURE, true);
+        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager.clearOldFiles();
+        try {
+            //progressBar.setVisibility(View.VISIBLE);
+            imageChooserManager.choose();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void CallTakePicture() {
+        chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
+        imageChooserManager = new ImageChooserManager(this,
+                ChooserType.REQUEST_CAPTURE_PICTURE, true);
+        imageChooserManager.setImageChooserListener(this);
+        try {
+            //progressBar.setVisibility(View.VISIBLE);
+            imageChooserManager.choose();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
+
+
+

@@ -113,11 +113,11 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
     protected void onPostExecute(Integer result) {
 
-        if(result != null && result.equals(SUCCESSFUL)) {
+        if(result != null && result.equals(SUCCESSFUL) && mDBAsyncCallBack != null) {
 
             mDBAsyncCallBack.CallBackOnSuccessfull();
         }
-        else
+        else if(mDBAsyncCallBack != null)
         {
             mDBAsyncCallBack.CallBackOnFail();
         }

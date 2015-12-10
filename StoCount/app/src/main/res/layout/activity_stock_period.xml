@@ -25,8 +25,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="@dimen/keyline_margin"
-                    android:contentDescription="user photo"
-                    android:src="@mipmap/ic_google" />
+                    android:contentDescription="user photo"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"

@@ -180,11 +180,8 @@
         android:clickable="true"
         app:fab_expandDirection="down"
         app:fab_labelsPosition="left"
-        android:layout_marginBottom="122dp"
-        app:fab_labelStyle="@style/menu_labels_style"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end">
-
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabScanButton"

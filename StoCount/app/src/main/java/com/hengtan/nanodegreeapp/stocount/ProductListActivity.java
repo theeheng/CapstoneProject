@@ -88,6 +88,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private StockPeriod mStockPeriod;
 
+    private MenuItem mSearchItem;
+
+    private static final int EMPTY_VIEW = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +102,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         mStockPeriod = Application.getCurrentStockPeriod();
 
         init();
+
+        hideShowFab();
 
         getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
 
@@ -154,13 +160,16 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.action_search);
+        mSearchItem = menu.findItem(R.id.action_search);
 
-        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));
+        if(!Utilities.IsConnectedToInternet(this))
+        {
+            mSearchItem.setVisible(false);
+        }
+
+        searchView = (SearchView) MenuItemCompat.getActionView(mSearchItem);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         //searchView.setIconified(false);
 
@@ -225,6 +234,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     protected void onResume()
     {
         super.onResume();
+        hideShowFab();
         RefreshApiPreference();
         getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
     }
@@ -276,6 +286,30 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 }));
     }
 
+    private void hideShowFab()
+    {
+        if(Utilities.IsConnectedToInternet(this))
+        {
+            fabSearchButton.setVisibility(View.VISIBLE);
+            fabBarcodeButton.setVisibility(View.VISIBLE);
+
+            if(mSearchItem != null)
+            {
+                mSearchItem.setVisible(true);
+            }
+        }
+        else
+        {
+            fabSearchButton.setVisibility(View.GONE);
+            fabBarcodeButton.setVisibility(View.GONE);
+
+            if(mSearchItem != null)
+            {
+                mSearchItem.setVisible(false);
+            }
+        }
+    }
+
     private void RefreshApiPreference()
     {
         String tmpApiPreferenceCode = Application.GetApiCodeFromPreference();
@@ -296,6 +330,11 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         switch (id) {
             case PRODUCT_LOADER:
                 // Returns a new CursorLoader
+
+                if(mStockPeriod == null)
+                {
+                    mStockPeriod = Application.getCurrentStockPeriod();
+                }
                 return new CursorLoader(
                         this,
                         StoCountContract.ProductEntry.buildFullProductUri(mStockPeriod.getStockPeriodId()),
@@ -356,7 +395,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     }
 
-    static class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.MyViewHolder> {
+    static class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private Cursor mProductCursor;
         private Context mContext;
@@ -369,28 +408,40 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         }
 
         @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+
+            View v;
+
+            if (position == EMPTY_VIEW) {
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_view, parent, false);
+                EmptyViewHolder evh = new EmptyViewHolder(v);
+                return evh;
+            }
+
             return new MyViewHolder(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(MyViewHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-            if(mProductCursor != null) {
+            if(mProductCursor != null && holder instanceof MyViewHolder) {
+
+                MyViewHolder myViewHolder = (MyViewHolder) holder;
+
                 mProductCursor.moveToPosition(position);
-                holder.dataTextView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
-                holder.dataTextInfoView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO)));
-                holder.dataTextCount.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY)));
+                myViewHolder.dataTextView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
+                myViewHolder.dataTextInfoView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO)));
+                myViewHolder.dataTextCount.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY)));
 
                 String imageUrl = mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE));
 
                 if(imageUrl.isEmpty())
                 {
-                    Glide.with(this.mContext).load(android.R.drawable.ic_menu_gallery).fitCenter().into(holder.dataImageView);
+                    Glide.with(this.mContext).load(android.R.drawable.ic_menu_gallery).fitCenter().into(myViewHolder.dataImageView);
                 }
                 else {
-                    Glide.with(this.mContext).load(imageUrl).fitCenter().into(holder.dataImageView);
+                    Glide.with(this.mContext).load(imageUrl).fitCenter().into(myViewHolder.dataImageView);
                 }
             }
         }
@@ -398,9 +449,22 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         @Override
         public int getItemCount() {
             if(mProductCursor != null)
-                return mProductCursor.getCount();
+            {
+                if(mProductCursor.getCount() == 0)
+                    return 1;
+                else
+                    return mProductCursor.getCount();
+            }
             else
-                return 0;
+                return 1;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (mProductCursor != null && mProductCursor.getCount() == 0) {
+                return EMPTY_VIEW;
+            }
+            return super.getItemViewType(position);
         }
 
         public void remove(int position) {
@@ -412,7 +476,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             DBAsyncTask deleteAsyncTask = new DBAsyncTask(mContext.getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.DELETE, null);
             deleteAsyncTask.execute(prod);
 
-            ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, ((ProductListActivity)mContext));
+            ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, (ProductListActivity)mContext);
 
             notifyItemRemoved(position);
 
@@ -444,6 +508,11 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             }
         }
 
+        static class EmptyViewHolder extends RecyclerView.ViewHolder {
+            public EmptyViewHolder(View itemView) {
+                super(itemView);
+            }
+        }
 
         static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -457,7 +526,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 dataTextView = ((TextView) view.findViewById(R.id.txt_data));
                 dataTextInfoView = ((TextView) view.findViewById(R.id.txt_datainfo));
                 dataTextCount = ((TextView) view.findViewById(R.id.txt_datacount));
-                dataImageView =  ((ImageView) view.findViewById(R.id.img_data));
+                dataImageView = ((ImageView) view.findViewById(R.id.img_data));
             }
         }
     }

@@ -44,12 +44,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @InjectView(R.id.sign_in_button)
     protected SignInButton signInButton;
 
-    @InjectView(R.id.status)
-    protected TextView mStatusTextView;
-
-    @InjectView(R.id.google_icon)
-    protected ImageView mGoogleIcon;
-
     private ProgressDialog mProgressDialog;
 
     private GoogleSignInAccount mAccount;
@@ -68,18 +62,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -102,7 +84,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
         // difference.
 
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton.setSize(SignInButton.SIZE_WIDE);
+        signInButton.setColorScheme(SignInButton.COLOR_DARK);
         signInButton.setScopes(gso.getScopeArray());
     }
 
@@ -112,6 +95,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (opr.isDone()) {
+            showProgressDialog();
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
             // and the GoogleSignInResult will be available instantly.
             Log.d(TAG, "Got cached sign-in");
@@ -138,34 +122,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    @OnClick(R.id.sign_out_button)
-    protected void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // [START_EXCLUDE]
-                        updateUI(false);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-
-    /*
-    @OnClick(R.id.disconnect_button)
-    protected void revokeAccess() {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // [START_EXCLUDE]
-                        updateUI(false);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-    */
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -185,38 +141,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             mAccount = result.getSignInAccount();
 
             getLoaderManager().restartLoader(USER_LOADER, null, this);
-
-
-            /*mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-            Glide.with(this).load(acct.getPhotoUrl()).asBitmap().into(new BitmapImageViewTarget(mGoogleIcon) {
-                @Override
-                protected void setResource(Bitmap resource) {
-                    RoundedBitmapDrawable circularBitmapDrawable =
-                            RoundedBitmapDrawableFactory.create(LoginActivity.this.getResources(), resource);
-
-                    circularBitmapDrawable.setCornerRadius(Math.max(resource.getWidth(), resource.getHeight()) / 2.0f);
-                    //circularBitmapDrawable.setCircular(true);
-                    mGoogleIcon.setImageDrawable(circularBitmapDrawable);
-                }
-            });
-            updateUI(true);
-            */
-        } else {
-            // Signed out, show unauthenticated UI.
-            updateUI(false);
-        }
-    }
-
-    private void updateUI(boolean signedIn) {
-        if (signedIn) {
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-        } else {
-            mStatusTextView.setText(R.string.signed_out);
-
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
-            Glide.with(this).load(R.mipmap.ic_google).fitCenter().into(mGoogleIcon);
         }
     }
 
@@ -277,7 +201,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-
 
         switch (loader.getId()) {
             case USER_LOADER:

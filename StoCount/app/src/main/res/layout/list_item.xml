@@ -10,72 +10,70 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:height="@dimen/list_item_height"
-        >
+        android:height="@dimen/list_item_height">
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="26.17"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:height="@dimen/list_item_height"
-        >
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="left|bottom"
-        android:id="@+id/txt_data"
-        android:text="list item product name"
-        android:textStyle="bold"
-        android:paddingLeft="@dimen/list_item_padding_sides"
-        android:paddingRight="@dimen/list_item_padding_sides"
-        android:ellipsize="end"
-        android:maxLines="10"
-        android:singleLine="true"
-        android:background="@android:color/white"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="left|top"
-            android:id="@+id/txt_datainfo"
-            android:text="additional info"
-            android:paddingLeft="@dimen/list_item_padding_sides"
-            android:paddingRight="@dimen/list_item_padding_sides"
-            android:ellipsize="end"
-            android:maxLines="10"
-            android:singleLine="true"
-            android:background="@android:color/white"/>
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="@dimen/unspecified"
+            android:layout_weight="23.17"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:height="@dimen/list_item_height">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/unspecified"
+                android:layout_weight="1"
+                android:id="@+id/txt_data"
+                android:text="@string/cd_product_name"
+                android:contentDescription="@string/cd_product_name"
+                android:paddingLeft="@dimen/list_item_padding_sides"
+                android:paddingRight="@dimen/list_item_padding_sides"
+                android:gravity="left|bottom"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:singleLine="true"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/unspecified"
+                android:layout_weight="1"
+                android:gravity="left|top"
+                android:id="@+id/txt_datainfo"
+                android:text="@string/cd_additional_info"
+                android:contentDescription="@string/cd_additional_info"
+                android:paddingLeft="@dimen/list_item_padding_sides"
+                android:paddingRight="@dimen/list_item_padding_sides"
+                android:ellipsize="end"
+                android:singleLine="true"/>
+
+        </LinearLayout>
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="@dimen/unspecified"
             android:layout_weight="8"
             android:layout_height="match_parent"
-            android:gravity="right|center_vertical"
             android:id="@+id/txt_datacount"
-            android:text="25.234"
+            android:text="@string/cd_stock_count"
+            android:contentDescription="@string/cd_stock_count"
             android:paddingRight="@dimen/list_item_padding_sides"
+            android:gravity="right|center_vertical"
             android:ellipsize="end"
-            android:maxLines="9"
-            android:singleLine="true"
-            android:background="@android:color/white"/>
+            android:singleLine="true"/>
 
         <ImageView
             android:id="@+id/img_data"
-            android:layout_gravity="right"
+            android:contentDescription="@string/cd_product_image"
             android:layout_width="@dimen/list_item_height"
             android:layout_height="@dimen/list_item_height"
-            android:background="@android:color/white"/>
+            android:layout_gravity="right"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:weightSum="3"
         android:orientation="horizontal"
         android:visibility="gone"
-        android:weightSum="3"
         android:height="@dimen/list_item_height"
         android:paddingLeft="@dimen/list_item_padding_sides"
         android:paddingRight="@dimen/list_item_padding_sides">
@@ -83,22 +81,23 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:id="@+id/txt_delete"
-            android:gravity="center_vertical"
-            android:text="@string/deleted"
-            android:clickable="false"
             android:layout_weight="1"
-            android:hapticFeedbackEnabled="true"
-            android:textColor="@android:color/white"/>
+            android:id="@+id/txt_delete"
+            android:text="@string/deleted"
+            android:contentDescription="@string/deleted"
+            android:clickable="false"
+            android:gravity="center_vertical"
+            android:hapticFeedbackEnabled="true"/>
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="@dimen/unspecified"
             android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_weight="2"
             android:id="@+id/txt_undo"
             android:text="@string/undo"
+            android:contentDescription="@string/undo"
             android:clickable="false"
-            android:layout_weight="2"
+            android:gravity="center"
             android:textColor="@color/yellow"/>
 
         </LinearLayout>

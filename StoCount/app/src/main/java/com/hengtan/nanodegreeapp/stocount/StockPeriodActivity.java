@@ -2,6 +2,7 @@ package com.hengtan.nanodegreeapp.stocount;
 
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -63,6 +64,10 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
 
     private boolean mIsClosingStockCount = false;
 
+    private String mCloseStockPeriodStr;
+    private String mStockPeriodStartingStr;
+    private String mNoDateSelectionStr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +76,12 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Resources res = getResources();
+        mCloseStockPeriodStr = res.getString(R.string.cd_close_stock_period);
+        mStockPeriodStartingStr = res.getString(R.string.cd_stock_period_starting);
+        mNoDateSelectionStr = res.getString(R.string.no_date_selection);
+
 
         widget.setOnDateChangedListener(this);
         widget.setOnMonthChangedListener(this);
@@ -95,8 +106,10 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
 
             if(mStockPeriod != null)
             {
-                userName.setText("Close Stock Period");
-                userEmail.setText("Stock Period Starting : "+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
+                userName.setText(mCloseStockPeriodStr);
+                userName.setContentDescription(mCloseStockPeriodStr);
+                userEmail.setText(mStockPeriodStartingStr + mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
+                userEmail.setContentDescription(mStockPeriodStartingStr+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
                 userAvatar.setVisibility(View.GONE);
             }
         }
@@ -106,7 +119,9 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
 
             if(mUser != null) {
                 userName.setText(mUser.getDisplayName());
+                userName.setContentDescription(mUser.getDisplayName());
                 userEmail.setText(mUser.getEmail());
+                userEmail.setContentDescription(mUser.getEmail());
                 Glide.with(this).load(mUser.getPhotoUrl()).asBitmap().into(new BitmapImageViewTarget(userAvatar) {
                     @Override
                     protected void setResource(Bitmap resource) {
@@ -137,7 +152,7 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
     private String getSelectedDatesString() {
         CalendarDay date = widget.getSelectedDate();
         if (date == null) {
-            return "No Selection";
+            return mNoDateSelectionStr;
         }
         return FORMATTER.format(date.getDate());
     }

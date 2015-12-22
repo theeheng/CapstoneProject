@@ -25,7 +25,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="@dimen/keyline_margin"
-                    android:contentDescription="user photo"/>
+                    android:contentDescription="@string/cd_user_photo"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -37,19 +37,17 @@
                     android:id="@+id/user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="user name"
-                    android:gravity="center"
-                    android:textColor="@android:color/white"
-                    android:textSize="36sp" />
+                    android:text="@string/cd_user_name"
+                    android:contentDescription="@string/cd_user_name"
+                    style="@style/Theme.StockPeriod.HeaderTitle" />
 
                 <TextView
                     android:id="@+id/user_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="xxxx@xxx.com"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp" />
+                    android:text="@string/cd_user_email"
+                    android:contentDescription="@string/cd_user_email"
+                    style="@style/Theme.StockPeriod.SubHeaderTitle" />
 
                 </LinearLayout>
 
@@ -63,7 +61,8 @@
 
     <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end" android:layout_margin="@dimen/fab_margin"
+        android:layout_gravity="bottom|end" android:layout_margin="@dimen/keyline_content_end_with_fab"
+        android:contentDescription="@string/cd_fab_save_stock_period"
         android:src="@android:drawable/ic_menu_save" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
@@ -68,6 +69,14 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     private String mBarcodeResult;
     private String mBarcodeFormat;
 
+    private String mStockPeriodStartDateStr;
+    private String mErrorBarcodeStr;
+    private String mCancelledBarcodeStr;
+    private String mScannedBarcodeStr;
+    private String mSearchCriteriaBarcodeStr;
+    private String mSearchCriteriaProductIdStr;
+    private String mNoProductFoundStr;
+
     private Integer mSearchResultId;
 
     private GoogleApiClient mGoogleApiClient;
@@ -96,9 +105,19 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
         mStockPeriod = Application.getCurrentStockPeriod();
 
+        Resources res = getResources();
+
+        mStockPeriodStartDateStr = res.getString(R.string.cd_stock_period_start_date);
+        mErrorBarcodeStr = res.getString(R.string.error_barcode_text);
+        mCancelledBarcodeStr = res.getString(R.string.cancelled_barcode_text);
+        mScannedBarcodeStr = res.getString(R.string.scanned_barcode_log_text);
+        mSearchCriteriaBarcodeStr = res.getString(R.string.search_criteria_barcode);
+        mSearchCriteriaProductIdStr = res.getString(R.string.search_criteria_productid);
+        mNoProductFoundStr =  res.getString(R.string.no_product_found_toast_text);
+
         if (mStockPeriod != null) {
 
-            txtStockPeriodDate.setText("Current Stock Period Starting : "+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
+            txtStockPeriodDate.setText(mStockPeriodStartDateStr+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
 
         }
 
@@ -147,7 +166,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
             //intentIntegrator.setOrientationLocked(false);
             intentIntegrator.initiateScan();
         } catch (Exception ex) {
-            Log.e(TAG, "Error loading barcode scanning :" + ex.getMessage());
+            Log.e(TAG, mErrorBarcodeStr + ex.getMessage());
         }
     }
 
@@ -184,17 +203,16 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
             mSearchResultId = null;
 
             if (mBarcodeResult == null) {
-                Log.d(TAG, "Cancelled scan");
-                Toast.makeText(this, "Cancelled Scanning Barcode", Toast.LENGTH_LONG).show();
+                Log.d(TAG, mCancelledBarcodeStr);
+                Toast.makeText(this, mCancelledBarcodeStr, Toast.LENGTH_LONG).show();
             } else {
-                Log.d(TAG, "Scanned : " + mBarcodeResult);
+                Log.d(TAG, mScannedBarcodeStr + mBarcodeResult);
 
                 mBarcodeFormat = result.getFormatName(); // EAN_13 | UPC_A
                 String formatTypeResult = result.getType(); // PRODUCT | ISBN
                 searchProductFromDB();
             }
         } else {
-            Log.d(TAG, "Weird");
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -302,10 +320,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
             String searchCriteria = "";
 
             if(loader.getId() == PRODUCT_BARCODE_LOADER)
-                searchCriteria = "barcode :" + mBarcodeResult;
+                searchCriteria = mSearchCriteriaBarcodeStr + mBarcodeResult;
             else if(loader.getId() == PRODUCT_ID_LOADER)
-                searchCriteria = "productid :" + mSearchResultId.toString();
-            Toast.makeText(this, "No product found for " + searchCriteria, Toast.LENGTH_LONG).show();
+                searchCriteria = mSearchCriteriaProductIdStr + mSearchResultId.toString();
+            Toast.makeText(this, mNoProductFoundStr + searchCriteria, Toast.LENGTH_LONG).show();
         }
     }
 

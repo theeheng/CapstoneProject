@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -92,6 +93,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private static final int EMPTY_VIEW = 10;
 
+    private String mErrorBarcodeStr;
+    private String mCancelledBarcodeStr;
+    private String mScannedBarcodeStr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +124,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
+        Resources res = getResources();
+
+        mErrorBarcodeStr = res.getString(R.string.error_barcode_text);
+        mCancelledBarcodeStr = res.getString(R.string.cancelled_barcode_text);
+        mScannedBarcodeStr = res.getString(R.string.scanned_barcode_log_text);
     }
 
     @OnClick(R.id.fabManualButton)
@@ -151,7 +162,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             //intentIntegrator.setOrientationLocked(false);
             intentIntegrator.initiateScan();
         } catch (Exception ex) {
-            Log.e(TAG, "Error loading barcode scanning :" + ex.getMessage());
+            Log.e(TAG, mErrorBarcodeStr + ex.getMessage());
         }
     }
 
@@ -210,10 +221,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             final String barcodeScanResult = result.getContents();
 
             if (barcodeScanResult == null) {
-                Log.d(TAG, "Cancelled scan");
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+                Log.d(TAG, mCancelledBarcodeStr);
+                Toast.makeText(this, mCancelledBarcodeStr, Toast.LENGTH_LONG).show();
             } else {
-                Log.d(TAG, "Scanned : " + barcodeScanResult);
+                Log.d(TAG, mScannedBarcodeStr + barcodeScanResult);
 
                 String formatNameResult = result.getFormatName();
                 String formatTypeResult = result.getType();
@@ -221,10 +232,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 mApiCall.SearchProduct(barcodeScanResult, formatNameResult, null, this);
 
                 //SearchProductFromAmazonApi(barcodeScanResult, formatNameResult, formatTypeResult);
-                // SearchProductFromWalmartAPI(barcodeScanResult,null);
+                //SearchProductFromWalmartAPI(barcodeScanResult,null);
             }
         } else {
-            Log.d(TAG, "Weird");
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -259,11 +269,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                                 adapter.remove(position);
 
-                                //put delete product code here
-                                //
-                                //
-                                //
-                                //
                             }
                         });
 
@@ -431,8 +436,13 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                 mProductCursor.moveToPosition(position);
                 myViewHolder.dataTextView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
+                myViewHolder.dataTextView.setContentDescription(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)));
+
                 myViewHolder.dataTextInfoView.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO)));
+                myViewHolder.dataTextInfoView.setContentDescription(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO)));
+
                 myViewHolder.dataTextCount.setText(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY)));
+                myViewHolder.dataTextCount.setContentDescription(mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY)));
 
                 String imageUrl = mProductCursor.getString(mProductCursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE));
 

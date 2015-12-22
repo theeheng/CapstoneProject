@@ -1,15 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
 <TextView android:id="@+id/stockPeriodDate"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Stock Period Start Date"
+    android:text="@string/cd_stock_period_start_date"
     android:layout_centerHorizontal="true"
-    android:padding="16dp"/>
+    android:padding="@dimen/keyline_margin"/>
 
     <RelativeLayout
         android:background="@color/background"
@@ -20,48 +19,51 @@
 
     <Button
         android:id="@+id/scanButton"
-        android:text="Scan Product Barcode"
-        android:layout_width="150dp"
-        android:layout_height="120dp"
-        android:padding="16dp"
-        android:layout_margin="16dp"
+        android:text="@string/scan_btn_text"
+        android:contentDescription="@string/scan_btn_text"
+        android:layout_width="@dimen/home_button_width"
+        android:layout_height="@dimen/home_button_height"
+        android:padding="@dimen/keyline_margin"
+        android:layout_margin="@dimen/keyline_margin"
         android:drawableTop="@mipmap/ic_barcode"
         android:background="@color/blue_grey_500"/>
 
-
     <Button
         android:id="@+id/searchButton"
-        android:text="Search Product Name"
-        android:layout_width="150dp"
-        android:layout_height="120dp"
+        android:text="@string/search_btn_text"
+        android:contentDescription="@string/search_btn_text"
+        android:layout_width="@dimen/home_button_width"
+        android:layout_height="@dimen/home_button_height"
         android:layout_below="@+id/scanButton"
-        android:padding="16dp"
-        android:layout_margin="16dp"
+        android:padding="@dimen/keyline_margin"
+        android:layout_margin="@dimen/keyline_margin"
         android:drawableTop="@android:drawable/ic_menu_search"
         android:background="@color/blue_grey_500"/>
 
     <Button
         android:id="@+id/viewButton"
-        android:text="View Product List"
-        android:layout_width="150dp"
-        android:layout_height="120dp"
+        android:text="@string/view_btn_text"
+        android:contentDescription="@string/view_btn_text"
+        android:layout_width="@dimen/home_button_width"
+        android:layout_height="@dimen/home_button_height"
         android:layout_toRightOf=  "@+id/scanButton"
         android:drawableTop="@android:drawable/ic_menu_view"
         android:background="@color/blue_grey_500"
-        android:padding="16dp"
-        android:layout_margin="16dp"/>
+        android:padding="@dimen/keyline_margin"
+        android:layout_margin="@dimen/keyline_margin"/>
 
         <Button
             android:id="@+id/closeButton"
-            android:text="Close Stock Period"
-            android:layout_width="150dp"
-            android:layout_height="120dp"
+            android:text="@string/close_btn_text"
+            android:contentDescription="@string/close_btn_text"
+            android:layout_width="@dimen/home_button_width"
+            android:layout_height="@dimen/home_button_height"
             android:layout_below="@+id/viewButton"
             android:layout_toRightOf="@+id/searchButton"
             android:drawableTop="@android:drawable/ic_menu_view"
             android:background="@color/blue_grey_500"
-            android:padding="16dp"
-            android:layout_margin="16dp"/>
+            android:padding="@dimen/keyline_margin"
+            android:layout_margin="@dimen/keyline_margin"/>
 
     </RelativeLayout>
 

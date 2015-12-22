@@ -10,10 +10,12 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.hengtan.nanodegreeapp.stocount.Application;
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
 import com.hengtan.nanodegreeapp.stocount.R;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
+import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,10 +27,10 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     public static final String LOG_TAG = StackRemoteViewsFactory.class.getSimpleName();
     private int mProductCount = 0;
     private List<Product> mWidgetItems = new ArrayList<Product>();
+    private List<String> mWidgetItemStockCounts = new ArrayList<String>();
     private Context mContext;
     private int mAppWidgetId;
     private static int counter = 0;
-
     public StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -38,23 +40,43 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     private void setupWidgetData()
     {
         mProductCount = 0;
+        StockPeriod stockPeriod = null;
 
-        Cursor mCursor = mContext.getContentResolver().query(
-                StoCountContract.ProductEntry.CONTENT_URI,   // The content URI of the words table
+        Cursor cursor = mContext.getContentResolver().query(
+                StoCountContract.StockPeriodEntry.CONTENT_URI,   // The content URI of the words table
                 null,                        // The columns to return for each row
-                null,                    // Selection criteria
+                StoCountContract.StockPeriodEntry.END_DATE+" is null",                    // Selection criteria
                 null,                     // Selection criteria
                 null);
 
-        if(mCursor != null) {
-            while(mCursor.moveToNext()) {
-
-                mWidgetItems.add(new Product(mCursor));
-
-                mProductCount++;
+        if(cursor != null) {
+            if(cursor.moveToFirst())
+            {
+                stockPeriod = new StockPeriod(cursor);
             }
+
+            cursor.close();
         }
 
+        if(stockPeriod != null) {
+            cursor = mContext.getContentResolver().query(
+                    StoCountContract.ProductEntry.buildFullProductUri(stockPeriod.getStockPeriodId()),   // The content URI of the words table
+                    null,                        // The columns to return for each row
+                    null,                    // Selection criteria
+                    null,                     // Selection criteria
+                    null);
+
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+
+                    mWidgetItems.add(new Product(cursor));
+                    mWidgetItemStockCounts.add(cursor.getString(cursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY)));
+                    mProductCount++;
+                }
+
+                cursor.close();
+            }
+        }
         counter ++;
     }
 
@@ -78,8 +100,8 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
             rv.setContentDescription(R.id.txt_data, mWidgetItems.get(position).getName());
             rv.setTextViewText(R.id.txt_datainfo, mWidgetItems.get(position).getAdditionalInfo());
             rv.setContentDescription(R.id.txt_datainfo, mWidgetItems.get(position).getAdditionalInfo());
-            rv.setTextViewText(R.id.txt_datacount, "5");
-            rv.setContentDescription(R.id.txt_datacount, "5");
+            rv.setTextViewText(R.id.txt_datacount, mWidgetItemStockCounts.get(position));
+            rv.setContentDescription(R.id.txt_datacount, mWidgetItemStockCounts.get(position));
 
             try {
                 URL url = new URL(mWidgetItems.get(position).getThumbnailImage());

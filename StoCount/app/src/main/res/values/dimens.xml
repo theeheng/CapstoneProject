@@ -2,18 +2,28 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="g_top_margin">100dp</dimen>
+    <dimen name="keyline_margin">16dp</dimen>
+    <dimen name="keyline_content_start">56dp</dimen>
+    <dimen name="keyline_content_end_with_fab">32dp</dimen>
+
+    <!-- login activity -->
+    <dimen name="login_title_margin_bottom">48dp</dimen>
+
+    <!-- stock period activity -->
+    <dimen name="app_bar_height">144dp</dimen>
+    <dimen name="stock_period_header_margin_bottom">10dp</dimen>
+
+    <!-- home activiyty -->
+    <dimen name="home_button_width">150dp</dimen>
+    <dimen name="home_button_height">120dp</dimen>
+
+    <!-- product list acitivity -->
     <dimen name="list_item_padding_sides">16dp</dimen>
     <dimen name="list_item_height">80dp</dimen>
 
-    <dimen name="app_bar_height">144dp</dimen>
-    <!-- detail -->
-    <dimen name="toolbar_content_insertStart">0dp</dimen>
-    <dimen name="toolbar_collapsed_height">144dp</dimen>
-
+    <!-- detail activity -->
+    <dimen name="detail_collapsing_toolbar_margin_start">70dp</dimen>
     <dimen name="detail_metabar_title_bottom_padding">4dp</dimen>
-
     <dimen name="detail_header_title_height">126dp</dimen>
     <dimen name="detail_image_height">256dp</dimen>
     <dimen name="detail_title_text_size">20sp</dimen>
@@ -21,23 +31,14 @@
     <dimen name="detail_body_text_size">14sp</dimen>
     <item name="detail_header_line_spacing_multiplier" format="float" type="fraction">0.9</item>
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
-
-
     <dimen name="detail_backdrop_height">382dp</dimen>
+    <dimen name="detail_description_text_input_height">300dp</dimen>
 
-    <dimen name="fab_size">56dp</dimen>
-    <dimen name="fab_press_translation_z">12dp</dimen>
+    <!-- list item -->
+    <dimen name="unspecified">0dp</dimen>
 
-    <dimen name="flexi_appbar_height">168dp</dimen>
+    <!-- widget -->
+    <dimen name="widget_width">390dp</dimen>
+    <dimen name="widget_height">110dp</dimen>
 
-    <dimen name="keyline_margin">16dp</dimen>
-    <dimen name="keyline_content_start">56dp</dimen>
-    <dimen name="keyline_content_end_with_fab">32dp</dimen>
-
-
-    <dimen name="widget_margin">8dp</dimen>
-    <dimen name="widget_width">320dp</dimen>
-    <dimen name="widget_height">80dp</dimen>
-    <dimen name="WidgetTeamNames">8.5sp</dimen>
-    <dimen name="WidgetScore">15sp</dimen>
 </resources>

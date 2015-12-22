@@ -12,11 +12,8 @@
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:background="@drawable/widget_item_background"
-        android:textColor="#ffffff"
-        android:textStyle="bold"
-        android:text="empty view"
-        android:contentDescription="empty view"
-        android:textSize="20sp" />
+        android:text="@string/cd_emtpy_view"
+        android:contentDescription="@string/cd_emtpy_view"
+        style="@style/Theme.WidgetEmptyView.Title" />
 </FrameLayout>

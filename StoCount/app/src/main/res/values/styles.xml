@@ -11,12 +11,35 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <!-- Dark Buttons -->
-    <style name="ThemeOverlay.MyDarkButton" parent="ThemeOverlay.AppCompat.Dark">
-        <item name="colorButtonNormal">@color/blue_grey_500</item>
-        <item name="android:textColor">@android:color/white</item>
+    <!-- login activity -->
+    <style name="Theme.Login.HeaderTitle" parent="@android:style/TextAppearance.DeviceDefault.Large">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/login_title_margin_bottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">64sp</item>
     </style>
 
+    <!-- stock period activity -->
+    <style name="Theme.StockPeriod.HeaderTitle" parent="@android:style/TextAppearance.DeviceDefault.Large">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/stock_period_header_margin_bottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">36sp</item>
+    </style>
+    <style name="Theme.StockPeriod.SubHeaderTitle" parent="@android:style/TextAppearance.DeviceDefault.Medium">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- product list activity -->
     <style name="menu_labels_style">
         <item name="android:background">@color/blue_grey_700</item>
         <item name="android:textColor">@android:color/white</item>
@@ -24,17 +47,25 @@
         <item name="android:paddingRight">16dp</item>
     </style>
 
-    <style name="Theme.Bacon.Detail.HeaderTitle" parent="@android:style/TextAppearance.DeviceDefault.Large">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingBottom">@dimen/detail_metabar_title_bottom_padding</item>
-        <item name="android:fontFamily">Roboto-Condensed</item>
-        <item name="android:textColor">@color/theme_text_detail_header</item>
+    <!-- empty view -->
+    <style name="Theme.EmptyView.Title" parent="@android:style/TextAppearance.DeviceDefault.Medium">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:layout_marginTop">@dimen/keyline_margin</item>
+        <item name="android:gravity">center</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/detail_title_text_size</item>
-        <item name="android:lineSpacingMultiplier">@fraction/detail_header_line_spacing_multiplier</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
+    <!-- widget -->
+    <style name="Theme.WidgetEmptyView.Title" parent="@android:style/TextAppearance.DeviceDefault.Medium">
+        <item name="android:layout_marginTop">@dimen/keyline_margin</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+
+    <!-- detail activity -->
     <style name="toolbar_theme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="colorControlNormal">@color/blue_grey_500</item>
     </style>

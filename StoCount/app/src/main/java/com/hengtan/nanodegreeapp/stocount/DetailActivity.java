@@ -3,6 +3,7 @@ package com.hengtan.nanodegreeapp.stocount;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,9 +47,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by Eric on 15/6/1.
- */
 public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack, ImageChooserListener, ImageChooserDialogFragmentCallBack {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
@@ -129,6 +127,18 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     private String chooserImageFilePath;
     private String chooserThumbnailFilePath;
 
+    private String mProductNameHintStr;
+    private String mAdditionalInfoHintStr;
+    private String mProductCountHintStr;
+    private String mDescriptionHintStr;
+    private String mErrorBarcodeStr;
+    private String mCancelledBarcodeStr;
+    private String mScannedBarcodeStr;
+    private String mSaveSuccessfulToast;
+    private String mFailedSaveToast;
+    private String mSaveFabStr;
+    private String mEditFabStr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,6 +146,20 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
         ButterKnife.inject(this);
 
         initToolbar();
+
+        Resources res = getResources();
+
+        mErrorBarcodeStr = res.getString(R.string.error_barcode_text);
+        mCancelledBarcodeStr = res.getString(R.string.cancelled_barcode_text);
+        mScannedBarcodeStr = res.getString(R.string.scanned_barcode_log_text);
+        mProductNameHintStr = res.getString(R.string.cd_product_name);
+        mAdditionalInfoHintStr = res.getString(R.string.cd_additional_info);
+        mProductCountHintStr = res.getString(R.string.cd_stock_count);
+        mDescriptionHintStr = res.getString(R.string.cd_description);
+        mSaveSuccessfulToast = res.getString(R.string.save_successful_toast_text);
+        mFailedSaveToast = res.getString(R.string.failed_save_toast_text);
+        mSaveFabStr = res.getString(R.string.save_fab_text);
+        mEditFabStr = res.getString(R.string.edit_fab_text);
 
         mStockPeriod = Application.getCurrentStockPeriod();
 
@@ -207,9 +231,9 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
         productCount.setBackgroundResource(R.color.transparent);
         description.setBackgroundResource(R.color.transparent);
 
-        additionalInfoTextInputLayout.setHint("additional info");
-        productCountTextInputLayout.setHint("product count");
-        descriptionTextInputLayout.setHint("description");
+        additionalInfoTextInputLayout.setHint(mAdditionalInfoHintStr);
+        productCountTextInputLayout.setHint(mProductCountHintStr);
+        descriptionTextInputLayout.setHint(mDescriptionHintStr);
 
         showHideProductCount();
         ToogleFabButton();
@@ -370,7 +394,7 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
             //intentIntegrator.setOrientationLocked(false);
             intentIntegrator.initiateScan();
         } catch (Exception ex) {
-            Log.e(TAG, "Error loading barcode scanning :" + ex.getMessage());
+            Log.e(TAG, mErrorBarcodeStr + ex.getMessage());
         }
     }
 
@@ -402,24 +426,24 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
 
                 if(mIsEditable) {
                     editFabButton.setIcon(android.R.drawable.ic_menu_save);
-                    editFabButton.setTitle("Save");
+                    editFabButton.setTitle(mSaveFabStr);
                 }
                 else {
                     editFabButton.setIcon(android.R.drawable.ic_menu_edit);
-                    editFabButton.setTitle("Edit");
+                    editFabButton.setTitle(mEditFabStr);
                 }
 
             } else {
 
                 if(mIsEditable) {
                     editFabButton.setIcon(android.R.drawable.ic_menu_save);
-                    editFabButton.setTitle("Save");
+                    editFabButton.setTitle(mSaveFabStr);
                     scanFabButton.setEnabled(false);
                 }
                 else {
                     editFabButton.setIcon(android.R.drawable.ic_menu_edit);
                     scanFabButton.setEnabled(true);
-                    editFabButton.setTitle("Edit");
+                    editFabButton.setTitle(mEditFabStr);
                 }
             }
     }
@@ -428,7 +452,7 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
         mIsEditable = true;
 
         name.setKeyListener(nameListener);
-        nameTextInputLayout.setHint("product name");
+        nameTextInputLayout.setHint(mProductNameHintStr);
 
         additionalInfo.setKeyListener(additionalInfoListener);
         //additionalInfoTextInputLayout.setHint("additional info");
@@ -492,10 +516,10 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
             String barcodeResult = result.getContents();
 
             if (barcodeResult == null) {
-                Log.d(TAG, "Cancelled scan");
-                Toast.makeText(this, "Cancelled Scanning Barcode", Toast.LENGTH_LONG).show();
+                Log.d(TAG, mCancelledBarcodeStr);
+                Toast.makeText(this, mCancelledBarcodeStr, Toast.LENGTH_LONG).show();
             } else {
-                Log.d(TAG, "Scanned : " + barcodeResult);
+                Log.d(TAG, mScannedBarcodeStr + barcodeResult);
 
                 mProduct.setBarcode(barcodeResult);
                 mProduct.setBarcodeFormat(result.getFormatName());
@@ -512,7 +536,6 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
             imageChooserManager.submit(requestCode, data);
         }
         else {
-            Log.d(TAG, "Weird");
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -523,13 +546,12 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
         productCount.setVisibility(View.VISIBLE);
         productCountTextInputLayout.setVisibility(View.VISIBLE);
 
-        Toast.makeText(this, "Save Successful..........", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mSaveSuccessfulToast, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void CallBackOnFail() {
-        Toast.makeText(this, "FAILED To Save ..........",
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mFailedSaveToast, Toast.LENGTH_SHORT).show();
     }
 
     // Should be called if for some reason the ImageChooserManager is null (Due

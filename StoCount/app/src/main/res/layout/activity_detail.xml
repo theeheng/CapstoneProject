@@ -22,10 +22,9 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginStart="70dp"
+            app:expandedTitleMarginStart="@dimen/detail_collapsing_toolbar_margin_start"
             app:expandedTitleMarginBottom="@dimen/detail_image_height"
-            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
-            >
+            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title">
 
 
             <LinearLayout
@@ -39,10 +38,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/detail_image_height"
                     android:src="@mipmap/test"
+                    android:contentDescription="@string/cd_product_image"
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
-                    app:layout_collapseMode="parallax"
-                    />
+                    app:layout_collapseMode="parallax" />
 
                 <LinearLayout
                     android:id="@+id/meta_bar"
@@ -73,6 +72,7 @@
                             android:inputType="textMultiLine"
                             android:lines="2"
                             android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                            android:contentDescription="@string/cd_product_name"
                             />
 
                     </android.support.design.widget.TextInputLayout>
@@ -104,23 +104,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingBottom="16dp"
+            android:paddingBottom="@dimen/keyline_margin"
             android:paddingLeft="@dimen/keyline_content_start"
-            android:paddingRight="16dp">
+            android:paddingRight="@dimen/keyline_margin">
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_additionalinfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/keyline_margin"
                 android:focusable="true"
                 android:focusableInTouchMode="true">
 
                 <EditText
                     android:id="@+id/et_additionalinfo"
+                    android:contentDescription="@string/cd_additional_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp" />
+                    android:layout_marginTop="@dimen/keyline_margin" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -128,15 +129,16 @@
                 android:id="@+id/til_productcount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/keyline_margin"
                 android:focusable="true"
                 android:focusableInTouchMode="true">
 
                 <EditText
                     android:id="@+id/et_productcount"
+                    android:contentDescription="@string/cd_stock_count"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="@dimen/keyline_margin"
                     android:digits="0123456789."
                     android:inputType="numberDecimal"/>
 
@@ -146,19 +148,20 @@
                 android:id="@+id/description"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/keyline_margin"
                 android:textSize="18dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_description"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="@dimen/detail_description_text_input_height"
+                android:layout_marginTop="@dimen/keyline_margin"
                 android:focusable="true"
-                android:focusableInTouchMode="true">
+                android:focusableInTouchMode="true">ThemeOverlay.MyDarkButton
 
                 <EditText
                     android:id="@+id/et_description"
+                    android:contentDescription="@string/cd_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
@@ -176,7 +179,7 @@
         android:id="@+id/famDetailButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/keyline_content_end_with_fab"
         android:clickable="true"
         app:fab_expandDirection="down"
         app:fab_labelsPosition="left"
@@ -189,7 +192,8 @@
             android:layout_height="wrap_content"
             app:fab_icon="@mipmap/ic_barcode"
             app:fab_size="mini"
-            app:fab_title="change barcode"/>
+            app:fab_title="@string/change_barcode_fab_text"
+            android:contentDescription="@string/change_barcode_fab_text" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabEditButton"
@@ -197,13 +201,10 @@
             android:layout_height="wrap_content"
             app:fab_icon="@android:drawable/ic_menu_edit"
             app:fab_size="mini"
-            app:fab_title="edit"/>
+            app:fab_title="@string/edit_fab_text"
+            android:contentDescription="@string/edit_fab_text"/>
 
     </android.support.design.widget.SupportFloatingActionsMenu>
-
-
-
-
 </android.support.design.widget.CoordinatorLayout>
 
 

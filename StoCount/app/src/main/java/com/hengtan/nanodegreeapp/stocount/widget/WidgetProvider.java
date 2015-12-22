@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
+import com.hengtan.nanodegreeapp.stocount.LoginActivity;
 import com.hengtan.nanodegreeapp.stocount.R;
 
 public class WidgetProvider extends AppWidgetProvider {
@@ -47,7 +48,7 @@ public class WidgetProvider extends AppWidgetProvider {
             if(bundle.get(DetailActivity.PRODUCT_PARCELABLE) != null)
             {
                 bundle = (Bundle) bundle.get(DetailActivity.PRODUCT_PARCELABLE);
-                Intent mainActivityIntent = new Intent(context.getApplicationContext(), DetailActivity.class);
+                Intent mainActivityIntent = new Intent(context.getApplicationContext(), LoginActivity.class);
                 mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 mainActivityIntent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
                 context.startActivity(mainActivityIntent);

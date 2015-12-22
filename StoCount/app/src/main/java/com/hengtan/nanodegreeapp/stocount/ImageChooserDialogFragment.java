@@ -14,7 +14,7 @@ public class ImageChooserDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Select image source");
+        builder.setTitle(getResources().getString(R.string.image_chooser_title));
         builder.setItems(R.array.image_chooser_option, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int itemIndex) {
 

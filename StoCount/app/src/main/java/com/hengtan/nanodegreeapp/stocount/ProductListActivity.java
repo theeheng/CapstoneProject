@@ -134,7 +134,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     @OnClick(R.id.fabManualButton)
     public void onManualClick(View v) {
-        Product prod = new Product();
+        Product prod = new Product(getResources());
         Bundle bundle = new Bundle();
         bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
         Intent intent = new Intent(this, DetailActivity.class);

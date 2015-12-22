@@ -109,7 +109,8 @@ public class WalmartApiCall implements ApiCall {
                     ctx.startActivity(intent);
 
                 } else {
-                    Toast.makeText(ctx, "Product not found for : " + searchCriteria, Toast.LENGTH_LONG).show();
+                    Resources res = ctx.getResources();
+                    Toast.makeText(ctx, res.getText(R.string.product_not_found_toast_text) + searchCriteria, Toast.LENGTH_LONG).show();
                 }
             }
 

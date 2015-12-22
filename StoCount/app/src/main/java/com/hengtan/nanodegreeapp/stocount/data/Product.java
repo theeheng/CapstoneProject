@@ -2,6 +2,8 @@ package com.hengtan.nanodegreeapp.stocount.data;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
@@ -9,6 +11,7 @@ import android.os.Parcelable;
 
 import com.amazon.webservices.awsecommerceservice.ImageSet;
 import com.amazon.webservices.awsecommerceservice.Item;
+import com.hengtan.nanodegreeapp.stocount.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +35,12 @@ public class Product implements Parcelable {
 
     private List<String> mParcelableString;
 
-    public Product()
+    public Product(Resources res)
     {
         this.mProductId = null;
-        this.mName = "Enter Product Name";
-        this.mDescription = "Enter Description";
-        this.mAdditionalInfo = "Enter Additional Info";
+        this.mName = res.getString(R.string.product_default_name);
+        this.mDescription = res.getString(R.string.product_default_description);
+        this.mAdditionalInfo = res.getString(R.string.product_default_additional_info);
         this.mThumbnailImage = "";
         this.mLargeImage = "";
         this.mBarcode = "";

@@ -61,6 +61,9 @@
     <string name="image_source_camera">camera</string>
     <string name="image_source_gallery">image gallery</string>
 
+    <!-- ImageChooser Dialog Fragment -->
+    <string name="image_chooser_title">Select image source</string>
+
     <!-- Widget -->
     <string name="cd_emtpy_view">Empty View</string>
 
@@ -73,6 +76,9 @@
     <string name="search_hint">search by product name</string>
     <string name="search_setting_description">Product Name</string>
 
-
-
+    <!-- others -->
+    <string name="product_not_found_toast_text">Product not found for : </string>
+    <string name="product_default_name">Enter Product Name</string>
+    <string name="product_default_description">Enter Description</string>
+    <string name="product_default_additional_info">Enter Additional Info</string>
 </resources>

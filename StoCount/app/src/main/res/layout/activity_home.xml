@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,7 +10,6 @@
     android:padding="@dimen/keyline_margin"/>
 
     <RelativeLayout
-        android:background="@color/background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -26,7 +24,8 @@
         android:padding="@dimen/keyline_margin"
         android:layout_margin="@dimen/keyline_margin"
         android:drawableTop="@mipmap/ic_barcode"
-        android:background="@color/blue_grey_500"/>
+        android:background="@color/teal_500"
+        android:textColor="@color/text_light"/>
 
     <Button
         android:id="@+id/searchButton"
@@ -38,7 +37,8 @@
         android:padding="@dimen/keyline_margin"
         android:layout_margin="@dimen/keyline_margin"
         android:drawableTop="@android:drawable/ic_menu_search"
-        android:background="@color/blue_grey_500"/>
+        android:background="@color/teal_500"
+        android:textColor="@color/text_light"/>
 
     <Button
         android:id="@+id/viewButton"
@@ -48,7 +48,8 @@
         android:layout_height="@dimen/home_button_height"
         android:layout_toRightOf=  "@+id/scanButton"
         android:drawableTop="@android:drawable/ic_menu_view"
-        android:background="@color/blue_grey_500"
+        android:background="@color/teal_500"
+        android:textColor="@color/text_light"
         android:padding="@dimen/keyline_margin"
         android:layout_margin="@dimen/keyline_margin"/>
 
@@ -61,7 +62,8 @@
             android:layout_below="@+id/viewButton"
             android:layout_toRightOf="@+id/searchButton"
             android:drawableTop="@android:drawable/ic_menu_view"
-            android:background="@color/blue_grey_500"
+            android:background="@color/teal_500"
+            android:textColor="@color/text_light"
             android:padding="@dimen/keyline_margin"
             android:layout_margin="@dimen/keyline_margin"/>
 

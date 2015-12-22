@@ -1,7 +1,6 @@
 <RelativeLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,6 +25,8 @@
     android:layout_alignParentRight="true"
     android:layout_alignParentEnd="true"
     app:fab_labelStyle="@style/menu_labels_style"
+    app:fab_addButtonColorNormal="@color/accent_color"
+    app:fab_addButtonColorPressed="@color/accent_color_dark"
     android:layout_marginBottom="@dimen/keyline_margin"
     android:layout_marginRight="@dimen/keyline_margin"
     android:layout_marginEnd="@dimen/keyline_margin">
@@ -37,7 +38,9 @@
         app:fab_title="@string/manual_fab_text"
         android:contentDescription="@string/manual_fab_text"
         app:fab_icon="@android:drawable/ic_menu_edit"
-        app:fab_size="mini" />
+        app:fab_size="mini"
+        app:fab_colorNormal="@color/accent_color"
+        app:fab_colorPressed="@color/accent_color_dark" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabSearchButton"
@@ -46,7 +49,9 @@
         app:fab_title="@string/api_search_fab_text"
         android:contentDescription="@string/api_search_fab_text"
         app:fab_icon="@android:drawable/ic_menu_search"
-        app:fab_size="mini" />
+        app:fab_size="mini"
+        app:fab_colorNormal="@color/accent_color"
+        app:fab_colorPressed="@color/accent_color_dark" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabBarcodeButton"
@@ -55,7 +60,9 @@
         app:fab_icon="@mipmap/ic_barcode"
         app:fab_title="@string/api_scan_fab_text"
         android:contentDescription="@string/api_scan_fab_text"
-        app:fab_size="mini" />
+        app:fab_size="mini"
+        app:fab_colorNormal="@color/accent_color"
+        app:fab_colorPressed="@color/accent_color_dark" />
 
 </com.getbase.floatingactionbutton.FloatingActionsMenu>
 

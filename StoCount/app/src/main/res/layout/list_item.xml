@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/lyt_container"
-    android:background="@color/gray_background">
+    android:id="@+id/lyt_container">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -76,7 +75,8 @@
         android:visibility="gone"
         android:height="@dimen/list_item_height"
         android:paddingLeft="@dimen/list_item_padding_sides"
-        android:paddingRight="@dimen/list_item_padding_sides">
+        android:paddingRight="@dimen/list_item_padding_sides"
+        android:background="@color/teal_200">
 
         <TextView
             android:layout_width="0dp"
@@ -87,7 +87,8 @@
             android:contentDescription="@string/deleted"
             android:clickable="false"
             android:gravity="center_vertical"
-            android:hapticFeedbackEnabled="true"/>
+            android:hapticFeedbackEnabled="true"
+            android:textColor="@color/text_dark"/>
 
         <TextView
             android:layout_width="@dimen/unspecified"
@@ -98,7 +99,7 @@
             android:contentDescription="@string/undo"
             android:clickable="false"
             android:gravity="center"
-            android:textColor="@color/yellow"/>
+            android:textColor="@color/text_light"/>
 
         </LinearLayout>
 

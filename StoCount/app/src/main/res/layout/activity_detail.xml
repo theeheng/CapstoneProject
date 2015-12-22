@@ -47,7 +47,7 @@
                     android:id="@+id/meta_bar"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/detail_header_title_height"
-                    android:background="@color/blue_grey_900"
+                    android:background="@color/teal_500"
                     android:orientation="vertical"
                     android:paddingTop="@dimen/keyline_margin"
                     android:paddingLeft="@dimen/keyline_content_start"
@@ -67,7 +67,7 @@
                             android:id="@+id/et_name"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:textColor="@color/white"
+                            android:textColor="@color/text_light"
                             android:fitsSystemWindows="true"
                             android:inputType="textMultiLine"
                             android:lines="2"
@@ -181,6 +181,8 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/keyline_content_end_with_fab"
         android:clickable="true"
+        app:fab_addButtonColorNormal="@color/accent_color"
+        app:fab_addButtonColorPressed="@color/accent_color_dark"
         app:fab_expandDirection="down"
         app:fab_labelsPosition="left"
         app:layout_anchor="@id/appbar"
@@ -193,6 +195,8 @@
             app:fab_icon="@mipmap/ic_barcode"
             app:fab_size="mini"
             app:fab_title="@string/change_barcode_fab_text"
+            app:fab_colorNormal="@color/accent_color"
+            app:fab_colorPressed="@color/accent_color_dark"
             android:contentDescription="@string/change_barcode_fab_text" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -202,6 +206,8 @@
             app:fab_icon="@android:drawable/ic_menu_edit"
             app:fab_size="mini"
             app:fab_title="@string/edit_fab_text"
+            app:fab_colorNormal="@color/accent_color"
+            app:fab_colorPressed="@color/accent_color_dark"
             android:contentDescription="@string/edit_fab_text"/>
 
     </android.support.design.widget.SupportFloatingActionsMenu>

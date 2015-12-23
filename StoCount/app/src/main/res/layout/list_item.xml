@@ -25,7 +25,9 @@
                 android:id="@+id/txt_data"
                 android:text="@string/cd_product_name"
                 android:contentDescription="@string/cd_product_name"
+                android:paddingStart="@dimen/list_item_padding_sides"
                 android:paddingLeft="@dimen/list_item_padding_sides"
+                android:paddingEnd="@dimen/list_item_padding_sides"
                 android:paddingRight="@dimen/list_item_padding_sides"
                 android:gravity="left|bottom"
                 android:textStyle="bold"
@@ -40,8 +42,10 @@
                 android:id="@+id/txt_datainfo"
                 android:text="@string/cd_additional_info"
                 android:contentDescription="@string/cd_additional_info"
+                android:paddingStart="@dimen/list_item_padding_sides"
                 android:paddingLeft="@dimen/list_item_padding_sides"
                 android:paddingRight="@dimen/list_item_padding_sides"
+                android:paddingEnd="@dimen/list_item_padding_sides"
                 android:ellipsize="end"
                 android:singleLine="true"/>
 
@@ -54,6 +58,7 @@
             android:id="@+id/txt_datacount"
             android:text="@string/cd_stock_count"
             android:contentDescription="@string/cd_stock_count"
+            android:paddingEnd="@dimen/list_item_padding_sides"
             android:paddingRight="@dimen/list_item_padding_sides"
             android:gravity="right|center_vertical"
             android:ellipsize="end"
@@ -74,8 +79,10 @@
         android:orientation="horizontal"
         android:visibility="gone"
         android:height="@dimen/list_item_height"
+        android:paddingStart="@dimen/list_item_padding_sides"
         android:paddingLeft="@dimen/list_item_padding_sides"
         android:paddingRight="@dimen/list_item_padding_sides"
+        android:paddingEnd="@dimen/list_item_padding_sides"
         android:background="@color/teal_200">
 
         <TextView

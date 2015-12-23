@@ -51,7 +51,9 @@
                     android:orientation="vertical"
                     android:paddingTop="@dimen/keyline_margin"
                     android:paddingLeft="@dimen/keyline_content_start"
+                    android:paddingStart="@dimen/keyline_content_start"
                     android:paddingRight="@dimen/keyline_margin"
+                    android:paddingEnd="@dimen/keyline_margin"
                     android:paddingBottom="@dimen/keyline_margin"
                     android:fitsSystemWindows="true">
 
@@ -106,7 +108,9 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/keyline_margin"
             android:paddingLeft="@dimen/keyline_content_start"
-            android:paddingRight="@dimen/keyline_margin">
+            android:paddingStart="@dimen/keyline_content_start"
+            android:paddingRight="@dimen/keyline_margin"
+            android:paddingEnd="@dimen/keyline_margin">
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_additionalinfo"
@@ -180,6 +184,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/keyline_content_end_with_fab"
+        android:layout_marginEnd="@dimen/keyline_content_end_with_fab"
         android:clickable="true"
         app:fab_addButtonColorNormal="@color/accent_color"
         app:fab_addButtonColorPressed="@color/accent_color_dark"

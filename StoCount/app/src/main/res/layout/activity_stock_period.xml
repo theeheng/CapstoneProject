@@ -24,6 +24,7 @@
                     android:id="@+id/user_avatar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/keyline_margin"
                     android:paddingRight="@dimen/keyline_margin"
                     android:contentDescription="@string/cd_user_photo"/>
 

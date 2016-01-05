@@ -268,7 +268,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 // Returns a new CursorLoader
                 return new CursorLoader(
                         this,
-                        StoCountContract.ProductEntry.buildFullProductUri(mStockPeriod.getStockPeriodId()),
+                        StoCountContract.ProductEntry.buildCurrentProductUri(mStockPeriod.getStockPeriodId()),
                         null,
                         StoCountContract.ProductEntry.BARCODE + " = ? AND " + StoCountContract.ProductEntry.BARCODE_FORMAT + " = ? ",
                         new String[]{mBarcodeResult, mBarcodeFormat},
@@ -279,7 +279,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 // Returns a new CursorLoader
                 return new CursorLoader(
                         this,
-                        StoCountContract.ProductEntry.buildFullProductUri(mStockPeriod.getStockPeriodId()),
+                        StoCountContract.ProductEntry.buildCurrentProductUri(mStockPeriod.getStockPeriodId()),
                         null,
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID +" = ?",
                         new String[] {mSearchResultId.toString()},

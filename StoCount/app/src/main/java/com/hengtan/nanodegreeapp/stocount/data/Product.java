@@ -32,6 +32,7 @@ public class Product implements Parcelable {
     private String mAdditionalInfo;
     private String mBarcode;
     private String mBarcodeFormat;
+    private boolean mDeleted;
 
     private List<String> mParcelableString;
 
@@ -45,6 +46,7 @@ public class Product implements Parcelable {
         this.mLargeImage = "";
         this.mBarcode = "";
         this.mBarcodeFormat = "";
+        this.mDeleted = false;
     }
 
     public Product(Cursor cursor) {
@@ -57,11 +59,12 @@ public class Product implements Parcelable {
         this.mLargeImage = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.LARGE_IMAGE));
         this.mBarcode = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.BARCODE));
         this.mBarcodeFormat = cursor.getString(cursor.getColumnIndex(StoCountContract.ProductEntry.BARCODE_FORMAT));
+        this.mDeleted = cursor.getInt(cursor.getColumnIndex(StoCountContract.ProductEntry.DELETED)) == 1;
     }
 
     private enum ProductIndex
     {
-        PRODUCT_ID(0), PRODUCT_NAME(1), PRODUCT_DESCRIPTION(2), PRODUCT_THUMBNAILIMAGE(3), PRODUCT_LARGEIMAGE(4), PRODUCT_CATEGORY(5), PRODUCT_BARCODE(6), PRODUCT_BARCODEFORMAT(7);
+        PRODUCT_ID(0), PRODUCT_NAME(1), PRODUCT_DESCRIPTION(2), PRODUCT_THUMBNAILIMAGE(3), PRODUCT_LARGEIMAGE(4), PRODUCT_CATEGORY(5), PRODUCT_BARCODE(6), PRODUCT_BARCODEFORMAT(7), PRODUCT_DELETED(8);
 
         private int value;
 
@@ -85,6 +88,7 @@ public class Product implements Parcelable {
         this.mAdditionalInfo = tescoProduct.getPriceDescription();
         this.mBarcode = tescoProduct.getEANBarcode();
         this.mBarcodeFormat = "EAN_13";
+        this.mDeleted = false;
     }
 
     public Product(WalmartItems walmartProduct)
@@ -97,6 +101,7 @@ public class Product implements Parcelable {
         this.mAdditionalInfo = walmartProduct.categoryPath;
         this.mBarcode = walmartProduct.upc;
         this.mBarcodeFormat = "UPC_A";
+        this.mDeleted = false;
     }
 
     public Product(Item amazonItem)
@@ -147,6 +152,7 @@ public class Product implements Parcelable {
             }
         }
 
+        this.mDeleted = false;
 
         //UpdateUI(name, description, thumbnailUrl);
     }
@@ -172,6 +178,7 @@ public class Product implements Parcelable {
         this.mAdditionalInfo = mParcelableString.get(ProductIndex.PRODUCT_CATEGORY.ordinal());
         this.mBarcode = mParcelableString.get(ProductIndex.PRODUCT_BARCODE.ordinal());
         this.mBarcodeFormat = mParcelableString.get(ProductIndex.PRODUCT_BARCODEFORMAT.ordinal());
+        this.mDeleted = Boolean.parseBoolean(mParcelableString.get(ProductIndex.PRODUCT_DELETED.ordinal()));
     }
 
     public String getName()
@@ -274,7 +281,7 @@ public class Product implements Parcelable {
         values.add(ProductIndex.PRODUCT_CATEGORY.ordinal(),this.mAdditionalInfo);
         values.add(ProductIndex.PRODUCT_BARCODE.ordinal(),this.mBarcode);
         values.add(ProductIndex.PRODUCT_BARCODEFORMAT.ordinal(),this.mBarcodeFormat);
-
+        values.add(ProductIndex.PRODUCT_DELETED.ordinal(),Boolean.toString(this.mDeleted));
         dest.writeStringList(values);
     }
 
@@ -305,6 +312,7 @@ public class Product implements Parcelable {
         values.put(StoCountContract.ProductEntry.ADDITIONAL_INFO, this.mAdditionalInfo);
         values.put(StoCountContract.ProductEntry.BARCODE, this.mBarcode);
         values.put(StoCountContract.ProductEntry.BARCODE_FORMAT, this.mBarcodeFormat);
+        values.put(StoCountContract.ProductEntry.DELETED, (this.mDeleted) ? 1 : 0);
 
         if(IsAddingNewProduct())
         {
@@ -319,11 +327,17 @@ public class Product implements Parcelable {
 
     public int DeleteProduct(ContentResolver contentResolver) {
 
-        return contentResolver.delete(
+        ContentValues values = new ContentValues();
+        values.put(StoCountContract.ProductEntry.DELETED, 1);
+
+        return contentResolver.update(StoCountContract.ProductEntry.CONTENT_URI, values, StoCountContract.ProductEntry._ID + " = ? ", new String[]{this.mProductId.toString()});
+
+        /*return contentResolver.delete(
                 StoCountContract.ProductEntry.CONTENT_URI,
                 StoCountContract.ProductEntry._ID + " = ? ",
                 new String[] { this.mProductId.toString() }
         );
+        */
     }
 
     public boolean IsAddingNewProduct()

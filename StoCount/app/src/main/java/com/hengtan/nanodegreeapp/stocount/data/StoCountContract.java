@@ -18,8 +18,10 @@ public class StoCountContract {
     public static final String PATH_USERS = "users";
     public static final String PATH_PRODUCTS = "products";
     public static final String PATH_STOCK_PERIODS = "stockperiods";
+    public static final String PATH_PREVIOUS_STOCK_PERIODS = "previousstockperiods";
     public static final String PATH_PRODUCT_COUNTS = "books";
-    public static final String PATH_FULLPRODUCT = "fullproduct";
+    public static final String PATH_CURRENTPRODUCT = "currentproduct";
+    public static final String PATH_PREVIOUSPRODUCT = "previousproduct";
 
 
     public static final class UserEntry implements BaseColumns {
@@ -52,7 +54,9 @@ public class StoCountContract {
     public static final class ProductEntry implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_PRODUCTS).build();
 
-        public static final Uri FULL_CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FULLPRODUCT).build();
+        public static final Uri CURRENT_CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_CURRENTPRODUCT).build();
+
+        public static final Uri PREVIOUS_CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_PREVIOUSPRODUCT).build();
 
         public static final String CONTENT_TYPE =
                 "vnd.android.cursor.dir/" + CONTENT_AUTHORITY + "/" + PATH_PRODUCTS;
@@ -77,17 +81,25 @@ public class StoCountContract {
 
         public static final String BARCODE_FORMAT = "barcodeformat";
 
+        public static final String DELETED = "deleted";
+
         public static Uri buildProductUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        public static Uri buildFullProductUri(long id) {
-            return ContentUris.withAppendedId(FULL_CONTENT_URI, id);
+        public static Uri buildCurrentProductUri(long id) {
+            return ContentUris.withAppendedId(CURRENT_CONTENT_URI, id);
+        }
+
+        public static Uri buildPreviousProductUri(long id) {
+            return ContentUris.withAppendedId(PREVIOUS_CONTENT_URI, id);
         }
     }
 
     public static final class StockPeriodEntry implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_STOCK_PERIODS).build();
+
+        public static final Uri PREVIOUS_CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_PREVIOUS_STOCK_PERIODS).build();
 
         public static final String CONTENT_TYPE =
                 "vnd.android.cursor.dir/" + CONTENT_AUTHORITY + "/" + PATH_STOCK_PERIODS;
@@ -105,7 +117,6 @@ public class StoCountContract {
         public static Uri buildStockPeriodUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
     }
 
     public static final class ProductCountEntry implements BaseColumns {

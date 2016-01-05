@@ -59,7 +59,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
         if(stockPeriod != null) {
             cursor = mContext.getContentResolver().query(
-                    StoCountContract.ProductEntry.buildFullProductUri(stockPeriod.getStockPeriodId()),   // The content URI of the words table
+                    StoCountContract.ProductEntry.buildCurrentProductUri(stockPeriod.getStockPeriodId()),   // The content URI of the words table
                     null,                        // The columns to return for each row
                     null,                    // Selection criteria
                     null,                     // Selection criteria

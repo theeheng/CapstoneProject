@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by hengtan on 29/11/2015.
  */
-public class StockPeriod implements Parcelable {
+public class StockPeriod implements Parcelable, Cloneable {
 
     private Integer mStockPeriodId;
     private Date mStartDate;
@@ -173,6 +173,10 @@ public class StockPeriod implements Parcelable {
             mStockPeriodId = Integer.parseInt(result.getLastPathSegment());
         }
 
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
 

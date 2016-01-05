@@ -112,10 +112,12 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     private String productCountOriginalText;
     private String descriptionOriginalText;
 
+    private boolean mPreivousStockPeriod = false;
     private boolean mIsEditable = false;
     private boolean mIsStockCountEntry = false;
     public static final String PRODUCT_PARCELABLE = "PRODUCTPARCELABLE";
     public static final String PRODUCT_COUNT_PARCELABLE = "PRODUCTCOUNTPARCELABLE";
+    public static final String IS_PREVIOUS_STOCK_PERIOD = "ISPREVIOUSSTOCKPERIOD";
     public static final String IS_STOCK_ENTRY_EXTRA = "ISSTOCKENTRYEXTRA";
 
     private Product mProduct;
@@ -178,6 +180,8 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
                 mProduct = bundle.getParcelable(PRODUCT_PARCELABLE);
                 mProductCount = bundle.getParcelable(PRODUCT_COUNT_PARCELABLE);
             }
+
+            mPreivousStockPeriod =  intent.getBooleanExtra(IS_PREVIOUS_STOCK_PERIOD, false);
 
             mIsStockCountEntry = intent.getBooleanExtra(IS_STOCK_ENTRY_EXTRA, false);
         }
@@ -433,7 +437,13 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
                     editFabButton.setTitle(mEditFabStr);
                 }
 
-            } else {
+            } else if(mPreivousStockPeriod) {
+                famButton.setEnabled(false);
+                famButton.setVisibility(View.GONE);
+                editFabButton.setEnabled(false);
+                scanFabButton.setEnabled(false);
+            }
+            else{
 
                 if(mIsEditable) {
                     editFabButton.setIcon(android.R.drawable.ic_menu_save);

@@ -37,6 +37,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 StoCountContract.ProductEntry.ADDITIONAL_INFO + " TEXT," +
                 StoCountContract.ProductEntry.BARCODE + " TEXT," +
                 StoCountContract.ProductEntry.BARCODE_FORMAT + " TEXT," +
+                StoCountContract.ProductEntry.DELETED + " BOOLEAN," +
                 " FOREIGN KEY (" + StoCountContract.ProductEntry._ID + ") REFERENCES " +
                 StoCountContract.ProductCountEntry.TABLE_NAME + " (" + StoCountContract.ProductCountEntry._ID + "))";
 

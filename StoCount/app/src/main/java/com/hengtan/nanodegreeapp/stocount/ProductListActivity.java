@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import android.support.v4.view.MenuItemCompat;
@@ -23,7 +24,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +57,10 @@ import butterknife.OnClick;
 
 import android.app.LoaderManager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ProductListActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = ProductListActivity.class.getSimpleName();
@@ -69,8 +77,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @InjectView(R.id.fabBarcodeButton)
     protected FloatingActionButton fabBarcodeButton;
 
+    @InjectView(R.id.stockPeriodSpinner)
+    protected Spinner mStockPeriodSpinner;
+
     @InjectView(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
+
 
     private SearchView searchView;
 
@@ -78,8 +90,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private ProductListAdapter adapter;
 
+    private StockPeriodSpinnerAdapter spinnerAdapter;
+
     // Identifies a particular Loader being used in this component
     private static final int PRODUCT_LOADER = 0;
+
+    private static final int PREVIOUS_STOCK_LOADER = 1;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -87,7 +103,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private ApiCall mApiCall;
 
-    private StockPeriod mStockPeriod;
+    private StockPeriod mCurrentStockPeriod;
+
+    private StockPeriod mSelectedStockPeriod;
 
     private MenuItem mSearchItem;
 
@@ -104,13 +122,13 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         ButterKnife.inject(this);
         mApiCode = Application.GetApiCodeFromPreference();
         mApiCall = Application.GetApiCallFromPreference(mApiCode);
-        mStockPeriod = Application.getCurrentStockPeriod();
+        mCurrentStockPeriod = Application.getCurrentStockPeriod();
 
         init();
 
         hideShowFab();
 
-        getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
+        getLoaderManager().restartLoader(PREVIOUS_STOCK_LOADER, null, this);
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -253,7 +271,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        adapter = new ProductListAdapter(this, mStockPeriod);
+        adapter = new ProductListAdapter(this, mCurrentStockPeriod);
         mRecyclerView.setAdapter(adapter);
         final SwipeToDismissTouchListener<RecyclerViewAdapter> touchListener =
                 new SwipeToDismissTouchListener<>(
@@ -289,6 +307,34 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                         }
                     }
                 }));
+
+        spinnerAdapter = new StockPeriodSpinnerAdapter(this, mCurrentStockPeriod);
+
+        mStockPeriodSpinner.setAdapter(spinnerAdapter);
+
+        mStockPeriodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            /**
+             * Called when a new item was selected (in the Spinner)
+             */
+            public void onItemSelected(AdapterView<?> parent,
+                                       View view, int pos, long id) {
+                mSelectedStockPeriod = (StockPeriod) parent.getItemAtPosition(pos);
+
+                //inAnimation = new AlphaAnimation(0f, 1f);
+                //inAnimation.setDuration(200);
+                //progressBarHolder.setAnimation(inAnimation);
+                //progressBarHolder.setVisibility(View.VISIBLE);
+                getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
+            }
+
+
+            public void onNothingSelected(AdapterView parent) {
+                // Do nothing.
+            }
+        });
+
+
+
     }
 
     private void hideShowFab()
@@ -336,18 +382,43 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             case PRODUCT_LOADER:
                 // Returns a new CursorLoader
 
-                if(mStockPeriod == null)
+                if(mSelectedStockPeriod == null)
                 {
-                    mStockPeriod = Application.getCurrentStockPeriod();
+                    mSelectedStockPeriod = Application.getCurrentStockPeriod();
                 }
+
+                if(mCurrentStockPeriod.getStockPeriodId() == mSelectedStockPeriod.getStockPeriodId()) {
+                    return new CursorLoader(
+                            this,
+                            StoCountContract.ProductEntry.buildCurrentProductUri(mSelectedStockPeriod.getStockPeriodId()),
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                }
+                else
+                {
+                    return new CursorLoader(
+                            this,
+                            StoCountContract.ProductEntry.buildPreviousProductUri(mSelectedStockPeriod.getStockPeriodId()),
+                            null,
+                            null,
+                            null,
+                            null
+                    );
+                }
+
+            case PREVIOUS_STOCK_LOADER:
                 return new CursorLoader(
                         this,
-                        StoCountContract.ProductEntry.buildFullProductUri(mStockPeriod.getStockPeriodId()),
+                        StoCountContract.StockPeriodEntry.PREVIOUS_CONTENT_URI,
                         null,
                         null,
                         null,
                         null
                 );
+
             default:
                 // An invalid id was passed in
                 return null;
@@ -357,8 +428,19 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        adapter.swapCursor(data);
-        adapter.notifyDataSetChanged();
+        switch (loader.getId())
+        {
+            case PRODUCT_LOADER:
+                adapter.swapCursor(data, mSelectedStockPeriod);
+                adapter.notifyDataSetChanged();
+                break;
+            case PREVIOUS_STOCK_LOADER:
+                spinnerAdapter.swapCursor(data);
+                spinnerAdapter.notifyDataSetChanged();
+                mStockPeriodSpinner.setSelection(spinnerAdapter.getCount()-1);
+                break;
+        }
+
         //if (position != ListView.INVALID_POSITION) {
         //    bookList.smoothScrollToPosition(position);
         //}
@@ -404,12 +486,14 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
         private Cursor mProductCursor;
         private Context mContext;
-        private StockPeriod mStockPeriod;
+        private StockPeriod mCurrentStockPeriod;
+        private StockPeriod mSelectedStockPeriod;
+
 
         ProductListAdapter(Context context, StockPeriod stockPeriod) {
             this.mProductCursor = null;
             this.mContext = context;
-            this.mStockPeriod = stockPeriod;
+            this.mCurrentStockPeriod = stockPeriod;
         }
 
         @Override
@@ -479,22 +563,29 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
         public void remove(int position) {
 
-            mProductCursor.moveToPosition(position);
+            if(mCurrentStockPeriod.getStockPeriodId() == mSelectedStockPeriod.getStockPeriodId()) {
+                mProductCursor.moveToPosition(position);
 
-            Product prod = new Product(mProductCursor);
+                Product prod = new Product(mProductCursor);
 
-            DBAsyncTask deleteAsyncTask = new DBAsyncTask(mContext.getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.DELETE, null);
-            deleteAsyncTask.execute(prod);
+                DBAsyncTask deleteAsyncTask = new DBAsyncTask(mContext.getContentResolver(), DBAsyncTask.ObjectType.PRODUCT, DBAsyncTask.OperationType.DELETE, null);
+                deleteAsyncTask.execute(prod);
 
-            ((Activity)mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, (ProductListActivity)mContext);
+                ((Activity) mContext).getLoaderManager().restartLoader(PRODUCT_LOADER, null, (ProductListActivity) mContext);
 
-            notifyItemRemoved(position);
+                notifyItemRemoved(position);
+            }
+            else
+            {
+                Toast.makeText(mContext, "Unable delete product for previous stock period.", Toast.LENGTH_LONG).show();
+            }
 
         }
 
-        public void swapCursor(Cursor cursor)
+        public void swapCursor(Cursor cursor, StockPeriod stockPeriod)
         {
             this.mProductCursor = cursor;
+            this.mSelectedStockPeriod = stockPeriod;
         }
 
         public void onItemclicked(int position)
@@ -513,6 +604,16 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+
+
+                if(mCurrentStockPeriod.getStockPeriodId() != mSelectedStockPeriod.getStockPeriodId()) {
+                    intent.putExtra(DetailActivity.IS_PREVIOUS_STOCK_PERIOD, true);
+                }
+                else
+                {
+                    intent.putExtra(DetailActivity.IS_PREVIOUS_STOCK_PERIOD, false);
+                }
+
                 mContext.startActivity(intent);
 
             }
@@ -541,4 +642,111 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         }
     }
 
+}
+
+
+class StockPeriodSpinnerAdapter extends BaseAdapter
+{
+    private Cursor mStockPeriodCursor;
+    private Context mContext;
+    private StockPeriod mCurrentPeriod;
+    private LayoutInflater mInflater;
+
+    StockPeriodSpinnerAdapter(Context context, StockPeriod stockPeriod) {
+        this.mStockPeriodCursor = null;
+        this.mContext = context;
+        this.mInflater = LayoutInflater.from(context);
+
+        try {
+            this.mCurrentPeriod = (StockPeriod) stockPeriod.clone();
+        } catch (CloneNotSupportedException ex) {
+
+        }
+    }
+
+    public void swapCursor(Cursor cursor)
+    {
+        this.mStockPeriodCursor = cursor;
+    }
+
+
+    @Override
+    public int getCount() {
+        if(mStockPeriodCursor != null)
+        {
+            return mStockPeriodCursor.getCount() + 1;
+        }
+        else
+            return 1;
+    }
+
+    @Override
+    public Object getItem(int i) {
+
+        if (mStockPeriodCursor != null) {
+
+            if(mStockPeriodCursor.getCount() > i) {
+                mStockPeriodCursor.moveToPosition(i);
+                return new StockPeriod(mStockPeriodCursor);
+            }
+            else
+            {
+                return mCurrentPeriod;
+            }
+        }
+        else
+            return null;
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    @Override
+    public View getView(int i, View view, ViewGroup viewGroup) {
+        ViewHolder holder=null;
+
+        if(view==null ||  view.getTag() == null ) {
+            view = mInflater.inflate(R.layout.stock_period_spinner_item,viewGroup,false);
+
+            holder = new ViewHolder();
+
+            holder.txtStockPeriodDate=(TextView)view.findViewById(R.id.stockPeriodSpinnerItemDate);
+            holder.txtStockPeriodId=(TextView)view.findViewById(R.id.stockPeriodSpinnerItemId);
+
+            if(i==0)
+            {
+                view.setTag(holder);
+            }
+
+        }
+        else
+        {
+            holder = (ViewHolder) view.getTag();
+        }
+
+        if (mStockPeriodCursor != null) {
+            if(mStockPeriodCursor.getCount() > i) {
+                mStockPeriodCursor.moveToPosition(i);
+                StockPeriod sp = new StockPeriod(mStockPeriodCursor);
+                holder.txtStockPeriodDate.setText(sp.DateFormat.format(sp.getStartDate()) + " - " + sp.DateFormat.format(sp.getEndDate()));
+                holder.txtStockPeriodId.setText(sp.getStockPeriodId().toString());
+            }
+            else
+            {
+                holder.txtStockPeriodDate.setText("Current Period Starting: "+mCurrentPeriod.DateFormat.format(mCurrentPeriod.getStartDate()));
+                holder.txtStockPeriodId.setText(mCurrentPeriod.getStockPeriodId().toString());
+            }
+        }
+
+        return view;
+    }
+}
+
+class ViewHolder
+{
+    TextView txtStockPeriodDate;
+
+    TextView txtStockPeriodId;
 }

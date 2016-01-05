@@ -26,20 +26,30 @@ public class StoCountProvider extends ContentProvider {
     private static final int PRODUCT_COUNT_ID = 400;
     private static final int PRODUCT_COUNT = 401;
 
-    private static final int PRODUCT_FULL = 500;
-    //private static final int PRODUCT_FULLDETAIL = 501;
+    private static final int PRODUCT_CURRENT = 500;
+    private static final int PRODUCT_PREVIOUS = 501;
+
+    private static final int STOCK_PERIOD_PREVIOUS = 600;
 
     private static final UriMatcher uriMatcher = buildUriMatcher();
 
     private DbHelper dbHelper;
 
-    private static final SQLiteQueryBuilder productFull;
+    private static final SQLiteQueryBuilder productCurrent;
+    private static final SQLiteQueryBuilder productPrevious;
 
     static{
-        productFull = new SQLiteQueryBuilder();
-        productFull.setTables(
+        productCurrent = new SQLiteQueryBuilder();
+        productCurrent.setTables(
+                StoCountContract.StockPeriodEntry.TABLE_NAME + " JOIN " +
                 StoCountContract.ProductEntry.TABLE_NAME + " LEFT OUTER JOIN " +
-                StoCountContract.ProductCountEntry.TABLE_NAME + " ON (" + StoCountContract.ProductEntry.TABLE_NAME+"."+StoCountContract.ProductEntry._ID + " = "+ StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.PRODUCT_ID  +")");
+                StoCountContract.ProductCountEntry.TABLE_NAME + " ON (" + StoCountContract.ProductEntry.TABLE_NAME+"."+StoCountContract.ProductEntry._ID + " = "+ StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.PRODUCT_ID  +" AND "+StoCountContract.StockPeriodEntry.TABLE_NAME+"."+StoCountContract.StockPeriodEntry._ID + " = "+ StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " )");
+
+        productPrevious = new SQLiteQueryBuilder();
+        productPrevious.setTables(
+                StoCountContract.ProductEntry.TABLE_NAME + " INNER JOIN " +
+                        StoCountContract.ProductCountEntry.TABLE_NAME + " ON (" + StoCountContract.ProductEntry.TABLE_NAME+"."+StoCountContract.ProductEntry._ID + " = "+ StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.PRODUCT_ID  +" )");
+
     }
 
 
@@ -58,7 +68,9 @@ public class StoCountProvider extends ContentProvider {
         matcher.addURI(authority, StoCountContract.PATH_STOCK_PERIODS, STOCK_PERIOD);
         matcher.addURI(authority, StoCountContract.PATH_PRODUCT_COUNTS, PRODUCT_COUNT);
 
-        matcher.addURI(authority, StoCountContract.PATH_FULLPRODUCT +"/#", PRODUCT_FULL);
+        matcher.addURI(authority, StoCountContract.PATH_CURRENTPRODUCT +"/#", PRODUCT_CURRENT);
+        matcher.addURI(authority, StoCountContract.PATH_PREVIOUSPRODUCT +"/#", PRODUCT_PREVIOUS);
+        matcher.addURI(authority, StoCountContract.PATH_PREVIOUS_STOCK_PERIODS, STOCK_PERIOD_PREVIOUS);
         //matcher.addURI(authority, StoCountContract.PATH_FULLPRODUCT, PRODUCT_FULL);
 
         return matcher;
@@ -74,6 +86,10 @@ public class StoCountProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor retCursor;
+
+        String[] bf_projection = null;
+        String bf_selection;
+
         switch (uriMatcher.match(uri)) {
             case USER:
                 retCursor=dbHelper.getReadableDatabase().query(
@@ -179,8 +195,8 @@ public class StoCountProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;*/
-            case PRODUCT_FULL:
-                String[] bf_projection ={
+            case PRODUCT_CURRENT:
+                bf_projection = new String[] {
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID,
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.PRODUCT_NAME,
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.DESCRIPTION,
@@ -189,6 +205,7 @@ public class StoCountProvider extends ContentProvider {
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.LARGE_IMAGE,
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.BARCODE,
                         StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.BARCODE_FORMAT,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.DELETED,
                         StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry._ID,
                         StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID,
                         StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.QUANTITY,
@@ -196,18 +213,18 @@ public class StoCountProvider extends ContentProvider {
                         //"group_concat(DISTINCT " + StoCountContract.ProductCountEntry.TABLE_NAME+ "."+ StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + ") as " + StoCountContract.AuthorEntry.AUTHOR
                 };
 
-                String bf_selection = null;
+                bf_selection = null;
 
                 if(selection != null && !selection.isEmpty())
                 {
-                    bf_selection = "("+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = '" + ContentUris.parseId(uri) + "' OR "+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID+" is null) AND "+selection;
+                    bf_selection = "("+StoCountContract.StockPeriodEntry.TABLE_NAME + "." + StoCountContract.StockPeriodEntry._ID + " = '" + ContentUris.parseId(uri) + "' AND "+StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.DELETED + " = 0 ) AND "+selection;
                 }
                 else
                 {
-                    bf_selection = StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = '" + ContentUris.parseId(uri) + "' OR "+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID+" is null ";
+                    bf_selection = StoCountContract.StockPeriodEntry.TABLE_NAME + "." + StoCountContract.StockPeriodEntry._ID + " = '" + ContentUris.parseId(uri) + "' AND "+StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.DELETED + " = 0 ";
                 }
 
-                retCursor = productFull.query(dbHelper.getReadableDatabase(),
+                retCursor = productCurrent.query(dbHelper.getReadableDatabase(),
                         bf_projection,
                         bf_selection,
                         selectionArgs,
@@ -216,6 +233,56 @@ public class StoCountProvider extends ContentProvider {
                         sortOrder);
                 break;
 
+            case PRODUCT_PREVIOUS:
+                bf_projection = new String[] {
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.PRODUCT_NAME,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.DESCRIPTION,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.ADDITIONAL_INFO,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.THUMBNAIL_IMAGE,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.LARGE_IMAGE,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.BARCODE,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.BARCODE_FORMAT,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.DELETED,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry._ID,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.QUANTITY,
+                        StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.COUNT_DATE
+                        //"group_concat(DISTINCT " + StoCountContract.ProductCountEntry.TABLE_NAME+ "."+ StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + ") as " + StoCountContract.AuthorEntry.AUTHOR
+                };
+
+                bf_selection = null;
+
+                if(selection != null && !selection.isEmpty())
+                {
+                    bf_selection = "("+StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = '" + ContentUris.parseId(uri) + "') AND "+selection;
+                }
+                else
+                {
+                    bf_selection = StoCountContract.ProductCountEntry.TABLE_NAME + "." + StoCountContract.ProductCountEntry.STOCK_PERIOD_ID + " = '" + ContentUris.parseId(uri) + "'";
+                }
+
+                retCursor = productPrevious.query(dbHelper.getReadableDatabase(),
+                        bf_projection,
+                        bf_selection,
+                        selectionArgs,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry._ID,
+                        null,
+                        sortOrder);
+                break;
+
+            case STOCK_PERIOD_PREVIOUS :
+
+                retCursor=dbHelper.getReadableDatabase().query(
+                        StoCountContract.StockPeriodEntry.TABLE_NAME,
+                        projection,
+                        StoCountContract.StockPeriodEntry.END_DATE + " is not null ",
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

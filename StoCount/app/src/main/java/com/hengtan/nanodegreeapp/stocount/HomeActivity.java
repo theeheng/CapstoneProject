@@ -117,7 +117,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
         if (mStockPeriod != null) {
 
-            txtStockPeriodDate.setText(mStockPeriodStartDateStr+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
+            txtStockPeriodDate.setText(mStockPeriodStartDateStr+" "+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
 
         }
 
@@ -320,10 +320,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
             String searchCriteria = "";
 
             if(loader.getId() == PRODUCT_BARCODE_LOADER)
-                searchCriteria = mSearchCriteriaBarcodeStr + mBarcodeResult;
+                searchCriteria = mSearchCriteriaBarcodeStr + " " +mBarcodeResult;
             else if(loader.getId() == PRODUCT_ID_LOADER)
-                searchCriteria = mSearchCriteriaProductIdStr + mSearchResultId.toString();
-            Toast.makeText(this, mNoProductFoundStr + searchCriteria, Toast.LENGTH_LONG).show();
+                searchCriteria = mSearchCriteriaProductIdStr + " " +mSearchResultId.toString();
+            Toast.makeText(this, mNoProductFoundStr + " " +searchCriteria, Toast.LENGTH_LONG).show();
         }
     }
 

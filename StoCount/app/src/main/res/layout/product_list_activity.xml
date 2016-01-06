@@ -1,25 +1,47 @@
-<RelativeLayout
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:fitsSystemWindows="true"
+    tools:context="com.hengtan.nanodegreeapp.stocount.StockPeriodActivity">
 
-<LinearLayout
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/productListAppBarLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" android:theme="@style/AppTheme.AppBarOverlay">
 
-    <Spinner
-        android:id="@+id/stockPeriodSpinner"
+        <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
+            android:layout_width="match_parent" android:layout_height="@dimen/default_app_bar_height"
+            android:background="?attr/colorPrimary" >
+
+            <Spinner
+                android:id="@+id/stockPeriodSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/default_app_bar_height"
+                android:popupBackground="@color/teal_500"
+                />
+
+        </android.support.v7.widget.Toolbar>
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recycler_view"/>
+        android:layout_height="match_parent">
 
-</LinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recycler_view"/>
+
+    </LinearLayout>
 
 
 <com.getbase.floatingactionbutton.FloatingActionsMenu
@@ -72,3 +94,5 @@
 </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -108,7 +108,7 @@ public class StockPeriodActivity extends AppCompatActivity implements OnDateSele
             {
                 userName.setText(mCloseStockPeriodStr);
                 userName.setContentDescription(mCloseStockPeriodStr);
-                userEmail.setText(mStockPeriodStartingStr + mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
+                userEmail.setText(mStockPeriodStartingStr + " " + mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
                 userEmail.setContentDescription(mStockPeriodStartingStr+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
                 userAvatar.setVisibility(View.GONE);
             }

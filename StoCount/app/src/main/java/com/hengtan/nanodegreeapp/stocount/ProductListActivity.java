@@ -18,6 +18,7 @@ import android.support.v7.internal.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -60,6 +61,7 @@ import android.app.LoaderManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ProductListActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener {
 
@@ -120,6 +122,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_list_activity);
         ButterKnife.inject(this);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         mApiCode = Application.GetApiCodeFromPreference();
         mApiCall = Application.GetApiCallFromPreference(mApiCode);
         mCurrentStockPeriod = Application.getCurrentStockPeriod();
@@ -503,6 +509,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
             if (position == EMPTY_VIEW) {
                 v = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_view, parent, false);
+
+                SetEmpytViewText(v);
+
                 EmptyViewHolder evh = new EmptyViewHolder(v);
                 return evh;
             }
@@ -537,6 +546,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 else {
                     Glide.with(this.mContext).load(imageUrl).fitCenter().into(myViewHolder.dataImageView);
                 }
+            }
+            else if(position == 0 && holder.itemView.findViewById(R.id.empty_view) != null)
+            {
+                SetEmpytViewText(holder.itemView);
             }
         }
 
@@ -577,7 +590,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             }
             else
             {
-                Toast.makeText(mContext, "Unable delete product for previous stock period.", Toast.LENGTH_LONG).show();
+                Resources res = mContext.getResources();
+                Toast.makeText(mContext, res.getString(R.string.unable_delete_previous_stock_toast), Toast.LENGTH_LONG).show();
             }
 
         }
@@ -619,6 +633,21 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             }
         }
 
+        private void SetEmpytViewText(View v)
+        {
+            TextView emptyViewText = (TextView) v.findViewById(R.id.empty_view);
+            Resources res = mContext.getResources();
+
+            if(mSelectedStockPeriod != null && mCurrentStockPeriod.getStockPeriodId() != mSelectedStockPeriod.getStockPeriodId())
+            {
+                emptyViewText.setText(res.getString(R.string.cd_empty_view_no_count_list_item));
+            }
+            else
+            {
+                emptyViewText.setText(res.getString(R.string.cd_empty_view_list_item));
+            }
+        }
+
         static class EmptyViewHolder extends RecyclerView.ViewHolder {
             public EmptyViewHolder(View itemView) {
                 super(itemView);
@@ -651,19 +680,20 @@ class StockPeriodSpinnerAdapter extends BaseAdapter
     private Context mContext;
     private StockPeriod mCurrentPeriod;
     private LayoutInflater mInflater;
+    private String mPreviouStockDateText;
+    private String mCurrentStockDateText;
 
     StockPeriodSpinnerAdapter(Context context, StockPeriod stockPeriod) {
         this.mStockPeriodCursor = null;
         this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
+        this.mCurrentPeriod = stockPeriod;
 
-        try {
-            this.mCurrentPeriod = (StockPeriod) stockPeriod.clone();
-        } catch (CloneNotSupportedException ex) {
+        Resources res = this.mContext.getResources();
+        mPreviouStockDateText = res.getString(R.string.preivous_stock_period_spinner_item_text);
+        mCurrentStockDateText = res.getString(R.string.current_stock_period_spinner_item_text);
 
-        }
     }
-
     public void swapCursor(Cursor cursor)
     {
         this.mStockPeriodCursor = cursor;
@@ -713,7 +743,6 @@ class StockPeriodSpinnerAdapter extends BaseAdapter
             holder = new ViewHolder();
 
             holder.txtStockPeriodDate=(TextView)view.findViewById(R.id.stockPeriodSpinnerItemDate);
-            holder.txtStockPeriodId=(TextView)view.findViewById(R.id.stockPeriodSpinnerItemId);
 
             if(i==0)
             {
@@ -730,16 +759,23 @@ class StockPeriodSpinnerAdapter extends BaseAdapter
             if(mStockPeriodCursor.getCount() > i) {
                 mStockPeriodCursor.moveToPosition(i);
                 StockPeriod sp = new StockPeriod(mStockPeriodCursor);
-                holder.txtStockPeriodDate.setText(sp.DateFormat.format(sp.getStartDate()) + " - " + sp.DateFormat.format(sp.getEndDate()));
-                holder.txtStockPeriodId.setText(sp.getStockPeriodId().toString());
+                holder.txtStockPeriodDate.setText(String.format(mPreviouStockDateText,sp.DateFormat.format(sp.getStartDate()), sp.DateFormat.format(sp.getEndDate())));
             }
             else
             {
-                holder.txtStockPeriodDate.setText("Current Period Starting: "+mCurrentPeriod.DateFormat.format(mCurrentPeriod.getStartDate()));
-                holder.txtStockPeriodId.setText(mCurrentPeriod.getStockPeriodId().toString());
+                holder.txtStockPeriodDate.setText(mCurrentStockDateText+" "+mCurrentPeriod.DateFormat.format(mCurrentPeriod.getStartDate()));
             }
         }
 
+        return view;
+    }
+
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent)
+    {
+        View view = super.getDropDownView(position, convertView, parent);
+        TextView textView = (TextView) view.findViewById(R.id.stockPeriodSpinnerItemDate);
+        textView.setPadding(16,0,0,0);
         return view;
     }
 }
@@ -747,6 +783,4 @@ class StockPeriodSpinnerAdapter extends BaseAdapter
 class ViewHolder
 {
     TextView txtStockPeriodDate;
-
-    TextView txtStockPeriodId;
 }

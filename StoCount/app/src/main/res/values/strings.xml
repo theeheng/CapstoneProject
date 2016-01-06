@@ -37,6 +37,7 @@
     <!-- Product List Activity -->
 
     <string name="cd_empty_view_list_item">Please add a new product</string>
+    <string name="cd_empty_view_no_count_list_item">No Stock Count Recorded for this period</string>
     <string name="cd_product_name">product name</string>
     <string name="cd_additional_info">additional info</string>
     <string name="cd_stock_count">stock count</string>
@@ -48,7 +49,9 @@
     <string name="deleted">Deleted</string>
     <string name="undo">Undo</string>
 
-
+    <string name="unable_delete_previous_stock_toast">Unable delete product for previous stock period.</string>
+    <string name="preivous_stock_period_spinner_item_text">From %1$s To %2$s</string>
+    <string name="current_stock_period_spinner_item_text">Current Period From</string>
     <!-- Detail Activity -->
     <string name="cd_description">Product Description</string>
     <string name="change_barcode_fab_text">Change Barcode</string>

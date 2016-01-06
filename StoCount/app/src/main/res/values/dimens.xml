@@ -33,6 +33,7 @@
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
     <dimen name="detail_backdrop_height">382dp</dimen>
     <dimen name="detail_description_text_input_height">300dp</dimen>
+    <dimen name="default_app_bar_height">56dp</dimen>
 
     <!-- list item -->
     <dimen name="unspecified">0dp</dimen>

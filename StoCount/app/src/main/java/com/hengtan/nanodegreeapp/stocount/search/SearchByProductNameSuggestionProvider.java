@@ -194,7 +194,7 @@ public class SearchByProductNameSuggestionProvider  extends ContentProvider {
         retCursor=dbHelper.getReadableDatabase().query(
                 StoCountContract.ProductEntry.TABLE_NAME,
                 null,
-                StoCountContract.ProductEntry.PRODUCT_NAME+" LIKE ?",
+                StoCountContract.ProductEntry.PRODUCT_NAME+" LIKE ? AND "+StoCountContract.ProductEntry.DELETED+" = 0",
                 new String[] { "%"+query+"%" },
                 null,
                 null,
@@ -203,7 +203,10 @@ public class SearchByProductNameSuggestionProvider  extends ContentProvider {
 
         if(retCursor.getCount() > 0) {
 
-            searchResult = new ArrayList<SearchSuggestion>();
+            if(searchResult == null)
+                searchResult = new ArrayList<SearchSuggestion>();
+            else
+                searchResult.clear();
 
             while (retCursor.moveToNext()) {
 
@@ -214,6 +217,10 @@ public class SearchByProductNameSuggestionProvider  extends ContentProvider {
 
                 searchResult.add(ss);
             }
+        }
+        else
+        {
+            searchResult.clear();
         }
     }
 }

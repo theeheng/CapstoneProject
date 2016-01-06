@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -116,6 +117,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     private String mErrorBarcodeStr;
     private String mCancelledBarcodeStr;
     private String mScannedBarcodeStr;
+
+    private SwipeToDismissTouchListener<RecyclerViewAdapter> mTouchListener;
+
+    private boolean mIsTouchListenerRemoved = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,7 +284,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
         adapter = new ProductListAdapter(this, mCurrentStockPeriod);
         mRecyclerView.setAdapter(adapter);
-        final SwipeToDismissTouchListener<RecyclerViewAdapter> touchListener =
+
+        mTouchListener =
                 new SwipeToDismissTouchListener<>(
                         new RecyclerViewAdapter(mRecyclerView),
                         new SwipeToDismissTouchListener.DismissCallbacks<RecyclerViewAdapter>() {
@@ -295,24 +301,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                             }
                         });
-
-        mRecyclerView.setOnTouchListener(touchListener);
-        // Setting this scroll listener is required to ensure that during ListView scrolling,
-        // we don't look for swipes.
-        mRecyclerView.setOnScrollListener((RecyclerView.OnScrollListener) touchListener.makeScrollListener());
-        mRecyclerView.addOnItemTouchListener(new SwipeableItemClickListener(this,
-                new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        if (view.getId() == R.id.txt_delete) {
-                            touchListener.processPendingDismisses();
-                        } else if (view.getId() == R.id.txt_undo) {
-                            touchListener.undoPendingDismiss();
-                        } else { // R.id.txt_data
-                            adapter.onItemclicked(position);
-                        }
-                    }
-                }));
 
         spinnerAdapter = new StockPeriodSpinnerAdapter(this, mCurrentStockPeriod);
 
@@ -338,9 +326,42 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 // Do nothing.
             }
         });
+    }
 
+    private void removeRecyclerViewTouchListener()
+    {
+        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
 
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
 
+        mIsTouchListenerRemoved = true;
+    }
+
+    private void setRecyclerViewTouchListener()
+    {
+        mRecyclerView.setOnTouchListener(mTouchListener);
+        // Setting this scroll listener is required to ensure that during ListView scrolling,
+        // we don't look for swipes.
+        mRecyclerView.setOnScrollListener((RecyclerView.OnScrollListener) mTouchListener.makeScrollListener());
+        mRecyclerView.addOnItemTouchListener(new SwipeableItemClickListener(this,
+                new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        if (view.getId() == R.id.txt_delete) {
+                            mTouchListener.processPendingDismisses();
+                        } else if (view.getId() == R.id.txt_undo) {
+                            mTouchListener.undoPendingDismiss();
+                        } else { // R.id.txt_data
+                            adapter.onItemclicked(position);
+                        }
+                    }
+                }));
+
+        mIsTouchListenerRemoved = false;
     }
 
     private void hideShowFab()
@@ -437,6 +458,15 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         switch (loader.getId())
         {
             case PRODUCT_LOADER:
+
+                if(data.getCount() == 0 && mCurrentStockPeriod.getStockPeriodId() != mSelectedStockPeriod.getStockPeriodId() && mIsTouchListenerRemoved == false) {
+                    removeRecyclerViewTouchListener();
+                }
+                else if(data.getCount() > 0 && mCurrentStockPeriod.getStockPeriodId() == mSelectedStockPeriod.getStockPeriodId() && mIsTouchListenerRemoved == true)
+                {
+                    setRecyclerViewTouchListener();
+                }
+
                 adapter.swapCursor(data, mSelectedStockPeriod);
                 adapter.notifyDataSetChanged();
                 break;

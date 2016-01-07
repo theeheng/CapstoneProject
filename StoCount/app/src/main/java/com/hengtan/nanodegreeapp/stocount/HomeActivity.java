@@ -33,10 +33,14 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
+import com.hengtan.nanodegreeapp.stocount.data.DbHelper;
+import com.hengtan.nanodegreeapp.stocount.data.DbImportExport;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
+
+import java.io.File;
 
 public class HomeActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener {
 
@@ -53,6 +57,12 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
     @InjectView(R.id.closeButton)
     protected Button btnClose;
+
+    @InjectView(R.id.backupButton)
+    protected Button btnBackup;
+
+    @InjectView(R.id.restoreButton)
+    protected Button btnRestore;
 
     @InjectView(R.id.stockPeriodDate)
     protected TextView txtStockPeriodDate;
@@ -192,6 +202,16 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         Intent intent = new Intent(this, StockPeriodActivity.class);
         intent.putExtra(StockPeriodActivity.IS_CLOSE_STOCK_EXTRA, true);
         this.startActivity(intent);
+    }
+
+    @OnClick(R.id.backupButton)
+    public void onBackupBtnClick(View v) {
+        DbImportExport.exportDb(new File(getFilesDir()+"/"+"MyDirectory"));
+    }
+
+    @OnClick(R.id.restoreButton)
+    public void onRestoreBtnClick(View v) {
+        DbImportExport.restoreDb(new File(getFilesDir()+"/"+"MyDirectory", DbHelper.DATABASE_NAME));
     }
 
     @Override

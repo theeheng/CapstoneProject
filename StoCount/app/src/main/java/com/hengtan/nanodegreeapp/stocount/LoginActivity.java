@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.Auth;
@@ -28,6 +30,8 @@ import com.google.android.gms.common.api.Status;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 import com.hengtan.nanodegreeapp.stocount.data.User;
+
+import java.util.concurrent.TimeUnit;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -52,10 +56,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private StockPeriod mStockPeriod;
 
+    private boolean mIsOffline = false;
+
     // Identifies a particular Loader being used in this component
     private static final int USER_LOADER = 0;
 
     private static final int STOCK_PERIOD_LOADER = 1;
+
+    private static final int OFFLINE_USER_LOADER = 2;
+
+    private static final int UNKNOWN_LOGN_STATUS = 12501;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +82,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // Build a GoogleApiClient with access to the Google Sign-In API and the
         // options specified by gso.
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                //.enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addOnConnectionFailedListener(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
@@ -109,10 +120,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
                 public void onResult(GoogleSignInResult googleSignInResult) {
-                    hideProgressDialog();
                     handleSignInResult(googleSignInResult);
+                    hideProgressDialog();
                 }
-            });
+            }, 15, TimeUnit.SECONDS);
+
         }
     }
 
@@ -137,10 +149,20 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
 
+            mIsOffline = false;
+
             // Signed in successfully, show authenticated UI.
             mAccount = result.getSignInAccount();
 
             getLoaderManager().restartLoader(USER_LOADER, null, this);
+        }
+        else if (result.getStatus().getStatusCode() == UNKNOWN_LOGN_STATUS || result.getStatus().getStatusCode() == ConnectionResult.INTERRUPTED  || result.getStatus().getStatusCode() == ConnectionResult.TIMEOUT || result.getStatus().getStatusCode() == ConnectionResult.NETWORK_ERROR)
+        {
+            if(!Utilities.IsConnectedToInternet(this))
+            {
+                mIsOffline = true;
+                getLoaderManager().restartLoader(OFFLINE_USER_LOADER, null, this);
+            }
         }
     }
 
@@ -148,6 +170,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
+        Toast.makeText(this,"onConnectionFailed:" + connectionResult ,Toast.LENGTH_SHORT);
+
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
@@ -183,6 +207,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         new String[]{mAccount.getId()},
                         null
                 );
+            case OFFLINE_USER_LOADER:
+                // Returns a new CursorLoader
+                return new CursorLoader(
+                        this,
+                        StoCountContract.UserEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null
+                );
             case STOCK_PERIOD_LOADER:
                 // Returns a new CursorLoader
                 return new CursorLoader(
@@ -204,17 +238,27 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         switch (loader.getId()) {
             case USER_LOADER:
+            case OFFLINE_USER_LOADER:
 
                 if (cursor != null && cursor.getCount() > 0) {
                     cursor.moveToFirst();
                     mUser = new User(cursor);
+
+                    //Load current stock period
+                    getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
+
+                } else if (mIsOffline){
+                    Resources res = getResources();
+                    Toast.makeText(this, res.getString(R.string.offline_firstime_text) , Toast.LENGTH_SHORT).show();
+
                 } else {
                     mUser = new User(mAccount);
                     mUser.SaveUser(getContentResolver());
-                }
 
-                //Load current stock period
-                getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
+                    //Load current stock period
+                    getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
+
+                }
 
                 break;
 

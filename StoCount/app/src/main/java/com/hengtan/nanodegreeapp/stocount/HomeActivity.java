@@ -76,6 +76,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
     private static final int PRODUCT_BARCODE_LOADER = 1;
 
+    private static final int STOCK_PERIOD_LOADER = 2;
+
     private String mBarcodeResult;
     private String mBarcodeFormat;
 
@@ -126,11 +128,13 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         mNoProductFoundStr =  res.getString(R.string.no_product_found_toast_text);
 
         if (mStockPeriod != null) {
-
-            txtStockPeriodDate.setText(mStockPeriodStartDateStr+" "+mStockPeriod.DateFormat.format(mStockPeriod.getStartDate()));
-
+            SetStockPeriodText(mStockPeriod);
         }
 
+    }
+
+    private void SetStockPeriodText(StockPeriod stckPeriod) {
+        txtStockPeriodDate.setText(mStockPeriodStartDateStr+" "+stckPeriod.DateFormat.format(stckPeriod.getStartDate()));
     }
 
     @Override
@@ -212,6 +216,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @OnClick(R.id.restoreButton)
     public void onRestoreBtnClick(View v) {
         DbImportExport.restoreDb(new File(getFilesDir()+"/"+"MyDirectory", DbHelper.DATABASE_NAME));
+
+        //Load current stock period
+        getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
     }
 
     @Override
@@ -305,6 +312,16 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                         new String[] {mSearchResultId.toString()},
                         null
                 );
+            case STOCK_PERIOD_LOADER:
+                // Returns a new CursorLoader
+                return new CursorLoader(
+                        this,
+                        StoCountContract.StockPeriodEntry.CONTENT_URI,
+                        null,
+                        StoCountContract.StockPeriodEntry.END_DATE + " IS NULL ",
+                        null,
+                        null
+                );
             default:
                 // An invalid id was passed in
                 return null;
@@ -334,7 +351,15 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 intent.putExtra(DetailActivity.IS_STOCK_ENTRY_EXTRA, true);
                 this.startActivity(intent);
             }
-
+            else if(loader.getId() == STOCK_PERIOD_LOADER )
+            {
+                if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToFirst();
+                    mStockPeriod = new StockPeriod(cursor);
+                    SetStockPeriodText(mStockPeriod);
+                    Application.setCurrentStockPeriod(mStockPeriod);
+                }
+            }
         }
         else {
             String searchCriteria = "";

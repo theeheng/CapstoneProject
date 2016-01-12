@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.support.v4.view.MenuItemCompat;
@@ -28,12 +29,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.auth.api.Auth;
@@ -61,6 +66,7 @@ import android.app.LoaderManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,6 +92,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @InjectView(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
 
+    @InjectView(R.id.progressBarHolder)
+    protected FrameLayout progressBarHolder;
 
     private SearchView searchView;
 
@@ -302,6 +310,20 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                             }
                         });
 
+        mRecyclerView.addOnItemTouchListener(new SwipeableItemClickListener(this,
+                new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        if (view.getId() == R.id.txt_delete) {
+                            mTouchListener.processPendingDismisses();
+                        } else if (view.getId() == R.id.txt_undo) {
+                            mTouchListener.undoPendingDismiss();
+                        } else { // R.id.txt_data
+                            adapter.onItemclicked(position);
+                        }
+                    }
+                }));
+
         spinnerAdapter = new StockPeriodSpinnerAdapter(this, mCurrentStockPeriod);
 
         mStockPeriodSpinner.setAdapter(spinnerAdapter);
@@ -314,10 +336,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                                        View view, int pos, long id) {
                 mSelectedStockPeriod = (StockPeriod) parent.getItemAtPosition(pos);
 
-                //inAnimation = new AlphaAnimation(0f, 1f);
-                //inAnimation.setDuration(200);
-                //progressBarHolder.setAnimation(inAnimation);
-                //progressBarHolder.setVisibility(View.VISIBLE);
                 getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
             }
 
@@ -338,6 +356,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             }
         });
 
+        mRecyclerView.setOnScrollListener(null);
+
+
         mIsTouchListenerRemoved = true;
     }
 
@@ -347,19 +368,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         // Setting this scroll listener is required to ensure that during ListView scrolling,
         // we don't look for swipes.
         mRecyclerView.setOnScrollListener((RecyclerView.OnScrollListener) mTouchListener.makeScrollListener());
-        mRecyclerView.addOnItemTouchListener(new SwipeableItemClickListener(this,
-                new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        if (view.getId() == R.id.txt_delete) {
-                            mTouchListener.processPendingDismisses();
-                        } else if (view.getId() == R.id.txt_undo) {
-                            mTouchListener.undoPendingDismiss();
-                        } else { // R.id.txt_data
-                            adapter.onItemclicked(position);
-                        }
-                    }
-                }));
+
+
 
         mIsTouchListenerRemoved = false;
     }
@@ -407,7 +417,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
      */
         switch (id) {
             case PRODUCT_LOADER:
+
                 // Returns a new CursorLoader
+
+                ProgressBarHelper.ShowProgressBar(progressBarHolder);
 
                 if(mSelectedStockPeriod == null)
                 {
@@ -467,8 +480,18 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     setRecyclerViewTouchListener();
                 }
 
+                runOnUiThread(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                      ProgressBarHelper.HideProgressBar(progressBarHolder);
+                                  }
+                              });
+
                 adapter.swapCursor(data, mSelectedStockPeriod);
                 adapter.notifyDataSetChanged();
+
+
+
                 break;
             case PREVIOUS_STOCK_LOADER:
                 spinnerAdapter.swapCursor(data);
@@ -524,12 +547,13 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         private Context mContext;
         private StockPeriod mCurrentStockPeriod;
         private StockPeriod mSelectedStockPeriod;
-
+        private GlideLoaderListener<String, GlideDrawable> mGlideListener;
 
         ProductListAdapter(Context context, StockPeriod stockPeriod) {
             this.mProductCursor = null;
             this.mContext = context;
             this.mCurrentStockPeriod = stockPeriod;
+            this.mGlideListener = new GlideLoaderListener<String, GlideDrawable>(mContext, android.R.drawable.ic_menu_gallery);
         }
 
         @Override
@@ -574,7 +598,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     Glide.with(this.mContext).load(android.R.drawable.ic_menu_gallery).fitCenter().into(myViewHolder.dataImageView);
                 }
                 else {
-                    Glide.with(this.mContext).load(imageUrl).fitCenter().into(myViewHolder.dataImageView);
+                    Glide.with(this.mContext).load(imageUrl).listener(this.mGlideListener).fitCenter().into(myViewHolder.dataImageView);
                 }
             }
             else if(position == 0 && holder.itemView.findViewById(R.id.empty_view) != null)
@@ -635,31 +659,35 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         public void onItemclicked(int position)
         {
             if(mProductCursor != null) {
-                mProductCursor.moveToPosition(position);
 
-                Product prod = new Product(mProductCursor);
-                ProductCount prodCount = new ProductCount(mProductCursor);
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
-
-                if(prodCount.getProductCountId() != null)
-                    bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE, prodCount);
-
-                Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
-
-
-                if(mCurrentStockPeriod.getStockPeriodId() != mSelectedStockPeriod.getStockPeriodId()) {
-                    intent.putExtra(DetailActivity.IS_PREVIOUS_STOCK_PERIOD, true);
-                }
-                else
+                if(position ==0 && mProductCursor.getCount() ==0)
                 {
-                    intent.putExtra(DetailActivity.IS_PREVIOUS_STOCK_PERIOD, false);
+                    //Do nothing because user is tapping default empty view for list
                 }
+                else {
+                    mProductCursor.moveToPosition(position);
 
-                mContext.startActivity(intent);
+                    Product prod = new Product(mProductCursor);
+                    ProductCount prodCount = new ProductCount(mProductCursor);
 
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+
+                    if (prodCount.getProductCountId() != null)
+                        bundle.putParcelable(DetailActivity.PRODUCT_COUNT_PARCELABLE, prodCount);
+
+                    Intent intent = new Intent(mContext, DetailActivity.class);
+                    intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+
+
+                    if (mCurrentStockPeriod.getStockPeriodId() != mSelectedStockPeriod.getStockPeriodId()) {
+                        intent.putExtra(DetailActivity.IS_PREVIOUS_STOCK_PERIOD, true);
+                    } else {
+                        intent.putExtra(DetailActivity.IS_PREVIOUS_STOCK_PERIOD, false);
+                    }
+
+                    mContext.startActivity(intent);
+                }
             }
         }
 
@@ -814,3 +842,4 @@ class ViewHolder
 {
     TextView txtStockPeriodDate;
 }
+

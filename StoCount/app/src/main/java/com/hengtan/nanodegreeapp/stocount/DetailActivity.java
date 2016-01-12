@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -198,7 +199,7 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
                 Glide.with(this).load(R.mipmap.no_image).fitCenter().into(image);
             }
             else {
-                Glide.with(this).load(mProduct.getLargeImage()).fitCenter().into(image);
+                Glide.with(this).load(mProduct.getLargeImage()).listener(new GlideLoaderListener<String, GlideDrawable>(this, R.mipmap.no_image)).fitCenter().into(image);
             }
         }
 

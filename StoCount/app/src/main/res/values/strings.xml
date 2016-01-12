@@ -4,6 +4,7 @@
     <!-- login activity -->
     <string name="login_btn_text">Sign in with Google</string>
     <string name="loading">Loading......</string>
+    <string name="offline_firstime_text">You are required to have internet connection to login when first using the application.</string>
 
     <!-- Stock Period activity -->
     <string name="cd_user_photo">User Photo from Google Profile</string>

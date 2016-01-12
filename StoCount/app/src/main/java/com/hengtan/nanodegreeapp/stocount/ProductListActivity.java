@@ -130,6 +130,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private boolean mIsTouchListenerRemoved = true;
 
+    private static int mPreviousSelectedStockPeriodPosition = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -336,7 +338,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                                        View view, int pos, long id) {
                 mSelectedStockPeriod = (StockPeriod) parent.getItemAtPosition(pos);
 
-                getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
+                if(mPreviousSelectedStockPeriodPosition != pos) {
+
+                    ProgressBarHelper.ShowProgressBar(progressBarHolder);
+                    mPreviousSelectedStockPeriodPosition = pos;
+                    getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
+                }
             }
 
 
@@ -368,8 +375,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         // Setting this scroll listener is required to ensure that during ListView scrolling,
         // we don't look for swipes.
         mRecyclerView.setOnScrollListener((RecyclerView.OnScrollListener) mTouchListener.makeScrollListener());
-
-
 
         mIsTouchListenerRemoved = false;
     }
@@ -419,8 +424,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             case PRODUCT_LOADER:
 
                 // Returns a new CursorLoader
-
-                ProgressBarHelper.ShowProgressBar(progressBarHolder);
 
                 if(mSelectedStockPeriod == null)
                 {
@@ -480,17 +483,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     setRecyclerViewTouchListener();
                 }
 
-                runOnUiThread(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      ProgressBarHelper.HideProgressBar(progressBarHolder);
-                                  }
-                              });
+                ProgressBarHelper.HideProgressBar(progressBarHolder);
 
                 adapter.swapCursor(data, mSelectedStockPeriod);
                 adapter.notifyDataSetChanged();
-
-
 
                 break;
             case PREVIOUS_STOCK_LOADER:

@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -134,7 +136,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     }
 
     private void SetStockPeriodText(StockPeriod stckPeriod) {
-        txtStockPeriodDate.setText(mStockPeriodStartDateStr+" "+stckPeriod.DateFormat.format(stckPeriod.getStartDate()));
+        txtStockPeriodDate.setText(mStockPeriodStartDateStr + " " + stckPeriod.DateFormat.format(stckPeriod.getStartDate()));
     }
 
     @Override
@@ -169,13 +171,16 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 startActivityForResult(i, RESULT_SETTINGS);
                 return true;
             case R.id.action_backup:
-                BackupDBFile();
+                DbImportExport.exportDb(this);
+                Toast.makeText(this, mBackupSuccessfulStr, Toast.LENGTH_SHORT);
                 return true;
             case R.id.action_restore:
-                RestoreDBFile();
+                DbImportExport.restoreDb(this);
+                //Load current stock period
+                getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
                 return true;
             case R.id.action_send:
-                SendDBFile();
+                DbImportExport.sendDBFile(this);
                 return true;
         }
 
@@ -215,37 +220,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         Intent intent = new Intent(this, StockPeriodActivity.class);
         intent.putExtra(StockPeriodActivity.IS_CLOSE_STOCK_EXTRA, true);
         this.startActivity(intent);
-    }
-
-    public void BackupDBFile() {
-        DbImportExport.exportDb(new File(Environment.getExternalStorageDirectory() + "/" + "MyDirectory"));
-        Toast.makeText(this, mBackupSuccessfulStr, Toast.LENGTH_SHORT);
-    }
-
-    public void RestoreDBFile() {
-        DbImportExport.restoreDb(new File(Environment.getExternalStorageDirectory()+"/"+"MyDirectory", DbHelper.DATABASE_NAME));
-
-        //Load current stock period
-        getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
-
-        Toast.makeText(this, mRestoreSuccessfulStr, Toast.LENGTH_SHORT);
-    }
-
-    public void SendDBFile() {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[] {"email@example.com"});
-        intent.putExtra(Intent.EXTRA_SUBJECT, "subject here");
-        intent.putExtra(Intent.EXTRA_TEXT, "body text");
-        File file = new File(Environment.getExternalStorageDirectory()+"/"+"MyDirectory", DbHelper.DATABASE_NAME);
-        if (!file.exists() || !file.canRead()) {
-            Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-        Uri uri = Uri.fromFile(file);
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(intent, "Send email..."));
     }
 
     @Override

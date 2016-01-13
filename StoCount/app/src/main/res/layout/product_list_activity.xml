@@ -8,7 +8,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/productListAppBarLayout"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent" android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_width="match_parent" android:theme="@style/AppStoCountTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
             android:layout_width="match_parent" android:layout_height="@dimen/default_app_bar_height"

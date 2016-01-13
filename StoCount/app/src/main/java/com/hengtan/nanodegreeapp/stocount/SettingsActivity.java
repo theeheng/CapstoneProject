@@ -1,6 +1,7 @@
 package com.hengtan.nanodegreeapp.stocount;
 
 import android.annotation.TargetApi;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +14,11 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+
+import com.hengtan.nanodegreeapp.stocount.data.DbImportExport;
+
+import net.rdrei.android.dirchooser.DirectoryChooserConfig;
+import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
 import java.util.List;
 
@@ -27,7 +33,8 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements
+        DirectoryChooserFragment.OnFragmentInteractionListener {
     /**
      * Determines whether to always show the simplified settings UI, where
      * settings are presented in a single list. When false, settings are shown
@@ -40,11 +47,19 @@ public class SettingsActivity extends PreferenceActivity {
     private static final boolean ALWAYS_SIMPLE_PREFS = true;
     private static final int PICK_DIRECTORY_REQUEST = 1;  // The request code
 
+    private static DirectoryChooserFragment mDialog;
+    private Preference mDirectoryPreference;
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
         setupSimplePreferencesScreen();
+
+        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                .newDirectoryName(DbImportExport.DEFAULT_BACKUP_DIRECTORY)
+                .build();
+        mDialog = DirectoryChooserFragment.newInstance(config);
     }
 
     /**
@@ -67,6 +82,18 @@ public class SettingsActivity extends PreferenceActivity {
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference(API_PREFERENCE_ID));
+
+        mDirectoryPreference = findPreference(BACKUP_DIRECTORY_KEY);
+
+        bindPreferenceSummaryToValue(mDirectoryPreference);
+
+        mDirectoryPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                mDialog.show(getFragmentManager(), null);
+                return true;
+            }
+        });
     }
 
     /**
@@ -185,6 +212,26 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
+    @Override
+    public void onSelectDirectory(String s) {
+        String newValue = s;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(BACKUP_DIRECTORY_KEY, newValue);
+        editor.commit();
+        mDialog.dismiss();
+
+        sBindPreferenceSummaryToValueListener.onPreferenceChange(mDirectoryPreference,
+                PreferenceManager
+                        .getDefaultSharedPreferences(mDirectoryPreference.getContext())
+                        .getString(mDirectoryPreference.getKey(), ""));
+    }
+
+    @Override
+    public void onCancelChooser() {
+        mDialog.dismiss();
+    }
+
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
@@ -201,40 +248,7 @@ public class SettingsActivity extends PreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(API_PREFERENCE_ID));
-
-
-            Preference filePicker = (Preference) findPreference(BACKUP_DIRECTORY_KEY);
-            filePicker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(......); //Intent to start openIntents File Manager
-                    startActivityForResult(intent, PICK_DIRECTORY_REQUEST);
-                    return true;
-                }
-            });
-
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        // Check which request we're responding to
-        if (requestCode == PICK_DIRECTORY_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                // The user picked a directory.
-                // The Intent's data Uri identifies which contact was selected.
-
-                // Do something with the directory here (bigger example below)
-
-                //get the new value from Intent data
-                String newValue = "";
-                SharedPreferences preferences = "";
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString(BACKUP_DIRECTORY_KEY, newValue);
-                editor.commit();
-            }
+            bindPreferenceSummaryToValue(findPreference(BACKUP_DIRECTORY_KEY));
         }
     }
 }

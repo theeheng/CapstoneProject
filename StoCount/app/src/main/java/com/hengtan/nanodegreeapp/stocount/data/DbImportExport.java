@@ -1,11 +1,20 @@
 package com.hengtan.nanodegreeapp.stocount.data;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.net.Uri;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.hengtan.nanodegreeapp.stocount.Application;
+import com.hengtan.nanodegreeapp.stocount.SettingsActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,34 +29,39 @@ public class DbImportExport {
 
     public static final String TAG = DbImportExport.class.getName();
 
-
     /** Directory that files are to be read from and written to **/
-
-    protected static final File DATABASE_EXTERNAL_DIRECTORY = new File(Environment.getExternalStorageDirectory(),"MyDirectory");
-    //protected static final File DATABASE_INTERNAL_DIRECTORY = new File(Environment.getFilesDir(),"MyDirectory");
-
+    public static final String DEFAULT_BACKUP_DIRECTORY = "StoCountBackup";
+    public static final File DATABASE_EXTERNAL_DIRECTORY = new File(Environment.getExternalStorageDirectory(),DEFAULT_BACKUP_DIRECTORY);
 
     /** File path of Db to be imported **/
     protected static final File IMPORT_EXTERNAL_DIRECTORY_FILE = new File(DATABASE_EXTERNAL_DIRECTORY,DbHelper.DATABASE_NAME);
-    public static final String PACKAGE_NAME = "com.hengtan.nanodegreeapp.stocount";
+
     public static final String DATABASE_TABLE = "entryTable";
 
     /** Contains: /data/data/com.example.app/databases/example.db **/
 
     private static final File DATA_DIRECTORY_DATABASE =
             new File(Environment.getDataDirectory() +
-                    "/data/" + PACKAGE_NAME +
+                    "/data/" + Application.GetPackageName() +
                     "/databases/" + DbHelper.DATABASE_NAME );
+
+    private static String GetBackupDirectoryFromPreference(Context ctx)
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return preferences.getString(SettingsActivity.BACKUP_DIRECTORY_KEY, null);
+    }
 
     /** Saves the application database to the
      * export directory under MyDb.db **/
-    public static  boolean exportDb(File internalFileDir){
+    public static boolean exportDb(Context ctx){
+
+        String preferenceBackupPath = GetBackupDirectoryFromPreference(ctx);
 
         File dbFile = DATA_DIRECTORY_DATABASE;
         File exportDir = null;
 
-        if( ! SdIsPresent() )
-            exportDir = internalFileDir;
+        if(preferenceBackupPath != null && (!preferenceBackupPath.isEmpty()))
+            exportDir = new File(preferenceBackupPath);
         else
             exportDir = DATABASE_EXTERNAL_DIRECTORY;
 
@@ -71,18 +85,16 @@ public class DbImportExport {
 
     /** Replaces current database with the IMPORT_FILE if
      * import database is valid and of the correct type **/
-    public static boolean restoreDb(File internalFile){
+    public static boolean restoreDb(Context ctx){
+
+        String preferenceBackupPath = GetBackupDirectoryFromPreference(ctx);
 
         File importFile = null;
 
-        if( ! SdIsPresent() )
-        {
-            importFile = internalFile;
-        }
+        if(preferenceBackupPath != null && (!preferenceBackupPath.isEmpty()))
+            importFile = new File(preferenceBackupPath, DbHelper.DATABASE_NAME);
         else
-        {
             importFile = IMPORT_EXTERNAL_DIRECTORY_FILE;
-        }
 
         File exportFile = DATA_DIRECTORY_DATABASE;
 
@@ -101,6 +113,34 @@ public class DbImportExport {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static void sendDBFile(Activity context) {
+
+        String preferenceBackupPath = GetBackupDirectoryFromPreference(context);
+
+        File backedupFile = null;
+
+        if(preferenceBackupPath != null && (!preferenceBackupPath.isEmpty()))
+            backedupFile = new File(preferenceBackupPath, DbHelper.DATABASE_NAME);
+        else
+            backedupFile = IMPORT_EXTERNAL_DIRECTORY_FILE;
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[] {"email@example.com"});
+        intent.putExtra(Intent.EXTRA_SUBJECT, "subject here");
+        intent.putExtra(Intent.EXTRA_TEXT, "body text");
+
+        if (!backedupFile.exists() || !backedupFile.canRead()) {
+            Toast.makeText(context, "Attachment Error", Toast.LENGTH_SHORT).show();
+            context.finish();
+            return;
+        }
+        Uri uri = Uri.fromFile(backedupFile);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setType("Message/rfc822");
+        context.startActivity(Intent.createChooser(intent, "Send DB file..."));
     }
 
     /** Imports the file at IMPORT_FILE **/
@@ -126,7 +166,7 @@ public class DbImportExport {
           //  final int timestampColumn = cursor.getColumnIndexOrThrow("timestamp");
 
 
-// Adds all items in cursor to current database
+        // Adds all items in cursor to current database
        //     cursor.moveToPosition(-1);
        //     while(cursor.moveToNext()){
        //         dbAdapter.createQuote(

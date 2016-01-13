@@ -7,11 +7,11 @@
     tools:context="com.hengtan.nanodegreeapp.stocount.StockPeriodActivity">
 
     <android.support.design.widget.AppBarLayout android:layout_height="wrap_content"
-        android:layout_width="match_parent" android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_width="match_parent" android:theme="@style/AppStoCountTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
             android:layout_width="match_parent" android:layout_height="@dimen/app_bar_height"
-            android:background="?attr/colorPrimary" app:popupTheme="@style/AppTheme.PopupOverlay">
+            android:background="?attr/colorPrimary" app:popupTheme="@style/AppStoCountTheme.PopupOverlay">
 
             <LinearLayout
                 android:layout_width="match_parent"

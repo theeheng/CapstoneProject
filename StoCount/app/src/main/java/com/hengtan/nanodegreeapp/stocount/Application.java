@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import com.google.android.gms.auth.api.Auth;
@@ -15,6 +16,7 @@ import com.hengtan.nanodegreeapp.stocount.api.AmazonApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.TescoApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.WalmartApiCall;
+import com.hengtan.nanodegreeapp.stocount.data.DbImportExport;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 import com.hengtan.nanodegreeapp.stocount.data.User;
 
@@ -27,12 +29,14 @@ public class Application extends android.app.Application {
     private static User mCurrentLoginUser;
     private static StockPeriod mCurrentStockPeriod;
     private static String mDefaultApiCode = "TESCO";
+
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
         Resources resources = context.getResources();
         mDefaultApiCode  = resources.getString(R.string.preference_tesco_api_code);
+        InitializeBackupDirectoryPreference();
     }
 
     public static Context getContext(){
@@ -115,5 +119,23 @@ public class Application extends android.app.Application {
         {
             return mDefaultApiCode;
         }
+    }
+
+    public static void InitializeBackupDirectoryPreference()
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String initialValue = preferences.getString(SettingsActivity.BACKUP_DIRECTORY_KEY, null);
+
+        if(initialValue == null)
+        {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(SettingsActivity.BACKUP_DIRECTORY_KEY, DbImportExport.DATABASE_EXTERNAL_DIRECTORY.getPath());
+            editor.commit();
+        }
+    }
+
+    public static String GetPackageName()
+    {
+        return context.getPackageName();
     }
 }

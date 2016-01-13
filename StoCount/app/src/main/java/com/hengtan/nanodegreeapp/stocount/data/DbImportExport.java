@@ -31,6 +31,7 @@ public class DbImportExport {
 
     /** Directory that files are to be read from and written to **/
     public static final String DEFAULT_BACKUP_DIRECTORY = "StoCountBackup";
+    public static final String DEFAULT_IMAGE_BACKUP_DIRECTORY = DEFAULT_BACKUP_DIRECTORY+ "/"+"StoCountImage";
     public static final File DATABASE_EXTERNAL_DIRECTORY = new File(Environment.getExternalStorageDirectory(),DEFAULT_BACKUP_DIRECTORY);
 
     /** File path of Db to be imported **/

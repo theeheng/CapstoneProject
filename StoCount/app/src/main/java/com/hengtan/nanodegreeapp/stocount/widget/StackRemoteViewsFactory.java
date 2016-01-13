@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -16,6 +17,7 @@ import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,12 +105,30 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
             rv.setContentDescription(R.id.txt_datacount, mWidgetItemStockCounts.get(position));
 
             try {
-                URL url = new URL(mWidgetItems.get(position).getThumbnailImage());
-                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                rv.setImageViewBitmap(R.id.img_data, bmp);
+
+                String imagePath = mWidgetItems.get(position).getThumbnailImage();
+                Bitmap bmp = null;
+
+                if(imagePath != null && (!imagePath.isEmpty()) && imagePath.indexOf("http") > -1)
+                {
+                    URL url = new URL(mWidgetItems.get(position).getThumbnailImage());
+                    bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                }
+                else if(imagePath != null && (!imagePath.isEmpty()))
+                {
+                    Uri url = Uri.fromFile(new File(imagePath));
+                    bmp = BitmapFactory.decodeStream(mContext.getContentResolver().openInputStream(url));
+                }
+
+                if(bmp != null) {
+                    rv.setImageViewBitmap(R.id.img_data, bmp);
+                }
+
             }
             catch (Exception ex)
             {
+                rv.setImageViewResource(R.id.img_data, android.R.drawable.ic_menu_gallery);
                 String err = ex.getMessage();
             }
             //rv.setImageViewUri(R.id.img_data, Uri.parse(mWidgetItems.get(position).getThumbnailImage()));

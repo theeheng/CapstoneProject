@@ -32,6 +32,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.hengtan.nanodegreeapp.stocount.data.DBAsyncCallBack;
 import com.hengtan.nanodegreeapp.stocount.data.DBAsyncTask;
+import com.hengtan.nanodegreeapp.stocount.data.DbImportExport;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
@@ -619,7 +620,7 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     public void CallChooseImage() {
         chooserType = ChooserType.REQUEST_PICK_PICTURE;
         imageChooserManager = new ImageChooserManager(this,
-                ChooserType.REQUEST_PICK_PICTURE, true);
+                ChooserType.REQUEST_PICK_PICTURE, DbImportExport.DEFAULT_IMAGE_BACKUP_DIRECTORY, true);
         imageChooserManager.setImageChooserListener(this);
         imageChooserManager.clearOldFiles();
         try {
@@ -636,7 +637,7 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     public void CallTakePicture() {
         chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
         imageChooserManager = new ImageChooserManager(this,
-                ChooserType.REQUEST_CAPTURE_PICTURE, true);
+                ChooserType.REQUEST_CAPTURE_PICTURE, DbImportExport.DEFAULT_IMAGE_BACKUP_DIRECTORY, true);
         imageChooserManager.setImageChooserListener(this);
         try {
             //progressBar.setVisibility(View.VISIBLE);

@@ -10,16 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:height="@dimen/list_item_height"
-        >
+        android:height="@dimen/list_item_height">
 
         <LinearLayout
             android:layout_width="@dimen/unspecified"
             android:layout_weight="20"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:height="@dimen/list_item_height"
-            >
+            android:height="@dimen/list_item_height">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/unspecified"
@@ -29,14 +28,13 @@
                 android:text="@string/cd_product_name"
                 android:contentDescription="@string/cd_product_name"
                 android:textStyle="bold"
-                android:paddingStart="@dimen/list_item_padding_sides"
                 android:paddingLeft="@dimen/list_item_padding_sides"
                 android:paddingEnd="@dimen/list_item_padding_sides"
                 android:paddingRight="@dimen/list_item_padding_sides"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:textColor="@android:color/holo_blue_dark"
-                android:background="@android:color/white"/>
+                android:textColor="@color/text_dark" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/unspecified"
@@ -45,14 +43,12 @@
                 android:id="@+id/txt_datainfo"
                 android:text="@string/cd_additional_info"
                 android:contentDescription="@string/cd_additional_info"
-                android:paddingStart="@dimen/list_item_padding_sides"
                 android:paddingLeft="@dimen/list_item_padding_sides"
                 android:paddingEnd="@dimen/list_item_padding_sides"
                 android:paddingRight="@dimen/list_item_padding_sides"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:textColor="@android:color/holo_blue_dark"
-                android:background="@android:color/white"/>
+                android:textColor="@color/text_dark" />
         </LinearLayout>
 
         <TextView
@@ -67,8 +63,7 @@
             android:paddingRight="@dimen/list_item_padding_sides"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="@android:color/holo_blue_dark"
-            android:background="@android:color/white"/>
+            android:textColor="@color/text_dark" />
 
         <ImageView
             android:id="@+id/img_data"

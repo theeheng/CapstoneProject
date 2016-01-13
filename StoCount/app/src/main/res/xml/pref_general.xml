@@ -10,4 +10,7 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
+    <Preference android:title="@string/pref_title_backup_directory"
+        android:key="@string/pref_key_backup_directory"
+        />
 </PreferenceScreen>

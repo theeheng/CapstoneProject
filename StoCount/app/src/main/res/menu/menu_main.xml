@@ -3,8 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".HomeActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="200" app:showAsAction="never" />
+    <item android:id="@+id/action_backup" android:title="@string/action_backup"
+        android:orderInCategory="300" app:showAsAction="never" />
+    <item android:id="@+id/action_restore" android:title="@string/action_restore"
+        android:orderInCategory="400" app:showAsAction="never" />
+    <item android:id="@+id/action_send" android:title="@string/action_send"
+        android:orderInCategory="500" app:showAsAction="never" />
     <item android:id="@+id/action_logout" android:title="@string/action_logout"
-        android:orderInCategory="100" app:showAsAction="never" />
+        android:orderInCategory="600" app:showAsAction="never" />
     <item android:id="@+id/action_search" android:title="@string/action_search"
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="ifRoom|collapseActionView"

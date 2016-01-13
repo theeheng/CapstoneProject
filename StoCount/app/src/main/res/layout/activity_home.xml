@@ -40,19 +40,6 @@
         android:background="@color/teal_500"
         android:textColor="@color/text_light"/>
 
-        <Button
-            android:id="@+id/backupButton"
-            android:text="Backup"
-            android:contentDescription="Backup"
-            android:layout_width="@dimen/home_button_width"
-            android:layout_height="@dimen/home_button_height"
-            android:layout_below="@+id/searchButton"
-            android:padding="@dimen/keyline_margin"
-            android:layout_margin="@dimen/keyline_margin"
-            android:drawableTop="@android:drawable/ic_menu_search"
-            android:background="@color/teal_500"
-            android:textColor="@color/text_light"/>
-
     <Button
         android:id="@+id/viewButton"
         android:text="@string/view_btn_text"
@@ -76,22 +63,6 @@
             android:layout_below="@+id/viewButton"
             android:layout_toEndOf="@+id/searchButton"
             android:layout_toRightOf="@+id/searchButton"
-            android:drawableTop="@android:drawable/ic_menu_view"
-            android:background="@color/teal_500"
-            android:textColor="@color/text_light"
-            android:padding="@dimen/keyline_margin"
-            android:layout_margin="@dimen/keyline_margin"/>
-
-
-        <Button
-            android:id="@+id/restoreButton"
-            android:text="Restore"
-            android:contentDescription="Restore"
-            android:layout_width="@dimen/home_button_width"
-            android:layout_height="@dimen/home_button_height"
-            android:layout_below="@+id/closeButton"
-            android:layout_toEndOf="@+id/backupButton"
-            android:layout_toRightOf="@+id/backupButton"
             android:drawableTop="@android:drawable/ic_menu_view"
             android:background="@color/teal_500"
             android:textColor="@color/text_light"

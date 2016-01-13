@@ -2,6 +2,8 @@ package com.hengtan.nanodegreeapp.stocount;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,8 +36,9 @@ public class SettingsActivity extends PreferenceActivity {
      */
 
     public static final String API_PREFERENCE_ID = "api_endpoint_list";
+    public static final String BACKUP_DIRECTORY_KEY = "BackupDirectory";
     private static final boolean ALWAYS_SIMPLE_PREFS = true;
-
+    private static final int PICK_DIRECTORY_REQUEST = 1;  // The request code
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -198,6 +201,40 @@ public class SettingsActivity extends PreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(API_PREFERENCE_ID));
+
+
+            Preference filePicker = (Preference) findPreference(BACKUP_DIRECTORY_KEY);
+            filePicker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent intent = new Intent(......); //Intent to start openIntents File Manager
+                    startActivityForResult(intent, PICK_DIRECTORY_REQUEST);
+                    return true;
+                }
+            });
+
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // Check which request we're responding to
+        if (requestCode == PICK_DIRECTORY_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The user picked a directory.
+                // The Intent's data Uri identifies which contact was selected.
+
+                // Do something with the directory here (bigger example below)
+
+                //get the new value from Intent data
+                String newValue = "";
+                SharedPreferences preferences = "";
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(BACKUP_DIRECTORY_KEY, newValue);
+                editor.commit();
+            }
         }
     }
 }

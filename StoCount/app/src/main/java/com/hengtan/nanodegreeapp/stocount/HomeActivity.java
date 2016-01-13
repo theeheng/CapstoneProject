@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -58,12 +60,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @InjectView(R.id.closeButton)
     protected Button btnClose;
 
-    @InjectView(R.id.backupButton)
-    protected Button btnBackup;
-
-    @InjectView(R.id.restoreButton)
-    protected Button btnRestore;
-
     @InjectView(R.id.stockPeriodDate)
     protected TextView txtStockPeriodDate;
 
@@ -88,6 +84,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     private String mSearchCriteriaBarcodeStr;
     private String mSearchCriteriaProductIdStr;
     private String mNoProductFoundStr;
+    private String mBackupSuccessfulStr;
+    private String mRestoreSuccessfulStr;
 
     private Integer mSearchResultId;
 
@@ -126,6 +124,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         mSearchCriteriaBarcodeStr = res.getString(R.string.search_criteria_barcode);
         mSearchCriteriaProductIdStr = res.getString(R.string.search_criteria_productid);
         mNoProductFoundStr =  res.getString(R.string.no_product_found_toast_text);
+        mBackupSuccessfulStr =  res.getString(R.string.backup_successful);
+        mRestoreSuccessfulStr =  res.getString(R.string.restore_successful);
 
         if (mStockPeriod != null) {
             SetStockPeriodText(mStockPeriod);
@@ -168,6 +168,15 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 Intent i = new Intent(this, SettingsActivity.class);
                 startActivityForResult(i, RESULT_SETTINGS);
                 return true;
+            case R.id.action_backup:
+                BackupDBFile();
+                return true;
+            case R.id.action_restore:
+                RestoreDBFile();
+                return true;
+            case R.id.action_send:
+                SendDBFile();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -208,17 +217,35 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         this.startActivity(intent);
     }
 
-    @OnClick(R.id.backupButton)
-    public void onBackupBtnClick(View v) {
-        DbImportExport.exportDb(new File(getFilesDir()+"/"+"MyDirectory"));
+    public void BackupDBFile() {
+        DbImportExport.exportDb(new File(Environment.getExternalStorageDirectory() + "/" + "MyDirectory"));
+        Toast.makeText(this, mBackupSuccessfulStr, Toast.LENGTH_SHORT);
     }
 
-    @OnClick(R.id.restoreButton)
-    public void onRestoreBtnClick(View v) {
-        DbImportExport.restoreDb(new File(getFilesDir()+"/"+"MyDirectory", DbHelper.DATABASE_NAME));
+    public void RestoreDBFile() {
+        DbImportExport.restoreDb(new File(Environment.getExternalStorageDirectory()+"/"+"MyDirectory", DbHelper.DATABASE_NAME));
 
         //Load current stock period
         getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
+
+        Toast.makeText(this, mRestoreSuccessfulStr, Toast.LENGTH_SHORT);
+    }
+
+    public void SendDBFile() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[] {"email@example.com"});
+        intent.putExtra(Intent.EXTRA_SUBJECT, "subject here");
+        intent.putExtra(Intent.EXTRA_TEXT, "body text");
+        File file = new File(Environment.getExternalStorageDirectory()+"/"+"MyDirectory", DbHelper.DATABASE_NAME);
+        if (!file.exists() || !file.canRead()) {
+            Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        Uri uri = Uri.fromFile(file);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        startActivity(Intent.createChooser(intent, "Send email..."));
     }
 
     @Override

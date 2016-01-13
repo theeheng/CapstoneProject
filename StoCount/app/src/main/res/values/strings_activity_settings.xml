@@ -20,4 +20,7 @@
 
     <string name="preference_amazon_api_code">AMAZON</string>
 
+    <string name="pref_title_backup_directory">Backup Directory</string>
+
+    <string name="pref_key_backup_directory">BackupDirectory</string>
 </resources>

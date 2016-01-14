@@ -97,7 +97,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private SearchView searchView;
 
-    public static final int RESULT_SETTINGS = 1;
+    //public static final int RESULT_SETTINGS = 1;
 
     private ProductListAdapter adapter;
 
@@ -349,25 +349,24 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                                        View view, int pos, long id) {
                 mSelectedStockPeriod = (StockPeriod) parent.getItemAtPosition(pos);
 
-                if(mSelectedStockPeriod != null)
-                {
-                if (mSelectedStockPeriod.getStockPeriodId() == mCurrentStockPeriod.getStockPeriodId()) {
-                    famProductListButton.setVisibility(View.VISIBLE);
-                } else {
-                    if (mShowSearchItem) {
-                        mShowSearchItem = false;
-                        invalidateOptionsMenu();
+                if (mSelectedStockPeriod != null) {
+                    if (mSelectedStockPeriod.getStockPeriodId() == mCurrentStockPeriod.getStockPeriodId()) {
+                        famProductListButton.setVisibility(View.VISIBLE);
+                    } else {
+                        if (mShowSearchItem) {
+                            mShowSearchItem = false;
+                            invalidateOptionsMenu();
+                        }
+
+                        famProductListButton.setVisibility(View.GONE);
                     }
 
-                    famProductListButton.setVisibility(View.GONE);
-                }
+                    if (mPreviousSelectedStockPeriodPosition != pos) {
 
-                if (mPreviousSelectedStockPeriodPosition != pos) {
-
-                    ProgressBarHelper.ShowProgressBar(progressBarHolder);
-                    mPreviousSelectedStockPeriodPosition = pos;
-                    getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
-                }
+                        ProgressBarHelper.ShowProgressBar(progressBarHolder);
+                        mPreviousSelectedStockPeriodPosition = pos;
+                        getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
+                    }
                 }
             }
 
@@ -520,7 +519,17 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                 if(mSavedSelectedStockPeriodPosition != -1)
                 {
-                    mStockPeriodSpinner.setSelection(mSavedSelectedStockPeriodPosition);
+                    //fix recycler view not refresh when user select index == 0
+                    if(mSavedSelectedStockPeriodPosition == 0 && mStockPeriodSpinner.getSelectedItemPosition() ==0)
+                    {
+                        ProgressBarHelper.ShowProgressBar(progressBarHolder);
+                        mPreviousSelectedStockPeriodPosition = mSavedSelectedStockPeriodPosition;
+                        mSelectedStockPeriod = (StockPeriod) spinnerAdapter.getItem(mSavedSelectedStockPeriodPosition);
+                        getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
+                    }
+                    else {
+                        mStockPeriodSpinner.setSelection(mSavedSelectedStockPeriodPosition);
+                    }
                 }
                 else {
                     mStockPeriodSpinner.setSelection(spinnerAdapter.getCount() - 1);
@@ -528,10 +537,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                 break;
         }
-
-        //if (position != ListView.INVALID_POSITION) {
-        //    bookList.smoothScrollToPosition(position);
-        //}
     }
 
     @Override

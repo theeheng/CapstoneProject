@@ -37,7 +37,7 @@
                     android:id="@+id/photo"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/detail_image_height"
-                    android:src="@mipmap/test"
+                    android:src="@mipmap/no_image"
                     android:contentDescription="@string/cd_product_image"
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"

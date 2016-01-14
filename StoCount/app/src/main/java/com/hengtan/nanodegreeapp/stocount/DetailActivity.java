@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputLayout;
@@ -200,7 +201,10 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
                 Glide.with(this).load(R.mipmap.no_image).fitCenter().into(image);
             }
             else {
-                Glide.with(this).load(mProduct.getLargeImage()).listener(new GlideLoaderListener<String, GlideDrawable>(this, R.mipmap.no_image)).fitCenter().into(image);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    postponeEnterTransition();
+                }
+                Glide.with(this).load(mProduct.getLargeImage()).listener(new GlideLoaderListener<String, GlideDrawable>(this, R.mipmap.no_image, image)).fitCenter().into(image);
             }
         }
 

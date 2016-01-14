@@ -365,7 +365,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                     if (mPreviousSelectedStockPeriodPosition != pos) {
 
-                        ProgressBarHelper.ShowProgressBar(progressBarHolder);
+                        //ProgressBarHelper.ShowProgressBar(progressBarHolder);
                         mPreviousSelectedStockPeriodPosition = pos;
                         getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
                     }
@@ -509,7 +509,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     setRecyclerViewTouchListener();
                 }
 
-                ProgressBarHelper.HideProgressBar(progressBarHolder);
+                //ProgressBarHelper.HideProgressBar(progressBarHolder);
 
                 adapter.swapCursor(data, mSelectedStockPeriod);
                 adapter.notifyDataSetChanged();
@@ -524,7 +524,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     //fix recycler view not refresh when user select index == 0
                     if(mSavedSelectedStockPeriodPosition == 0 && mStockPeriodSpinner.getSelectedItemPosition() ==0)
                     {
-                        ProgressBarHelper.ShowProgressBar(progressBarHolder);
+                        //ProgressBarHelper.ShowProgressBar(progressBarHolder);
                         mPreviousSelectedStockPeriodPosition = mSavedSelectedStockPeriodPosition;
                         mSelectedStockPeriod = (StockPeriod) spinnerAdapter.getItem(mSavedSelectedStockPeriodPosition);
                         getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
@@ -598,7 +598,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             this.mProductCursor = null;
             this.mContext = context;
             this.mCurrentStockPeriod = stockPeriod;
-            this.mGlideListener = new GlideLoaderListener<String, GlideDrawable>(mContext, android.R.drawable.ic_menu_gallery);
+            this.mGlideListener = new GlideLoaderListener<String, GlideDrawable>(mContext, android.R.drawable.ic_menu_gallery, null);
         }
 
         @Override
@@ -754,6 +754,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                         if(productImage != null)
                         {
+                            productImage.setTransitionName("photo");
                             ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(((Activity)mContext), productImage, "photo");
                             mContext.startActivity(intent, options.toBundle());
 

@@ -83,7 +83,8 @@
     <string name="restore_successful">Restore DB File Completed</string>
 
     <!-- searchable xml -->
-    <string name="search_hint">Add product by API product name</string>
+    <string name="search_hint">stock count by product name</string>
+    <string name="search_api_hint">Add product by API product name</string>
     <string name="search_setting_description">Product Name</string>
 
     <!-- others -->

@@ -66,6 +66,7 @@
 
         <ImageView
             android:id="@+id/img_data"
+            android:transitionName="photo"
             android:contentDescription="@string/cd_product_image"
             android:layout_width="@dimen/list_item_height"
             android:layout_height="@dimen/list_item_height"

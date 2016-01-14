@@ -1,6 +1,7 @@
 package com.hengtan.nanodegreeapp.stocount;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -10,6 +11,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.support.v4.view.MenuItemCompat;
@@ -332,7 +334,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                         } else if (view.getId() == R.id.txt_undo) {
                             mTouchListener.undoPendingDismiss();
                         } else { // R.id.txt_data
-                            adapter.onItemclicked(position);
+                            adapter.onItemclicked(view, position);
                         }
                     }
                 }));
@@ -699,7 +701,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             this.mSelectedStockPeriod = stockPeriod;
         }
 
-        public void onItemclicked(int position)
+        public void onItemclicked(View view, int position)
         {
             if(mProductCursor != null) {
 
@@ -729,7 +731,42 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                         intent.putExtra(DetailActivity.IS_PREVIOUS_STOCK_PERIOD, false);
                     }
 
-                    mContext.startActivity(intent);
+                    if(Build.VERSION.SDK_INT >= 21) {
+
+                        ImageView productImage = null;
+
+                        if(view instanceof ImageView)
+                        {
+                            productImage = (ImageView) view;
+                        }
+                        else
+                        {
+                            if(view.getParent() != null && view.getParent().getParent() != null)
+                            {
+                                View temp = ((View)view.getParent().getParent()).findViewById(R.id.img_data);
+
+                                if(temp instanceof ImageView)
+                                {
+                                    productImage = (ImageView) temp;
+                                }
+                            }
+                        }
+
+                        if(productImage != null)
+                        {
+                            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(((Activity)mContext), productImage, "photo");
+                            mContext.startActivity(intent, options.toBundle());
+
+                        }
+                        else
+                        {
+                            mContext.startActivity(intent);
+                        }
+                       }
+                    else
+                    {
+                        mContext.startActivity(intent);
+                    }
                 }
             }
         }

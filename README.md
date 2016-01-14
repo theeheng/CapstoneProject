@@ -7,9 +7,9 @@ mobile phone.
 
 # StoCount
 
-[![ScreenShot1](https://raw.githubusercontent.com/theeheng/CapstoneProject/master/demo1.gif)](https://www.youtube.com/watch?v=CK2i36x5zr4)
-[![ScreenShot2](https://raw.githubusercontent.com/theeheng/CapstoneProject/master/demo2.gif)](https://www.youtube.com/watch?v=CK2i36x5zr4)
-[![ScreenShot3](https://raw.githubusercontent.com/theeheng/CapstoneProject/master/demo3.gif)](https://www.youtube.com/watch?v=CK2i36x5zr4)
+[![ScreenShot1](https://raw.githubusercontent.com/theeheng/CapstoneProject/master/demo1.gif)](https://www.youtube.com/watch?v=eCjkQo1wiIg)
+[![ScreenShot2](https://raw.githubusercontent.com/theeheng/CapstoneProject/master/demo2.gif)](https://www.youtube.com/watch?v=eCjkQo1wiIg)
+[![ScreenShot3](https://raw.githubusercontent.com/theeheng/CapstoneProject/master/demo3.gif)](https://www.youtube.com/watch?v=eCjkQo1wiIg)
 
 StoCount is perfect for independent shopkeeper, small restaurant or home user which interested
 to keep track of store inventory electronically on a portable device such as mobile phone or

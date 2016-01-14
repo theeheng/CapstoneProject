@@ -172,10 +172,11 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 return true;
             case R.id.action_backup:
                 DbImportExport.exportDb(this);
-                Toast.makeText(this, mBackupSuccessfulStr, Toast.LENGTH_SHORT);
+                Toast.makeText(this, mBackupSuccessfulStr, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_restore:
                 DbImportExport.restoreDb(this);
+                Toast.makeText(this, mRestoreSuccessfulStr, Toast.LENGTH_SHORT).show();
                 //Load current stock period
                 getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
                 return true;

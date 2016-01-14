@@ -51,8 +51,8 @@
     <string name="undo">Undo</string>
 
     <string name="unable_delete_previous_stock_toast">Unable delete product for previous stock period.</string>
-    <string name="preivous_stock_period_spinner_item_text">From %1$s To %2$s</string>
-    <string name="current_stock_period_spinner_item_text">Current Period From</string>
+    <string name="preivous_stock_period_spinner_item_text">Period From %1$s To %2$s</string>
+    <string name="current_stock_period_spinner_item_text">Current Stock Period From</string>
     <!-- Detail Activity -->
     <string name="cd_description">Product Description</string>
     <string name="change_barcode_fab_text">Change Barcode</string>
@@ -83,7 +83,7 @@
     <string name="restore_successful">Restore DB File Completed</string>
 
     <!-- searchable xml -->
-    <string name="search_hint">search by product name</string>
+    <string name="search_hint">Add product by API product name</string>
     <string name="search_setting_description">Product Name</string>
 
     <!-- others -->

@@ -108,7 +108,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     private static final int PREVIOUS_STOCK_LOADER = 1;
 
-    private GoogleApiClient mGoogleApiClient;
+    private static final String SELECTED_STOCKPERIOD_KEY = "SELECTEDSTOCKPERIODKEY";
+
 
     private String mApiCode;
 
@@ -129,8 +130,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     private SwipeToDismissTouchListener<RecyclerViewAdapter> mTouchListener;
 
     private boolean mIsTouchListenerRemoved = true;
-
-    private static int mPreviousSelectedStockPeriodPosition = -1;
+    private boolean mShowSearchItem = false;
+    private int mPreviousSelectedStockPeriodPosition = -1;
+    private int mSavedSelectedStockPeriodPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,24 +147,16 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         mApiCall = Application.GetApiCallFromPreference(mApiCode);
         mCurrentStockPeriod = Application.getCurrentStockPeriod();
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_STOCKPERIOD_KEY)) {
+            mSavedSelectedStockPeriodPosition = savedInstanceState.getInt(SELECTED_STOCKPERIOD_KEY,-1);
+            mPreviousSelectedStockPeriodPosition = -1;
+        }
+
         init();
 
         hideShowFab();
 
         getLoaderManager().restartLoader(PREVIOUS_STOCK_LOADER, null, this);
-
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-
-        // Build a GoogleApiClient with access to the Google Sign-In API and the
-        // options specified by gso.
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
 
         Resources res = getResources();
 
@@ -173,6 +167,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     @OnClick(R.id.fabManualButton)
     public void onManualClick(View v) {
+
+        famProductListButton.collapse();
+
+        mShowSearchItem = false;
+        invalidateOptionsMenu();
+
         Product prod = new Product(getResources());
         Bundle bundle = new Bundle();
         bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
@@ -183,19 +183,30 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     @OnClick(R.id.fabSearchButton)
     public void onSearchClick(View v) {
+
         famProductListButton.collapse();
 
         View actionSearch = findViewById(R.id.action_search);
 
         if(actionSearch instanceof ActionMenuItemView)
         {
-            ((ActionMenuItemView)actionSearch).callOnClick();
+            if(mShowSearchItem == false) {
+                mShowSearchItem = true;
+                invalidateOptionsMenu();
+            }
+            else {
+                ((ActionMenuItemView) actionSearch).callOnClick();
+            }
         }
     }
 
     @OnClick(R.id.fabBarcodeButton)
     public void onBarcodeClick(View v) {
         famProductListButton.collapse();
+
+        mShowSearchItem = false;
+        invalidateOptionsMenu();
+
         try {
             IntentIntegrator intentIntegrator = new IntentIntegrator(ProductListActivity.this);
             //intentIntegrator.setOrientationLocked(false);
@@ -208,14 +219,14 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.product_list_menu, menu);
 
         mSearchItem = menu.findItem(R.id.action_search);
 
-        if(!Utilities.IsConnectedToInternet(this))
-        {
-            mSearchItem.setVisible(false);
-        }
+        //if(!Utilities.IsConnectedToInternet(this))
+        //{
+        //    mSearchItem.setVisible(false);
+        //}
 
         searchView = (SearchView) MenuItemCompat.getActionView(mSearchItem);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -228,6 +239,14 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 new
 
         );*/
+
+        if(!mShowSearchItem) {
+            mSearchItem.setEnabled(false);
+        } else
+        {
+            mSearchItem.expandActionView();
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -237,17 +256,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        switch (id)
-        {
-            case R.id.action_logout:
-                Application.Logout(mGoogleApiClient, this);
-                return true;
-            case R.id.action_settings:
-                Intent i = new Intent(this, SettingsActivity.class);
-                startActivityForResult(i, RESULT_SETTINGS);
-                return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -285,7 +293,10 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         super.onResume();
         hideShowFab();
         RefreshApiPreference();
-        getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
+
+        if(mSelectedStockPeriod != null && mSelectedStockPeriod.getStockPeriodId() == mCurrentStockPeriod.getStockPeriodId()) {
+            getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
+        }
     }
     
     private void init() {
@@ -338,11 +349,25 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                                        View view, int pos, long id) {
                 mSelectedStockPeriod = (StockPeriod) parent.getItemAtPosition(pos);
 
-                if(mPreviousSelectedStockPeriodPosition != pos) {
+                if(mSelectedStockPeriod != null)
+                {
+                if (mSelectedStockPeriod.getStockPeriodId() == mCurrentStockPeriod.getStockPeriodId()) {
+                    famProductListButton.setVisibility(View.VISIBLE);
+                } else {
+                    if (mShowSearchItem) {
+                        mShowSearchItem = false;
+                        invalidateOptionsMenu();
+                    }
+
+                    famProductListButton.setVisibility(View.GONE);
+                }
+
+                if (mPreviousSelectedStockPeriodPosition != pos) {
 
                     ProgressBarHelper.ShowProgressBar(progressBarHolder);
                     mPreviousSelectedStockPeriodPosition = pos;
                     getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
+                }
                 }
             }
 
@@ -478,7 +503,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 if(data.getCount() == 0 && mCurrentStockPeriod.getStockPeriodId() != mSelectedStockPeriod.getStockPeriodId() && mIsTouchListenerRemoved == false) {
                     removeRecyclerViewTouchListener();
                 }
-                else if(data.getCount() > 0 && mCurrentStockPeriod.getStockPeriodId() == mSelectedStockPeriod.getStockPeriodId() && mIsTouchListenerRemoved == true)
+                else if(data.getCount() > 0 && mSelectedStockPeriod !=null && mCurrentStockPeriod.getStockPeriodId() == mSelectedStockPeriod.getStockPeriodId() && mIsTouchListenerRemoved == true)
                 {
                     setRecyclerViewTouchListener();
                 }
@@ -492,7 +517,15 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             case PREVIOUS_STOCK_LOADER:
                 spinnerAdapter.swapCursor(data);
                 spinnerAdapter.notifyDataSetChanged();
-                mStockPeriodSpinner.setSelection(spinnerAdapter.getCount()-1);
+
+                if(mSavedSelectedStockPeriodPosition != -1)
+                {
+                    mStockPeriodSpinner.setSelection(mSavedSelectedStockPeriodPosition);
+                }
+                else {
+                    mStockPeriodSpinner.setSelection(spinnerAdapter.getCount() - 1);
+                }
+
                 break;
         }
 
@@ -535,6 +568,15 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        if (mPreviousSelectedStockPeriodPosition != -1) {
+            outState.putInt(SELECTED_STOCKPERIOD_KEY, mPreviousSelectedStockPeriodPosition);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     static class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

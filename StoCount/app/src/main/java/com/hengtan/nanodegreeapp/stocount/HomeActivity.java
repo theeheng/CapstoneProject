@@ -87,7 +87,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     private String mSearchCriteriaProductIdStr;
     private String mNoProductFoundStr;
     private String mBackupSuccessfulStr;
+    private String mBackupErrorStr;
     private String mRestoreSuccessfulStr;
+    private String mRestoreErrorStr;
 
     private Integer mSearchResultId;
 
@@ -128,6 +130,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         mNoProductFoundStr =  res.getString(R.string.no_product_found_toast_text);
         mBackupSuccessfulStr =  res.getString(R.string.backup_successful);
         mRestoreSuccessfulStr =  res.getString(R.string.restore_successful);
+        mBackupErrorStr =  res.getString(R.string.backup_error);
+        mRestoreErrorStr =  res.getString(R.string.restore_error);
 
         if (mStockPeriod != null) {
             SetStockPeriodText(mStockPeriod);
@@ -171,14 +175,28 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 startActivityForResult(i, RESULT_SETTINGS);
                 return true;
             case R.id.action_backup:
-                DbImportExport.exportDb(this);
-                Toast.makeText(this, mBackupSuccessfulStr, Toast.LENGTH_SHORT).show();
+                if(DbImportExport.exportDb(this)) {
+                    Toast.makeText(this, mBackupSuccessfulStr, Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(this, mBackupErrorStr, Toast.LENGTH_SHORT).show();
+                }
                 return true;
             case R.id.action_restore:
-                DbImportExport.restoreDb(this);
-                Toast.makeText(this, mRestoreSuccessfulStr, Toast.LENGTH_SHORT).show();
-                //Load current stock period
-                getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
+                int dbVersion = DbImportExport.restoreDb(this);
+
+                if(dbVersion == DbImportExport.INVALID_DB_VERSION && dbVersion == DbImportExport.DB_FILE_NOT_EXIST && dbVersion == DbImportExport.RESTORE_DB_EXCEPTION) {
+
+                    Toast.makeText(this, String.format(mRestoreErrorStr, dbVersion), Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(this, String.format(mRestoreSuccessfulStr, dbVersion) , Toast.LENGTH_SHORT).show();
+
+                    //Load current stock period
+                    getLoaderManager().restartLoader(STOCK_PERIOD_LOADER, null, this);
+                }
                 return true;
             case R.id.action_send:
                 DbImportExport.sendDBFile(this);

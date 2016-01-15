@@ -80,7 +80,9 @@
     <string name="action_send">Send Backup File</string>
 
     <string name="backup_successful">Backup DB Completed</string>
-    <string name="restore_successful">Restore DB File Completed</string>
+    <string name="backup_error">Unable to Backup DB</string>
+    <string name="restore_successful">Restore DB Version %1$d Completed</string>
+    <string name="restore_error">Unable to Restore DB due to error code %1$d</string>
 
     <!-- searchable xml -->
     <string name="search_hint">stock count by product name</string>

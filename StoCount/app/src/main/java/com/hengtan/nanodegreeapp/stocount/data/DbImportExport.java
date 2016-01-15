@@ -39,6 +39,13 @@ public class DbImportExport {
 
     public static final String DATABASE_TABLE = "entryTable";
 
+    public static final int INVALID_DB_VERSION = -1;
+
+    public static final int DB_FILE_NOT_EXIST = -2;
+
+    public static final int RESTORE_DB_EXCEPTION = -3;
+
+
     /** Contains: /data/data/com.example.app/databases/example.db **/
 
     private static final File DATA_DIRECTORY_DATABASE =
@@ -86,7 +93,7 @@ public class DbImportExport {
 
     /** Replaces current database with the IMPORT_FILE if
      * import database is valid and of the correct type **/
-    public static boolean restoreDb(Context ctx){
+    public static int restoreDb(Context ctx){
 
         String preferenceBackupPath = GetBackupDirectoryFromPreference(ctx);
 
@@ -99,20 +106,22 @@ public class DbImportExport {
 
         File exportFile = DATA_DIRECTORY_DATABASE;
 
-        if( ! checkDbIsValid(importFile) ) return false;
+        int dbVersion = checkDbIsValid(importFile);
+
+        if(dbVersion == INVALID_DB_VERSION) return INVALID_DB_VERSION;
 
         if (!importFile.exists()) {
             Log.d(TAG, "File does not exist");
-            return false;
+            return DB_FILE_NOT_EXIST;
         }
 
         try {
             exportFile.createNewFile();
             copyFile(importFile, exportFile);
-            return true;
+            return dbVersion;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return RESTORE_DB_EXCEPTION;
         }
     }
 
@@ -146,11 +155,10 @@ public class DbImportExport {
 
     /** Imports the file at IMPORT_FILE **/
     protected static boolean importIntoDb(Context ctx){
-        if( ! SdIsPresent() ) return false;
 
         File importFile = IMPORT_EXTERNAL_DIRECTORY_FILE;
 
-        if( ! checkDbIsValid(importFile) ) return false;
+        if( checkDbIsValid(importFile) == INVALID_DB_VERSION ) return false;
 
         try{
             SQLiteDatabase sqlDb = SQLiteDatabase.openDatabase
@@ -190,39 +198,49 @@ public class DbImportExport {
     /** Given an SQLite database file, this checks if the file
      * is a valid SQLite database and that it contains all the
      * columns represented by DbAdapter.ALL_COLUMN_KEYS **/
-    protected static boolean checkDbIsValid( File db ){
+    protected static int checkDbIsValid( File db ){
+
+        int dbVersion = INVALID_DB_VERSION;
+
         try{
             SQLiteDatabase sqlDb = SQLiteDatabase.openDatabase
                     (db.getPath(), null, SQLiteDatabase.OPEN_READONLY);
+
+            dbVersion = sqlDb.getVersion();
+
+            if(dbVersion != INVALID_DB_VERSION && dbVersion < DbHelper.CURRENT_DATABASE_VERSION)
+            {
+                //perform db upgrade
+            }
 
             Cursor cursor = sqlDb.query(true, StoCountContract.ProductCountEntry.TABLE_NAME,
                     null, null, null, null, null, null, null
             );
 
-// ALL_COLUMN_KEYS should be an array of keys of essential columns.
+            // ALL_COLUMN_KEYS should be an array of keys of essential columns.
 
-// Throws exception if any column is missing
-         //   for( String s : DbAdapter.ALL_COLUMN_KEYS ){
-         //       cursor.getColumnIndexOrThrow(s);
-         //   }
+            // Throws exception if any column is missing
+                 //   for( String s : DbAdapter.ALL_COLUMN_KEYS ){
+                 //       cursor.getColumnIndexOrThrow(s);
+                 //   }
 
             sqlDb.close();
             cursor.close();
         } catch( IllegalArgumentException e ) {
             Log.d(TAG, "Database valid but not the right type");
             e.printStackTrace();
-            return false;
+            return INVALID_DB_VERSION;
         } catch( SQLiteException e ) {
             Log.d(TAG, "Database file is invalid.");
             e.printStackTrace();
-            return false;
+            return INVALID_DB_VERSION;
         } catch( Exception e){
             Log.d(TAG, "checkDbIsValid encountered an exception");
             e.printStackTrace();
-            return false;
+            return INVALID_DB_VERSION;
         }
 
-        return true;
+        return dbVersion;
     }
 
     private static void copyFile(File src, File dst) throws IOException {

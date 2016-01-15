@@ -10,11 +10,13 @@ import android.util.Log;
  */
 public class DbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION_0 = 0;
+    private static final int DATABASE_VERSION_1 = 1;
+    public static final int CURRENT_DATABASE_VERSION = DATABASE_VERSION_1;
     public static final String DATABASE_NAME = "stocount.db";
 
     public DbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, CURRENT_DATABASE_VERSION);
     }
 
     @Override
@@ -69,6 +71,12 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        switch(oldVersion) {
+            case DATABASE_VERSION_0:
+                //db.execSQL(DATABASE_CREATE_color);
+                // we want both updates, so no break statement here...
+            case DATABASE_VERSION_1:
+                //db.execSQL(DATABASE_CREATE_someothertable);
+        }
     }
 }

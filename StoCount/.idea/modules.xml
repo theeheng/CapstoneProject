@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/swipe/swipe.iml" filepath="$PROJECT_DIR$/swipe/swipe.iml" />
       <module fileurl="file://$PROJECT_DIR$/tesco-web-api-android/tesco-web-api-android.iml" filepath="$PROJECT_DIR$/tesco-web-api-android/tesco-web-api-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/walmart-web-api-android/walmart-web-api-android.iml" filepath="$PROJECT_DIR$/walmart-web-api-android/walmart-web-api-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wear/wear.iml" filepath="$PROJECT_DIR$/wear/wear.iml" />
       <module fileurl="file://$PROJECT_DIR$/zxing/zxing.iml" filepath="$PROJECT_DIR$/zxing/zxing.iml" />
     </modules>
   </component>

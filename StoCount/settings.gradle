@@ -1,1 +1,1 @@
-include ':app', ':swipe',':tesco-web-api-android', ':walmart-web-api-android', ':zxing', ':amazon-advertising-api-android', ':image-chooser-library'
+include ':app', ':swipe',':tesco-web-api-android', ':walmart-web-api-android', ':zxing', ':amazon-advertising-api-android', ':image-chooser-library', ':wear'

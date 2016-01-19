@@ -14,6 +14,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.os.Environment;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintJob;
+import android.print.PrintManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +34,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
@@ -51,6 +58,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
 import com.hengtan.nanodegreeapp.stocount.data.DBAsyncTask;
+import com.hengtan.nanodegreeapp.stocount.data.DbImportExport;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
@@ -96,6 +104,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     @InjectView(R.id.progressBarHolder)
     protected FrameLayout progressBarHolder;
+
+    private WebView mWebView;
 
     private SearchView searchView;
 
@@ -230,6 +240,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         //    mSearchItem.setVisible(false);
         //}
 
+        MenuItem printMenuItem = menu.findItem(R.id.action_print);
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            printMenuItem.setVisible(false);
+        }
+
         searchView = (SearchView) MenuItemCompat.getActionView(mSearchItem);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -259,7 +275,91 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        switch (id) {
+            case R.id.action_print:
+                PrintStockSheet();
+                return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void PrintStockSheet() {
+        // Create a WebView object specifically for printing
+        WebView webView = new WebView(this);
+        webView.setWebViewClient(new WebViewClient() {
+
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                Log.i(TAG, "page finished loading " + url);
+                createPrintJob(view);
+                mWebView = null;
+            }
+        });
+
+        String currentHeaderFormatString = "Current Period Starting From %1$s";
+        String previousHeaderFormatString = "Previous Stock Period From %1$s To %2$s";
+        String row = "<tr><td><img src=\"%1$s\" width=100 height=100/></td><td>%2$s</td><td>%3$s</td><td>%4$s</td></tr>";
+        String header = "";
+
+        if(mSelectedStockPeriod.getEndDate() == null)
+        {
+            header = String.format(currentHeaderFormatString,mSelectedStockPeriod.DateFormat.format(mSelectedStockPeriod.getStartDate()));
+        }
+        else
+        {
+            header = String.format(previousHeaderFormatString,mSelectedStockPeriod.DateFormat.format(mSelectedStockPeriod.getStartDate()), mSelectedStockPeriod.DateFormat.format(mSelectedStockPeriod.getEndDate()));
+        }
+        
+        // Generate an HTML document on the fly:
+        String htmlDocument = "<html><body><h1>"+header+"</h1><p> ";
+
+        htmlDocument += "<table><th colspan=2>Product Name</th><th>Additional Info</th><th>Stock Count</th>";
+
+        if(adapter.mProductCursor != null)
+        {
+            if(adapter.mProductCursor.moveToFirst()) {
+                do {
+                        htmlDocument += String.format(row,
+                                adapter.mProductCursor.getString(adapter.mProductCursor.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE)),
+                                adapter.mProductCursor.getString(adapter.mProductCursor.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME)),
+                                adapter.mProductCursor.getString(adapter.mProductCursor.getColumnIndex(StoCountContract.ProductEntry.ADDITIONAL_INFO)),
+                                adapter.mProductCursor.getString(adapter.mProductCursor.getColumnIndex(StoCountContract.ProductCountEntry.QUANTITY))
+
+                        );
+
+                }while(adapter.mProductCursor.moveToNext());
+            }
+        }
+
+        htmlDocument += "</table></p></body></html>";
+        String imageDirectory ="file:///"+ Environment.getExternalStorageDirectory()+"/"+ DbImportExport.DEFAULT_IMAGE_BACKUP_DIRECTORY;
+
+        webView.loadDataWithBaseURL(imageDirectory, htmlDocument, "text/HTML", "UTF-8", null);
+
+        // Keep a reference to WebView object until you pass the PrintDocumentAdapter
+        // to the PrintManager
+        mWebView = webView;
+
+    }
+
+    private void createPrintJob(WebView webView) {
+
+        // Get a PrintManager instance
+        PrintManager printManager = (PrintManager) this.getSystemService(Context.PRINT_SERVICE);
+
+        // Get a print adapter instance
+        PrintDocumentAdapter printAdapter = webView.createPrintDocumentAdapter();
+
+        // Create a print job with name and adapter instance
+        String jobName = getString(R.string.app_name) + " Document";
+        PrintJob printJob = printManager.print(jobName, printAdapter,new PrintAttributes.Builder().build());
+
+        // Save the job object for later status checking
+        //mPrintJobs.add(printJob);
     }
 
     @Override
@@ -731,7 +831,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                         intent.putExtra(DetailActivity.IS_PREVIOUS_STOCK_PERIOD, false);
                     }
 
-                    if(Build.VERSION.SDK_INT >= 21) {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
                         ImageView productImage = null;
 

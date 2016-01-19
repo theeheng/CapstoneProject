@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="demo_blue">#03a9f4</color>
+    <color name="demo_green">#72d572</color>
+    <color name="demo_red">#ff0000</color>
+    <color name="demo_item_text_color">@android:color/black</color>
+
+    <!-- Watch Face demo -->
+    <color name="watch_face_background">#cccccc</color>
+    <color name="default_time">#000000</color>
+    <color name="ambient_time">#ffffff</color>
+    <color name="ambient_background">#000000</color>
+    <color name="one_hundred_ten">#e5aeba</color>
+    <color name="one_hundred">#8e0f15</color>
+    <color name="ninety">#bc3118</color>
+    <color name="eighty">#da5d00</color>
+    <color name="seventy">#f5a704</color>
+    <color name="sixty">#cfc90a</color>
+    <color name="fifty">#27b22d</color>
+    <color name="forty">#19691e</color>
+    <color name="thirty">#2b4549</color>
+    <color name="twenty">#554ba6</color>
+    <color name="ten">#54a2c9</color>
+    <color name="zero">#2f66be</color>
+    <color name="negative_ten">#4256ba</color>
+    <color name="negative_twenty">#ad79e0</color>
+
+</resources>

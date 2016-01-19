@@ -5,6 +5,12 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/hengtan/nanodegreeapp/stocount/data/StoCountContract.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/com/hengtan/nanodegreeapp/stocount/data/StoCountProvider.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/xml/searchable.xml" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/wear/src/main/java/com/hengtan/nanodegreeapp/wear/DemoItemAdapter.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/wear/src/main/java/com/hengtan/nanodegreeapp/wear/DemoItemLayout.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/wear/src/main/res/drawable/demo_item_circle.xml" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/wear/src/main/res/layout/view_demo_item_layout.xml" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/wear/src/main/res/layout/view_demo_item_layout_content.xml" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/wear/src/main/res/values/colors.xml" charset="windows-1252" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

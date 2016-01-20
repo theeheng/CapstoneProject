@@ -40,6 +40,18 @@
         android:background="@color/teal_500"
         android:textColor="@color/text_light"/>
 
+        <Button
+            android:id="@+id/voiceButton"
+            android:text="Voice Search"
+            android:contentDescription="Voice Search"
+            android:layout_width="@dimen/home_button_width"
+            android:layout_height="@dimen/home_button_height"
+            android:layout_below="@+id/searchButton"
+            android:padding="@dimen/keyline_margin"
+            android:layout_margin="@dimen/keyline_margin"
+            android:drawableTop="@android:drawable/ic_menu_search"
+            android:background="@color/teal_500"
+            android:textColor="@color/text_light"/>
     <Button
         android:id="@+id/viewButton"
         android:text="@string/view_btn_text"

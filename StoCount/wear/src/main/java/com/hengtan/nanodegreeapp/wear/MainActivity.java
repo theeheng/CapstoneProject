@@ -22,13 +22,17 @@ public class MainActivity extends Activity implements WearableListView.ClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
+      /* final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
                 mTextView = (TextView) stub.findViewById(R.id.text);
+                mListView = (WearableListView) stub.findViewById(R.id.wearable_list);
             }
         });
+*/
+        
+        mListView = (WearableListView) findViewById(R.id.wearable_list);
         setupData();
         setupListView();
     }
@@ -46,11 +50,12 @@ public class MainActivity extends Activity implements WearableListView.ClickList
 
     public void setupData() {
        // mData.add(new DemoItem(getString(R.string.demo_item_bad_layout), new Intent(this, BadLayoutActivity.class)));
+ mData.add(new DemoItem("Detail", new Intent(this, DetailActivity.class)));
 
     }
 
     public void setupListView() {
-        mListView = (WearableListView) findViewById(R.id.wearable_list);
+
         mAdapter = new DemoItemAdapter(mData);
         mListView.setAdapter(mAdapter);
 

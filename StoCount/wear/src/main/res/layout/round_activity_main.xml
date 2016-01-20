@@ -6,16 +6,23 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:orientation="vertical"
-        tools:context=".MainActivity" tools:deviceIds="wear_square">
-        <TextView android:id="@+id/text" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="@string/hello_round" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_box="all">
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@android:color/black"
+            android:layout_height="wrap_content"
+            android:text="@string/hello_round" />
         <android.support.wearable.view.WearableListView
             android:id="@+id/wearable_list"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            app:layout_box="left|right"/>
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            />
     </LinearLayout>
 </android.support.wearable.view.BoxInsetLayout>

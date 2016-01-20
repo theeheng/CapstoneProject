@@ -103,7 +103,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     protected RecyclerView mRecyclerView;
 
     @InjectView(R.id.progressBarHolder)
-    protected FrameLayout progressBarHolder;
+    protected FrameLayout mProgressBarHolder;
 
     private WebView mWebView;
 
@@ -395,6 +395,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         super.onResume();
         hideShowFab();
         RefreshApiPreference();
+        ProgressBarHelper.HideProgressBar(this.mProgressBarHolder);
 
         if(mSelectedStockPeriod != null && mSelectedStockPeriod.getStockPeriodId() == mCurrentStockPeriod.getStockPeriodId()) {
             getLoaderManager().restartLoader(PRODUCT_LOADER, null, this);
@@ -405,7 +406,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        adapter = new ProductListAdapter(this, mCurrentStockPeriod);
+        adapter = new ProductListAdapter(this, mCurrentStockPeriod, this.mProgressBarHolder);
         mRecyclerView.setAdapter(adapter);
 
         mTouchListener =
@@ -464,8 +465,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     }
 
                     if (mPreviousSelectedStockPeriodPosition != pos) {
-
-                        //ProgressBarHelper.ShowProgressBar(progressBarHolder);
                         mPreviousSelectedStockPeriodPosition = pos;
                         getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
                     }
@@ -609,8 +608,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     setRecyclerViewTouchListener();
                 }
 
-                //ProgressBarHelper.HideProgressBar(progressBarHolder);
-
                 adapter.swapCursor(data, mSelectedStockPeriod);
                 adapter.notifyDataSetChanged();
 
@@ -624,7 +621,6 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     //fix recycler view not refresh when user select index == 0
                     if(mSavedSelectedStockPeriodPosition == 0 && mStockPeriodSpinner.getSelectedItemPosition() ==0)
                     {
-                        //ProgressBarHelper.ShowProgressBar(progressBarHolder);
                         mPreviousSelectedStockPeriodPosition = mSavedSelectedStockPeriodPosition;
                         mSelectedStockPeriod = (StockPeriod) spinnerAdapter.getItem(mSavedSelectedStockPeriodPosition);
                         getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
@@ -693,11 +689,13 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
         private StockPeriod mCurrentStockPeriod;
         private StockPeriod mSelectedStockPeriod;
         private GlideLoaderListener<String, GlideDrawable> mGlideListener;
+        private FrameLayout mProgressBarHolder;
 
-        ProductListAdapter(Context context, StockPeriod stockPeriod) {
+        ProductListAdapter(Context context, StockPeriod stockPeriod, FrameLayout progBarHolder) {
             this.mProductCursor = null;
             this.mContext = context;
             this.mCurrentStockPeriod = stockPeriod;
+            this.mProgressBarHolder = progBarHolder;
             this.mGlideListener = new GlideLoaderListener<String, GlideDrawable>(mContext, android.R.drawable.ic_menu_gallery, null);
         }
 
@@ -854,6 +852,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
                         if(productImage != null)
                         {
+                            ProgressBarHelper.ShowProgressBar(this.mProgressBarHolder);
                             productImage.setTransitionName("photo");
                             ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(((Activity)mContext), productImage, "photo");
                             mContext.startActivity(intent, options.toBundle());

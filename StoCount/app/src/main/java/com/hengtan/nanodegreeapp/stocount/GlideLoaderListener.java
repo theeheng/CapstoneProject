@@ -30,7 +30,14 @@ public class GlideLoaderListener<T, R> implements RequestListener<T, R> {
         android.util.Log.d("GLIDE LoggingListener", String.format(Locale.ROOT,
                 "onException(%s, %s, %s, %s)", e, model, target, isFirstResource), e);
 
-        Glide.with(ctx).load(defaultImg).fitCenter().into(target);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && imgView != null) {
+            imgView.setImageResource(defaultImg);
+            scheduleStartPostponedTransition(imgView, ((Activity) this.ctx));
+        }
+        else
+        {
+            Glide.with(ctx).load(defaultImg).fitCenter().into(target);
+        }
 
         return true;
     }

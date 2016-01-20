@@ -1,9 +1,11 @@
 package com.hengtan.nanodegreeapp.stocount;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -12,6 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.speech.RecognizerIntent;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +25,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +49,8 @@ import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener {
 
@@ -65,6 +71,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @InjectView(R.id.stockPeriodDate)
     protected TextView txtStockPeriodDate;
 
+    @InjectView(R.id.voiceButton)
+    protected Button btnVoice;
+
     private SearchView searchView;
 
     public static final int RESULT_SETTINGS = 1;
@@ -75,6 +84,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     private static final int PRODUCT_BARCODE_LOADER = 1;
 
     private static final int STOCK_PERIOD_LOADER = 2;
+
+    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1001;
 
     private String mBarcodeResult;
     private String mBarcodeFormat;
@@ -228,6 +239,33 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         }
     }
 
+    @OnClick(R.id.voiceButton)
+    public void onVoiceBtnClick(View v) {
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        // Specify the calling package to identify your application
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass()
+                .getPackage().getName());
+
+        // Display an hint to the user about what he should say.
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say: {Product Name} QUANTITY {Stock Count Value} UPDATE"
+                .toString());
+
+        // Given an hint to the recognizer about what the user is going to say
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                Locale.getDefault());
+
+        int noOfMatches = 10;
+        // Specify how many results you want to receive. The results will be
+        // sorted where the first result is the one with higher confidence.
+
+        //intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, noOfMatches);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+    }
+
+
     @OnClick(R.id.viewButton)
     public void onViewBtnClick(View v) {
         Intent intent = new Intent(this, ProductListActivity.class);
@@ -244,7 +282,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null) {
+        if (requestCode == IntentIntegrator.REQUEST_CODE && result != null) {
 
             mBarcodeResult = result.getContents();
             mSearchResultId = null;
@@ -259,10 +297,108 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 String formatTypeResult = result.getType(); // PRODUCT | ISBN
                 searchProductFromDB();
             }
+        } else if (requestCode == this.VOICE_RECOGNITION_REQUEST_CODE) {
+            //If Voice recognition is successful then it returns RESULT_OK
+            if (resultCode == RESULT_OK) {
+
+                ArrayList<String> textMatchList = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+                if (!textMatchList.isEmpty()) {
+
+                    if (textMatchList.size() == 1) {
+                        voiceProductSearch(textMatchList.get(0));
+                    } else {
+                        if (textMatchList.size() > 1) {
+                            AlertDialog.Builder builderSingle = new AlertDialog.Builder(
+                                    HomeActivity.this);
+                            builderSingle.setIcon(android.R.drawable.ic_menu_search);
+                            builderSingle.setTitle("Select a correct suggestion:-");
+                            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                                    HomeActivity.this,
+                                    android.R.layout.select_dialog_singlechoice, textMatchList);
+
+                            builderSingle.setNegativeButton("cancel",
+                                    new DialogInterface.OnClickListener() {
+
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+
+                            builderSingle.setAdapter(arrayAdapter,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            String strName = arrayAdapter.getItem(which);
+                                            voiceProductSearch(strName);
+                                        }
+                                    });
+                            builderSingle.show();
+                        }
+                    }
+
+                    // If first Match contains the 'search' word
+                    // Then start web search.
+
+                    // if (textMatchList.get(0).contains("search")) {
+
+                    //String searchQuery = textMatchList.get(0).replace("search", " ");
+                    //Intent search = new Intent(Intent.ACTION_WEB_SEARCH);
+                    //search.putExtra(SearchManager.QUERY, searchQuery);
+                    //startActivity(search);
+                    //  } else {
+                    // populate the Matches
+                    //     mlvTextMatches
+                    //             .setAdapter(new ArrayAdapter<String>(this,
+                    //                     android.R.layout.simple_list_item_1,
+                    //                     textMatchList));
+                    // }
+
+                }
+                //Result code for various error.
+            } else if (resultCode == RecognizerIntent.RESULT_AUDIO_ERROR) {
+                showToastMessage("Audio Error");
+            } else if (resultCode == RecognizerIntent.RESULT_CLIENT_ERROR) {
+                showToastMessage("Client Error");
+            } else if (resultCode == RecognizerIntent.RESULT_NETWORK_ERROR) {
+                showToastMessage("Network Error");
+            } else if (resultCode == RecognizerIntent.RESULT_NO_MATCH) {
+                showToastMessage("No Match");
+            } else if (resultCode == RecognizerIntent.RESULT_SERVER_ERROR) {
+                showToastMessage("Server Error");
+            }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    public void voiceProductSearch(String voiceText)
+    {
+        String productName = voiceText.toLowerCase().replace(" qty "," quantity ").replace(" quantities "," quantity ").replace("updates","update");
+        String quantityVoice = null;
+        boolean updateVoice = false;
+
+        showToastMessage(productName);
+
+        if(productName.toLowerCase().contains(" quantity "))
+        {
+            if(productName.length() > 6 && productName.substring(productName.length()-6,productName.length()).toLowerCase().equals("update"))
+            {
+                updateVoice = true;
+            }
+
+            String[] voiceResult = productName.toLowerCase().replace("update","").split(" quantity ");
+
+            productName = voiceResult[0];
+            quantityVoice = voiceResult[1];
+        }
+
+    }
+
+    void showToastMessage(String message){
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override

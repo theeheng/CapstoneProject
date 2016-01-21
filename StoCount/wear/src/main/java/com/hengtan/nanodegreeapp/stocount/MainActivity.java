@@ -106,7 +106,7 @@ public class MainActivity extends Activity implements WearableListView.ClickList
     @Override
     public void onConnected(Bundle bundle) {
         String messagePhone = "Hello phone\n Via the data layer";
-        new SendToDataLayerThread("/message_path", messagePhone).start();
+        new SendToDataLayerThread("/stocount-wearable-message-path", messagePhone).start();
 
     }
 

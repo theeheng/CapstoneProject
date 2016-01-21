@@ -12,7 +12,7 @@ public class WearListenerService extends com.google.android.gms.wearable.Wearabl
     public void onMessageReceived(MessageEvent messageEvent) {
         Log.v("myTag", "Message received on phone  from " + messageEvent.getSourceNodeId());
 
-        if (messageEvent.getPath().equals("/message_path")) {
+        if (messageEvent.getPath().equals("/stocount-wearable-message-path")) {
             final String message = new String(messageEvent.getData());
             Log.v("myTag", "Message path received on phone is: " + messageEvent.getPath());
             Log.v("myTag", "Message received on phone is: " + message);

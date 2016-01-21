@@ -25,14 +25,14 @@ import java.util.concurrent.TimeUnit;
  * Created by shalini
  */
 public class ListenerService extends com.google.android.gms.wearable.WearableListenerService {
-    private static final String WEARABLE_DATA_PATH = "/message_path";
+    private static final String WEARABLE_DATA_PATH = "/stocount-wearable-message-path";
     private static final String TAG = "ListenerService";
     private static long TIMEOUT_MS = 60000;
 
     @Override
     public void onCreate() {
 
-        Log.v("ListenerService", "onCreate : ");
+        Log.d("ListenerService", "onCreate : ");
 
         super.onCreate();
     }
@@ -40,7 +40,7 @@ public class ListenerService extends com.google.android.gms.wearable.WearableLis
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
 
-        Log.v("ListenerService", "onMessageReceived : ");
+        Log.d("ListenerService", "onMessageReceived : ");
 
         if (messageEvent.getPath().equals(WEARABLE_DATA_PATH)) {
             final String message = new String(messageEvent.getData());

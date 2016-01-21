@@ -19,12 +19,15 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataMap;
@@ -39,6 +42,11 @@ import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 
 public class ProductWearService extends IntentService implements
@@ -47,7 +55,7 @@ public class ProductWearService extends IntentService implements
 
     GoogleApiClient googleClient;
 
-    private static final String WEARABLE_DATA_PATH = "/message_path";
+    private static final String WEARABLE_DATA_PATH = "/stocount-wearable-data-path";
 
     /*private static final String[] FORECAST_COLUMNS = {
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
@@ -63,6 +71,8 @@ public class ProductWearService extends IntentService implements
     private static final int INDEX_MAX_TEMP = 2;
     private static final int INDEX_MIN_TEMP = 3;
 
+    private boolean isConnected = false;
+
     public ProductWearService() {
         super("ProductWearService");
     }
@@ -71,7 +81,7 @@ public class ProductWearService extends IntentService implements
     protected void onHandleIntent(Intent intent) {
         boolean dataUpdated = intent != null &&
                 WearListenerService.ACTION_DATA_UPDATED.equals(intent.getAction());
-        Log.w("action", intent.getAction());
+        Log.w("ProductWearService", "action: " + intent.getAction());
         if (dataUpdated ) {
             Log.w("action", "client created");
             // Build a new GoogleApiClient that includes the Wearable API
@@ -82,16 +92,15 @@ public class ProductWearService extends IntentService implements
                     .build();
             googleClient.connect();
 
+
+
+
         }
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        String message = null;
-        //Requires a new thread to avoid blocking the UI
-        Log.w("action", "sending message");
-        // Create a DataMap object and send it to the data layer
-        // Get today's data from the ContentProvider
+    private void sendMessage() {
+
+        Log.w("ProductWearService", "sendMessage");
 
         StockPeriod currentStockPeriod = Application.getCurrentStockPeriod();
 
@@ -106,41 +115,79 @@ public class ProductWearService extends IntentService implements
         if (data == null) {
             return;
         }
-        if (!data.moveToFirst()) {
-            data.close();
-            return;
+
+        ArrayList<DataMap> arrayListDataMap= new ArrayList<DataMap>();
+
+        if(data.moveToFirst()){
+
+            do {
+
+                // Extract the weather data from the Cursor
+                String productName = data.getString(data.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME));
+                String imagePath = data.getString(data.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE));
+
+                DataMap dataMap = new DataMap();
+
+                Bitmap bmp = null;
+                Asset asset = null;
+
+                try {
+
+                    if (imagePath != null && (!imagePath.isEmpty()) && imagePath.indexOf("http") > -1) {
+                        URL url = new URL(imagePath);
+                        bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                    } else if (imagePath != null && (!imagePath.isEmpty())) {
+                        Uri url = Uri.fromFile(new File(imagePath));
+                        bmp = BitmapFactory.decodeStream(getContentResolver().openInputStream(url));
+                    }
+
+                    if (bmp != null) {
+                        asset = createAssetFromBitmap(bmp);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                        String errorMesage = ex.getMessage();
+
+                }
+
+                dataMap.putString("prodName", productName);
+                dataMap.putAsset("prodImage", asset);
+
+                arrayListDataMap.add(dataMap);
+
+            }while(data.moveToNext());
+
         }
 
 
-        // Extract the weather data from the Cursor
-        String productName = data.getString(data.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME));
-        String mThumbnailImage = data.getString(data.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE));
-
-        data.close();
-
-        DataMap dataMap = new DataMap();
-
-        Bitmap bitmap = null;
-        Asset asset = null;
-        try
-        {
-            bitmap=Glide.with(this).load(mThumbnailImage).asBitmap().into(100,100).get();
-            asset = createAssetFromBitmap(bitmap);
-        }catch (Exception ex)
-        {
-
-        }
 
 
-        dataMap.putString("prodName", productName);
+
+
+
 
         //Requires a new thread to avoid blocking the UI
 
         //message=formattedMaxTemperature+";"+formattedMinTemperature+";"+weatherId;
         //new SendMessageToDataLayerThread(WEARABLE_DATA_PATH, message).start();
 
-        new SendToDataLayerThread(WEARABLE_DATA_PATH, dataMap, asset).start();
+        new SendToDataLayerThread(WEARABLE_DATA_PATH, arrayListDataMap).start();
 
+
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        String message = null;
+        //Requires a new thread to avoid blocking the UI
+        Log.w("ProductWearService", "google api connected");
+        // Create a DataMap object and send it to the data layer
+        // Get today's data from the ContentProvider
+        isConnected = true;
+        sendMessage();
     }
 
     private Asset createAssetFromBitmap(Bitmap bitmap) {
@@ -158,44 +205,33 @@ public class ProductWearService extends IntentService implements
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.w("action", "connection suspended failed " + connectionResult.toString());
     }
+
+
     class SendToDataLayerThread extends Thread {
         String path;
-        DataMap dataMap;
-        Asset asset;
+        ArrayList<DataMap> dataMap;
 
         // Constructor for sending data objects to the data layer
-        SendToDataLayerThread(String p, DataMap data, Asset ast) {
+        SendToDataLayerThread(String p, ArrayList<DataMap> data) {
             path = p;
             dataMap = data;
-            asset = ast;
         }
 
         public void run() {
-            NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(googleClient).await();
-            if (nodes != null && nodes.getNodes() != null) {
-                for (Node node : nodes.getNodes()) {
-                    Log.v("myTag", "DataMap: " + dataMap);
-                    // Construct a DataRequest and send over the data layer
-                    PutDataMapRequest putDMR = PutDataMapRequest.create(path);
-                    putDMR.getDataMap().putDataMap("map",dataMap);
 
-                    if(asset != null) {
-                   //     putDMR.getDataMap().putAsset("prodImage", asset);
-                    }
 
-                    PutDataRequest request = putDMR.asPutDataRequest();
+            PutDataMapRequest dataMapRequest = PutDataMapRequest.create(path);
+            dataMapRequest.getDataMap().putDataMapArrayList("stockDataMap", dataMap);
+            dataMapRequest.getDataMap().putLong("time", new Date().getTime());
+            PutDataRequest request = dataMapRequest.asPutDataRequest();
 
-                    DataApi.DataItemResult result = Wearable.DataApi.putDataItem(googleClient, request).await();
+            DataApi.DataItemResult result = Wearable.DataApi.putDataItem(googleClient, request).await();
 
-                    if (result.getStatus().isSuccess()) {
-                        Log.v("myTag", "DataMap: " + dataMap + " sent to: " + node.getDisplayName() + ", id:" + node.getId());
-                    } else {
-                        // Log an error
-                        Log.v("myTag", "ERROR: failed to send DataMap");
-                    }
-                }
-            }else{
-                Log.v("myTag", "ERROR: no nodes connected");
+            if (result.getStatus().isSuccess()) {
+                Log.v("myTag", "DataMap: " + dataMap + " sent successful");
+            } else {
+                // Log an error
+                Log.v("myTag", "ERROR: failed to send DataMap");
             }
         }
     }
@@ -207,6 +243,7 @@ public class ProductWearService extends IntentService implements
         }
         super.onDestroy();
     }
+
 
     class SendMessageToDataLayerThread extends Thread {
         String path;

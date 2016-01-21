@@ -111,7 +111,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
                 if(imagePath != null && (!imagePath.isEmpty()) && imagePath.indexOf("http") > -1)
                 {
-                    URL url = new URL(mWidgetItems.get(position).getThumbnailImage());
+                    URL url = new URL(imagePath);
                     bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 
                 }

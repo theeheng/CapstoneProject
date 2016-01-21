@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -555,10 +556,20 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     mSelectedStockPeriod = Application.getCurrentStockPeriod();
                 }
 
+                Uri productLoaderUri = null;
+
                 if(mCurrentStockPeriod.getStockPeriodId() == mSelectedStockPeriod.getStockPeriodId()) {
+                    productLoaderUri = StoCountContract.ProductEntry.buildCurrentProductUri(mSelectedStockPeriod.getStockPeriodId());
+                }
+                else
+                {
+                    productLoaderUri = StoCountContract.ProductEntry.buildPreviousProductUri(mSelectedStockPeriod.getStockPeriodId());
+                }
+
+                if(productLoaderUri != null) {
                     return new CursorLoader(
                             this,
-                            StoCountContract.ProductEntry.buildCurrentProductUri(mSelectedStockPeriod.getStockPeriodId()),
+                            productLoaderUri,
                             null,
                             null,
                             null,
@@ -567,14 +578,7 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 }
                 else
                 {
-                    return new CursorLoader(
-                            this,
-                            StoCountContract.ProductEntry.buildPreviousProductUri(mSelectedStockPeriod.getStockPeriodId()),
-                            null,
-                            null,
-                            null,
-                            null
-                    );
+                    return null;
                 }
 
             case PREVIOUS_STOCK_LOADER:

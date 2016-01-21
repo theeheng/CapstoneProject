@@ -2,9 +2,11 @@ package com.hengtan.nanodegreeapp.stocount;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -16,9 +18,14 @@ import com.hengtan.nanodegreeapp.stocount.api.AmazonApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.ApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.TescoApiCall;
 import com.hengtan.nanodegreeapp.stocount.api.WalmartApiCall;
+import com.hengtan.nanodegreeapp.stocount.data.DbHelper;
 import com.hengtan.nanodegreeapp.stocount.data.DbImportExport;
+import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 import com.hengtan.nanodegreeapp.stocount.data.User;
+import com.hengtan.nanodegreeapp.stocount.search.SearchSuggestion;
+
+import java.util.ArrayList;
 
 /**
  * Created by htan on 17/11/2015.
@@ -48,10 +55,7 @@ public class Application extends android.app.Application {
         mCurrentLoginUser =  user;
     }
 
-    public static User getCurrentLoginUser()
-    {
-        return mCurrentLoginUser;
-    }
+    public static User getCurrentLoginUser() { return mCurrentLoginUser; }
 
     public static void setCurrentStockPeriod(StockPeriod stockPeriod)
     {
@@ -60,7 +64,29 @@ public class Application extends android.app.Application {
 
     public static StockPeriod getCurrentStockPeriod()
     {
-        return mCurrentStockPeriod;
+        if(mCurrentStockPeriod != null && mCurrentStockPeriod.getStockPeriodId() != null) {
+            return mCurrentStockPeriod;
+        }
+        else {
+
+            Cursor retCursor = getContext().getContentResolver().query(
+                    StoCountContract.StockPeriodEntry.CONTENT_URI,
+                    null,
+                    StoCountContract.StockPeriodEntry.END_DATE + " IS NULL ",
+                    null,
+                    null
+            );
+
+            if (retCursor.getCount() > 0) {
+
+                if (retCursor.moveToFirst()) {
+                    mCurrentStockPeriod = new StockPeriod(retCursor);
+                    return mCurrentStockPeriod;
+                }
+            }
+        }
+
+        return null;
     }
 
     public static ApiCall GetApiCallFromPreference(String preferenceApiCode)

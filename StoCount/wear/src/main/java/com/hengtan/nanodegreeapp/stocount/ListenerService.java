@@ -49,12 +49,10 @@ public class ListenerService extends com.google.android.gms.wearable.WearableLis
             final String message = new String(messageEvent.getData());
             Log.v("myTag", "Message path received on watch is: " + messageEvent.getPath());
             Log.v("myTag", "Message received from node (" + messageEvent.getSourceNodeId() + ") on watch is: " + message);
-            String[] values=message.split(";");
+
             Bundle bundle= new Bundle();
 
-            bundle.putString("maxTemp", values[0]);
-            bundle.putString("minTemp", values[1]);
-            bundle.putString("weatherId", "" + values[2]);
+            //bundle.putString();
             Intent messageIntent = new Intent();
             messageIntent.setAction(Intent.ACTION_SEND);
             messageIntent.putExtras(bundle);
@@ -74,26 +72,4 @@ public class ListenerService extends com.google.android.gms.wearable.WearableLis
         final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
         dataEvents.close();
     }
-
-    /*
-    public Bitmap loadBitmapFromAsset(Asset asset) {
-        if (asset == null) {
-            throw new IllegalArgumentException("Asset must be non-null");
-        }
-        ConnectionResult result =  mGoogleApiClient.blockingConnect(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        if (!result.isSuccess()) {
-            return null;
-        }
-        // convert asset into a file descriptor and block until it's ready
-        InputStream assetInputStream = Wearable.DataApi.getFdForAsset(
-                mGoogleApiClient, asset).await().getInputStream();
-        mGoogleApiClient.disconnect();
-
-        if (assetInputStream == null) {
-            Log.w(TAG, "Requested an unknown Asset.");
-            return null;
-        }
-        // decode the stream into a bitmap
-        return BitmapFactory.decodeStream(assetInputStream);
-    }*/
 }

@@ -20,7 +20,7 @@ public class DemoItemLayout extends LinearLayout implements WearableListView.OnC
     private int mColorBlue;
     private int mColorGreen;
 
-    private ImageView mCircle;
+    private ImageView mThumbnail;
     private TextView mText;
 
     public DemoItemLayout(Context context) {
@@ -40,14 +40,14 @@ public class DemoItemLayout extends LinearLayout implements WearableListView.OnC
 
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.view_demo_item_layout_content, this, true);
-        mCircle = (ImageView) findViewById(R.id.circle);
+        mThumbnail = (ImageView) findViewById(R.id.thumbnail);
         mText = (TextView) findViewById(R.id.name);
         mColorBlue = getResources().getColor(R.color.demo_blue);
         mColorGreen = getResources().getColor(R.color.demo_green);
 
         // Initialize view with non-center position values
-        mCircle.setScaleX(SCALE_MIN);
-        mCircle.setScaleY(SCALE_MIN);
+        mThumbnail.setScaleX(SCALE_MIN);
+        mThumbnail.setScaleY(SCALE_MIN);
         mText.setAlpha(ALPHA_MIN);
     }
 
@@ -55,9 +55,11 @@ public class DemoItemLayout extends LinearLayout implements WearableListView.OnC
 
     @Override
     public void onCenterPosition(boolean animate) {
-        ((GradientDrawable) mCircle.getDrawable()).setColor(mColorBlue);
+
+        //((GradientDrawable) mThumbnail.getDrawable()).setColor(mColorBlue);
+
         if (animate) {
-            mCircle.animate()
+            mThumbnail.animate()
                     .scaleX(SCALE_MAX)
                     .scaleY(SCALE_MAX)
                     .setDuration(ANIMATION_DURATION)
@@ -67,17 +69,17 @@ public class DemoItemLayout extends LinearLayout implements WearableListView.OnC
                     .setDuration(ANIMATION_DURATION)
                     .start();
         } else {
-            mCircle.setScaleX(SCALE_MAX);
-            mCircle.setScaleY(SCALE_MAX);
+            mThumbnail.setScaleX(SCALE_MAX);
+            mThumbnail.setScaleY(SCALE_MAX);
             mText.setAlpha(ALPHA_MAX);
         }
     }
 
     @Override
     public void onNonCenterPosition(boolean animate) {
-        ((GradientDrawable) mCircle.getDrawable()).setColor(mColorGreen);
+        ((GradientDrawable) mThumbnail.getDrawable()).setColor(mColorGreen);
         if (animate) {
-            mCircle.animate()
+            mThumbnail.animate()
                     .scaleX(SCALE_MIN)
                     .scaleY(SCALE_MIN)
                     .setDuration(ANIMATION_DURATION)
@@ -87,8 +89,8 @@ public class DemoItemLayout extends LinearLayout implements WearableListView.OnC
                     .setDuration(ANIMATION_DURATION)
                     .start();
         } else {
-            mCircle.setScaleX(SCALE_MIN);
-            mCircle.setScaleY(SCALE_MIN);
+            mThumbnail.setScaleX(SCALE_MIN);
+            mThumbnail.setScaleY(SCALE_MIN);
             mText.setAlpha(ALPHA_MIN);
         }
     }

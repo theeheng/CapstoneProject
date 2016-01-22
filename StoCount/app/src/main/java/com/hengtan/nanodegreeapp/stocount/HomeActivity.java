@@ -47,6 +47,8 @@ import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
+import com.hengtan.nanodegreeapp.stocount.wearable.ProductWearService;
+import com.hengtan.nanodegreeapp.stocount.wearable.WearListenerService;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -268,6 +270,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
     @OnClick(R.id.viewButton)
     public void onViewBtnClick(View v) {
+
+        startService(new Intent(WearListenerService.ACTION_DATA_UPDATED).setClass(this, ProductWearService.class));
+
         Intent intent = new Intent(this, ProductListActivity.class);
         startActivity(intent);
     }

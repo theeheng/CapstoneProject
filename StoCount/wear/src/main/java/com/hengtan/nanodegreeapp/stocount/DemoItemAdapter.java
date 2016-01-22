@@ -24,6 +24,11 @@ public class DemoItemAdapter extends WearableListView.Adapter {
         mData = demoItems;
     }
 
+    public void swapItem(List<MainActivity.DemoItem> dItems)
+    {
+        mData = dItems;
+
+    }
     @Override
     public WearableListView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         return new ItemViewHolder(LayoutInflater.from(viewGroup.getContext())

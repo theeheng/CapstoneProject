@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.data.FreezableUtils;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -18,6 +19,7 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,7 +27,8 @@ import java.util.concurrent.TimeUnit;
  * Created by shalini
  */
 public class ListenerService extends com.google.android.gms.wearable.WearableListenerService {
-    private static final String WEARABLE_DATA_PATH = "/stocount-wearable-message-path";
+    public static final String WEARABLE_MESSAGE_PATH = "/stocount-wearable-message-path";
+    public static final String WEARABLE_DATA_PATH = "/stocount-wearable-data-path";
     private static final String TAG = "ListenerService";
     private static long TIMEOUT_MS = 60000;
 
@@ -42,7 +45,7 @@ public class ListenerService extends com.google.android.gms.wearable.WearableLis
 
         Log.d("ListenerService", "onMessageReceived : ");
 
-        if (messageEvent.getPath().equals(WEARABLE_DATA_PATH)) {
+        if (messageEvent.getPath().equals(WEARABLE_MESSAGE_PATH)) {
             final String message = new String(messageEvent.getData());
             Log.v("myTag", "Message path received on watch is: " + messageEvent.getPath());
             Log.v("myTag", "Message received from node (" + messageEvent.getSourceNodeId() + ") on watch is: " + message);
@@ -67,37 +70,9 @@ public class ListenerService extends com.google.android.gms.wearable.WearableLis
 
         Log.d(TAG, "onDataChanged: " + dataEvents);
 
-        DataMap dataMap;
-        for (DataEvent event : dataEvents) {
-
-            Log.v("myTag", "Data path received on watch is: " + event.getDataItem().getUri().getPath());
-
-
-            // Check the data type
-            if (event.getType() == DataEvent.TYPE_CHANGED) {
-                // Check the data path
-                String path = event.getDataItem().getUri().getPath();
-                if (path.equals(WEARABLE_DATA_PATH)) {}
-
-                DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-
-                dataMap = dataMapItem.getDataMap();
-
-                Log.v("myTag", "data received from  watch is: " + dataMap);
-
-
-                Asset profileAsset = dataMapItem.getDataMap().getAsset("profileImage");
-
-               // Bitmap bitmap = loadBitmapFromAsset(profileAsset);
-
-                Log.v("myTag", "DataMap received on watch: " + dataMap);
-                // Broadcast message to wearable activity for display
-                Intent messageIntent = new Intent();
-                messageIntent.setAction(Intent.ACTION_SEND);
-                messageIntent.putExtras(dataMap.toBundle());
-                LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
-            }
-        }
+        Log.d(TAG, "onDataChanged: " + dataEvents);
+        final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
+        dataEvents.close();
     }
 
     /*

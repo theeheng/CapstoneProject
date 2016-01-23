@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class DemoItemLayout extends LinearLayout implements WearableListView.OnCenterProximityListener {
+public class ProductItemLayout extends LinearLayout implements WearableListView.OnCenterProximityListener {
 
     private static final float ALPHA_MAX = 1.0f;
     private static final float ALPHA_MIN = 0.7f;
@@ -23,23 +23,23 @@ public class DemoItemLayout extends LinearLayout implements WearableListView.OnC
     private ImageView mThumbnail;
     private TextView mText;
 
-    public DemoItemLayout(Context context) {
+    public ProductItemLayout(Context context) {
         super(context);
         init();
     }
 
-    public DemoItemLayout(Context context, AttributeSet attrs) {
+    public ProductItemLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public DemoItemLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ProductItemLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
     private void init() {
-        LayoutInflater.from(getContext()).inflate(R.layout.view_demo_item_layout_content, this, true);
+        LayoutInflater.from(getContext()).inflate(R.layout.view_product_item_layout_content, this, true);
         mThumbnail = (ImageView) findViewById(R.id.thumbnail);
         mText = (TextView) findViewById(R.id.name);
         mColorBlue = getResources().getColor(R.color.demo_blue);
@@ -55,8 +55,8 @@ public class DemoItemLayout extends LinearLayout implements WearableListView.OnC
 
     @Override
     public void onCenterPosition(boolean animate) {
-
-        //((GradientDrawable) mThumbnail.getDrawable()).setColor(mColorBlue);
+        if(mThumbnail.getDrawable() instanceof GradientDrawable)
+            ((GradientDrawable) mThumbnail.getDrawable()).setColor(mColorBlue);
 
         if (animate) {
             mThumbnail.animate()
@@ -77,7 +77,10 @@ public class DemoItemLayout extends LinearLayout implements WearableListView.OnC
 
     @Override
     public void onNonCenterPosition(boolean animate) {
-        ((GradientDrawable) mThumbnail.getDrawable()).setColor(mColorGreen);
+
+        if(mThumbnail.getDrawable() instanceof GradientDrawable)
+            ((GradientDrawable) mThumbnail.getDrawable()).setColor(mColorGreen);
+
         if (animate) {
             mThumbnail.animate()
                     .scaleX(SCALE_MIN)

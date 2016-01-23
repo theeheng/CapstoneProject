@@ -25,6 +25,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -120,6 +123,8 @@ public class ProductWearService extends IntentService implements
 
         if(data.moveToFirst()){
 
+            int totalRows = data.getCount();
+            int index = 0;
             do {
 
                 // Extract the weather data from the Cursor
@@ -128,24 +133,34 @@ public class ProductWearService extends IntentService implements
 
                 DataMap dataMap = new DataMap();
 
-                Bitmap bmp = null;
-                Asset asset = null;
+                dataMap.putInt("prodIndex", index);
+                dataMap.putString("prodName", productName);
 
                 try {
 
                     if (imagePath != null && (!imagePath.isEmpty()) && imagePath.indexOf("http") > -1) {
                         URL url = new URL(imagePath);
-                        bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                        Glide.with(this).load(imagePath).asBitmap().into(new BitmapTarget<Bitmap>(dataMap, arrayListDataMap, index, totalRows));
+                        //bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 
                     } else if (imagePath != null && (!imagePath.isEmpty())) {
                         Uri url = Uri.fromFile(new File(imagePath));
-                        bmp = BitmapFactory.decodeStream(getContentResolver().openInputStream(url));
+                        Bitmap bmp = BitmapFactory.decodeStream(getContentResolver().openInputStream(url));
+                        Asset asset = createAssetFromBitmap(bmp);
+                        dataMap.putAsset("prodImage", asset);
+                        arrayListDataMap.add(dataMap);
                     }
 
-                    if (bmp != null) {
-                        asset = createAssetFromBitmap(bmp);
+                    if(arrayListDataMap.size() == totalRows)
+                    {
+                        //new SendMessageToDataLayerThread(WEARABLE_DATA_PATH, message).start();
+
+                        new SendToDataLayerThread(WEARABLE_DATA_PATH, arrayListDataMap).start();
+
                     }
 
+                    index++;
                 }
                 catch (Exception ex)
                 {
@@ -153,29 +168,9 @@ public class ProductWearService extends IntentService implements
 
                 }
 
-                dataMap.putString("prodName", productName);
-                dataMap.putAsset("prodImage", asset);
-
-                arrayListDataMap.add(dataMap);
-
             }while(data.moveToNext());
 
         }
-
-
-
-
-
-
-
-
-        //Requires a new thread to avoid blocking the UI
-
-        //message=formattedMaxTemperature+";"+formattedMinTemperature+";"+weatherId;
-        //new SendMessageToDataLayerThread(WEARABLE_DATA_PATH, message).start();
-
-        new SendToDataLayerThread(WEARABLE_DATA_PATH, arrayListDataMap).start();
-
 
     }
 
@@ -269,6 +264,40 @@ public class ProductWearService extends IntentService implements
                 }
             }else{
                 Log.v("myTag message", "ERROR: no nodes connected");
+            }
+        }
+    }
+
+    class BitmapTarget<Bitmap> extends SimpleTarget<Bitmap>
+    {
+        ArrayList<DataMap> arrayListDataMap;
+        DataMap dataMap;
+        int index;
+        int totalRows;
+
+        public BitmapTarget(DataMap dm, ArrayList<DataMap> listDM, int index, int totalRows)
+        {
+            this.dataMap = dm;
+            this.arrayListDataMap = listDM;
+            this.index = index;
+            this.totalRows = totalRows;
+
+        }
+
+        @Override
+        public void onResourceReady (Bitmap resource, GlideAnimation < ? super Bitmap > glideAnimation)
+        {
+            Asset asset = createAssetFromBitmap((android.graphics.Bitmap) resource);
+            dataMap.putAsset("prodImage", asset);
+            this.arrayListDataMap.add(dataMap);
+
+
+            if(this.arrayListDataMap.size() == this.totalRows)
+            {
+                //new SendMessageToDataLayerThread(WEARABLE_DATA_PATH, message).start();
+
+                new SendToDataLayerThread(WEARABLE_DATA_PATH, this.arrayListDataMap).start();
+
             }
         }
     }

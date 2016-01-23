@@ -9,9 +9,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class DemoItemAdapter extends WearableListView.Adapter {
+public class ProductItemAdapter extends WearableListView.Adapter {
 
-    private List<MainActivity.DemoItem> mData;
+    private List<MainActivity.ProductItem> mData;
 
     private static class ItemViewHolder extends WearableListView.ViewHolder {
         TextView text;
@@ -24,25 +24,25 @@ public class DemoItemAdapter extends WearableListView.Adapter {
         }
     }
 
-    public DemoItemAdapter(List<MainActivity.DemoItem> demoItems) {
+    public ProductItemAdapter(List<MainActivity.ProductItem> demoItems) {
         mData = demoItems;
     }
 
-    public void swapItem(List<MainActivity.DemoItem> dItems)
+    public void swapItem(List<MainActivity.ProductItem> productItems)
     {
-        mData = dItems;
+        mData = productItems;
 
     }
     @Override
     public WearableListView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         return new ItemViewHolder(LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.view_demo_item_layout, viewGroup, false));
+                .inflate(R.layout.view_product_item_layout, viewGroup, false));
     }
 
     @Override
     public void onBindViewHolder(WearableListView.ViewHolder viewHolder, int position) {
         // Get item
-        MainActivity.DemoItem item = mData.get(position);
+        MainActivity.ProductItem item = mData.get(position);
 
         // Update TextView
         ItemViewHolder itemViewHolder = (ItemViewHolder) viewHolder;

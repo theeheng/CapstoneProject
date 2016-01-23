@@ -1,24 +1,17 @@
 package com.hengtan.nanodegreeapp.stocount;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.data.FreezableUtils;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
@@ -33,51 +26,33 @@ import com.google.android.gms.wearable.Wearable;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements WearableListView.ClickListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, DataApi.DataListener, NodeApi.NodeListener  {
 
     private static final String TAG = "MainActivity";
-    private static final long CONNECTION_TIME_OUT_MS = 100;
 
-    private TextView mTextView;
-
-    private DemoItemAdapter mAdapter;
-    private List<DemoItem> mData = new ArrayList<DemoItem>();
+    private ProductItemAdapter mAdapter;
+    private ArrayList<ProductItem> mData = new ArrayList<ProductItem>();
     private WearableListView mListView;
     private GoogleApiClient mGoogleApiClient;
-
     private Handler mHandler;
 
-    BroadcastReceiver messageReceiver= new  BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle dataMap=intent.getExtras();
-
-            String maxTemp = dataMap.getString("productName");
-            String minTemp = dataMap.getString("minTemp");
-            String value=dataMap.getString("weatherId");
-
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler();
         setContentView(R.layout.activity_main);
 
-        mHandler = new Handler();
-
-      /* final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
+       final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
-                mTextView = (TextView) stub.findViewById(R.id.text);
                 mListView = (WearableListView) stub.findViewById(R.id.wearable_list);
+                setupListView();
             }
         });
-*/
+
 
         mListView = (WearableListView) findViewById(R.id.wearable_list);
 
@@ -87,16 +62,22 @@ public class MainActivity extends Activity implements WearableListView.ClickList
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, messageFilter);
-
-        setupListView();
     }
+
 
     @Override
     public void onClick(WearableListView.ViewHolder viewHolder) {
-        DemoItem item = mData.get(viewHolder.getPosition());
-        startActivity(item.getIntent());
+        ProductItem item = mData.get(viewHolder.getPosition());
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("prodName", item.getName());
+        Double currentCount = 5.6;
+        intent.putExtra("prodCurrentCount", currentCount);
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("prodImage", item.getThumbnail());
+        intent.putExtra("prodImage", bundle);
+
+        startActivity(intent);
     }
 
     @Override
@@ -121,7 +102,7 @@ public class MainActivity extends Activity implements WearableListView.ClickList
 
     public void setupListView() {
 
-        mAdapter = new DemoItemAdapter(mData);
+        mAdapter = new ProductItemAdapter(mData);
         mListView.setAdapter(mAdapter);
 
         // Note that this is NOT setting an OnClickListener, but a ClickListener
@@ -135,8 +116,8 @@ public class MainActivity extends Activity implements WearableListView.ClickList
         Wearable.DataApi.addListener(mGoogleApiClient, this);
         Wearable.NodeApi.addListener(mGoogleApiClient, this);
 
-        //String messagePhone = "Hello phone\n Via the data layer";
-        //new SendToDataLayerThread("/stocount-wearable-message-path", messagePhone).start();
+        String messagePhone = "Hello phone\n Via the data layer";
+        new SendToDataLayerThread("/stocount-wearable-message-path", messagePhone).start();
 
     }
 
@@ -167,48 +148,32 @@ public class MainActivity extends Activity implements WearableListView.ClickList
 
                         mData.clear();
 
+                        for(int i=0 ;i < arrayListDataMap.size() ; i++) {
+                            mData.add(i , null);
+                        }
+
                         for (DataMap dm : arrayListDataMap) {
 
-
+                            int index = dm.getInt("prodIndex");
                             String productName = dm.getString("prodName");
                             Asset imgAsset = dm.getAsset("prodImage");
 
                             Log.d(TAG, "DataMap  " + productName);
 
-                            if(imgAsset != null) {
+                            Bitmap thumbnail = loadBitmapFromAsset(mGoogleApiClient, imgAsset);
 
-                                 Bitmap thumbnail = loadBitmapFromAsset(mGoogleApiClient, imgAsset);
-                                        mData.add(new DemoItem(productName, thumbnail, new Intent(MainActivity.this, DetailActivity.class)));
+                            mData.set(index, new ProductItem(productName, thumbnail));
 
-
-
-                            }
-                            else
-                            {
-                                mData.add(new DemoItem(productName, null, new Intent(this, DetailActivity.class)));
-                            }
-                            //dm.getAsset("prodImage");
                         }
 
-                        mAdapter.swapItem(mData);
-                        mAdapter.notifyDataSetChanged();
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAdapter.swapItem(mData);
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        });
                     }
-                    /*Asset photo = dataMapItem.getDataMap()
-                            .getAsset(ListenerService.IMAGE_KEY);
-                    final Bitmap bitmap = loadBitmapFromAsset(mGoogleApiClient, photo);
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d(TAG, "Setting background image..");
-                            //mLayout.setBackground(new BitmapDrawable(getResources(), bitmap));
-                            image.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
-                            image.setVisibility(ImageView.VISIBLE);
-
-                            loading.setVisibility(TextView.GONE);
-                        }
-                    });
-                    */
-
                 }
 
             }  else {
@@ -221,20 +186,18 @@ public class MainActivity extends Activity implements WearableListView.ClickList
      * Extracts {@link android.graphics.Bitmap} data from the
      * {@link com.google.android.gms.wearable.Asset}
      */
-    public Bitmap loadBitmapFromAsset(GoogleApiClient client, Asset asset) {
+    private Bitmap loadBitmapFromAsset(GoogleApiClient apiClient, Asset asset) {
         if (asset == null) {
             throw new IllegalArgumentException("Asset must be non-null");
         }
 
-        // Convert asset into a file descriptor and block until it's ready
-        InputStream assetInputStream = Wearable.DataApi.getFdForAsset(client, asset).await().getInputStream();
+        InputStream assetInputStream = Wearable.DataApi.getFdForAsset(
+                apiClient, asset).await().getInputStream();
 
         if (assetInputStream == null) {
             Log.w(TAG, "Requested an unknown Asset.");
             return null;
         }
-
-        // Decode the stream into a bitmap
         return BitmapFactory.decodeStream(assetInputStream);
     }
 
@@ -273,14 +236,13 @@ public class MainActivity extends Activity implements WearableListView.ClickList
             }
         }
     }
-    public static class DemoItem {
+
+    public static class ProductItem {
         private String mName;
         private Bitmap mThumbnail;
-        private Intent mIntent;
 
-        public DemoItem(String name, Bitmap thumbnail, Intent intent) {
+        public ProductItem(String name, Bitmap thumbnail) {
             mName = name;
-            mIntent = intent;
             mThumbnail = thumbnail;
         }
 
@@ -292,8 +254,5 @@ public class MainActivity extends Activity implements WearableListView.ClickList
             return mThumbnail;
         }
 
-        public Intent getIntent() {
-            return mIntent;
-        }
     }
 }

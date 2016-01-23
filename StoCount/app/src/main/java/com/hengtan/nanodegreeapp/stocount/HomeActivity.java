@@ -271,8 +271,6 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     @OnClick(R.id.viewButton)
     public void onViewBtnClick(View v) {
 
-        startService(new Intent(WearListenerService.ACTION_DATA_UPDATED).setClass(this, ProductWearService.class));
-
         Intent intent = new Intent(this, ProductListActivity.class);
         startActivity(intent);
     }

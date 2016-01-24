@@ -14,18 +14,23 @@
      limitations under the License.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/gradient" >
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <!-- Button to trigger presentation of delayed confirmation view -->
+    <Button
+        android:id="@+id/trigger_button"
+        android:layout_width="@dimen/trigger_button_size"
+        android:layout_height="@dimen/trigger_button_size"
         android:layout_gravity="center"
-        android:layout_margin="8dp"
-        android:background="@drawable/shape"
-        android:text="custom_fragment_text"
-        android:textColor="@color/primary_text_light"/>
+        android:padding="10dp"
+        android:background="@drawable/trigger_button_background"
+        android:gravity="center"
+        android:lines="2"
+        android:text="Voice StoCount"
+        android:textSize="14sp"
+        app:layout_box="all"
+        />
 
 </FrameLayout>

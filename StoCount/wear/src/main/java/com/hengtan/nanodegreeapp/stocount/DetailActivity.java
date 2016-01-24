@@ -29,6 +29,7 @@ public class DetailActivity extends Activity {
         Intent intent = getIntent();
 
         final String prodName = intent.getStringExtra("prodName");
+        final String prodAdditionalInfo = intent.getStringExtra("prodInfo");
         final Double currentCount = intent.getDoubleExtra("prodCurrentCount", 0);
 
         Bundle b = intent.getBundleExtra("prodImage");
@@ -59,7 +60,7 @@ public class DetailActivity extends Activity {
                         return insets;
                     }
                 });
-                pager.setAdapter(new ProductDetailGridPagerAdapter(DetailActivity.this, getFragmentManager(), prodName, currentCount, prodImage));
+                pager.setAdapter(new ProductDetailGridPagerAdapter(DetailActivity.this, getFragmentManager(), prodName, prodAdditionalInfo, currentCount, prodImage));
                 DotsPageIndicator dotsPageIndicator = (DotsPageIndicator) findViewById(R.id.page_indicator);
                 dotsPageIndicator.setPager(pager);
             }

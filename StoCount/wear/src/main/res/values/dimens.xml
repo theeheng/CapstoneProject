@@ -19,4 +19,5 @@
     <dimen name="page_column_margin">10dp</dimen>
     <dimen name="page_column_margin_round">50dp</dimen>
     <dimen name="card_margin_bottom">3dp</dimen>
+    <dimen name="trigger_button_size">100dp</dimen>
 </resources>

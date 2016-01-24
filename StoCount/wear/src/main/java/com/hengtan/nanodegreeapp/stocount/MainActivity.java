@@ -70,7 +70,15 @@ public class MainActivity extends Activity implements WearableListView.ClickList
         ProductItem item = mData.get(viewHolder.getPosition());
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra("prodName", item.getName());
-        Double currentCount = 5.6;
+        intent.putExtra("prodInfo", item.getAdditionalInfo());
+
+        Double currentCount = 0.0;
+
+        if(item.getQuantity() != null)
+        {
+            currentCount = item.getQuantity();
+        }
+
         intent.putExtra("prodCurrentCount", currentCount);
 
         Bundle bundle = new Bundle();
@@ -155,14 +163,14 @@ public class MainActivity extends Activity implements WearableListView.ClickList
                         for (DataMap dm : arrayListDataMap) {
 
                             int index = dm.getInt("prodIndex");
-                            String productName = dm.getString("prodName");
+
                             Asset imgAsset = dm.getAsset("prodImage");
 
-                            Log.d(TAG, "DataMap  " + productName);
+                            Log.d(TAG, "DataMap  " + dm.getString("prodName"));
 
                             Bitmap thumbnail = loadBitmapFromAsset(mGoogleApiClient, imgAsset);
 
-                            mData.set(index, new ProductItem(productName, thumbnail));
+                            mData.set(index, new ProductItem(dm.getString("prodName"), dm.getString("prodInfo"), thumbnail, dm.getInt("prodCountId"), dm.getDouble("prodQuantity")));
 
                         }
 
@@ -239,20 +247,34 @@ public class MainActivity extends Activity implements WearableListView.ClickList
 
     public static class ProductItem {
         private String mName;
+        private Integer mProductCountId;
+        private Double mQuantity;
         private Bitmap mThumbnail;
+        private String mAdditionalInfo;
 
-        public ProductItem(String name, Bitmap thumbnail) {
+        public ProductItem(String name, String additionalInfo, Bitmap thumbnail, Integer productCountId, Double quantity) {
             mName = name;
+            mAdditionalInfo = additionalInfo;
             mThumbnail = thumbnail;
+            mProductCountId = productCountId;
+            mQuantity = quantity;
         }
 
         public String getName() {
             return mName;
         }
 
+        public String getAdditionalInfo() {
+            return mAdditionalInfo;
+        }
+
         public Bitmap getThumbnail() {
             return mThumbnail;
         }
+
+        public Double getQuantity() { return mQuantity; }
+
+        public Integer getProductCountId() { return mProductCountId; }
 
     }
 }

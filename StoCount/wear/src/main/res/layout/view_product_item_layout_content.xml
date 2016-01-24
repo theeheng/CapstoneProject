@@ -9,7 +9,7 @@
         android:layout_width="35dp"
         android:layout_margin="16dp"
         android:layout_gravity="center"
-        android:src="@drawable/demo_item_circle"/>
+        android:src="@drawable/list_item_circle"/>
 
     <TextView
         android:id="@+id/name"

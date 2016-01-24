@@ -57,7 +57,7 @@ public class ProductDetailGridPagerAdapter extends FragmentGridPagerAdapter {
     private Bitmap mThumbnail;
 
 
-    public ProductDetailGridPagerAdapter(Context ctx, FragmentManager fm, String name, Double count, Bitmap image) {
+    public ProductDetailGridPagerAdapter(Context ctx, FragmentManager fm, String name, String additionalInfo, Double count, Bitmap image) {
         super(fm);
         mContext = ctx;
         mProductName = name;
@@ -65,7 +65,7 @@ public class ProductDetailGridPagerAdapter extends FragmentGridPagerAdapter {
         mThumbnail = image;
         mRows = new ArrayList<Row>();
 
-        mRows.add(new Row(cardFragment(mProductName, "Current Count : "+Double.toString(mCurrentCount)),new CustomFragment()));
+        mRows.add(new Row(cardFragment(mProductName, additionalInfo+"\n StoCount : "+Double.toString(mCurrentCount)),new CustomFragment()));
 
         /*
         mRows.add(new Row(cardFragment(R.string.welcome_title, R.string.welcome_text)));

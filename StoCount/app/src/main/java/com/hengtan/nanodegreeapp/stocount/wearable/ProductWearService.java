@@ -41,6 +41,9 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.hengtan.nanodegreeapp.stocount.Application;
+import com.hengtan.nanodegreeapp.stocount.DetailActivity;
+import com.hengtan.nanodegreeapp.stocount.data.Product;
+import com.hengtan.nanodegreeapp.stocount.data.ProductCount;
 import com.hengtan.nanodegreeapp.stocount.data.StoCountContract;
 import com.hengtan.nanodegreeapp.stocount.data.StockPeriod;
 
@@ -128,15 +131,23 @@ public class ProductWearService extends IntentService implements
             do {
 
                 // Extract the weather data from the Cursor
-                String productName = data.getString(data.getColumnIndex(StoCountContract.ProductEntry.PRODUCT_NAME));
-                String imagePath = data.getString(data.getColumnIndex(StoCountContract.ProductEntry.THUMBNAIL_IMAGE));
+
+                Product prod = new Product(data);
+                ProductCount prodCount = new ProductCount(data);
+
+                String imagePath = prod.getThumbnailImage();
 
                 DataMap dataMap = new DataMap();
 
                 dataMap.putInt("prodIndex", index);
-                dataMap.putString("prodName", productName);
+                dataMap.putString("prodName", prod.getName());
+                dataMap.putString("prodInfo", prod.getAdditionalInfo());
 
-                try {
+                if (prodCount.getProductCountId() != null) {
+                    dataMap.putInt("prodCountId", prodCount.getProductCountId());
+                    dataMap.putDouble("prodQuantity", prodCount.getQuantity());
+                }
+                    try {
 
                     if (imagePath != null && (!imagePath.isEmpty()) && imagePath.indexOf("http") > -1) {
                         URL url = new URL(imagePath);

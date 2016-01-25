@@ -46,6 +46,7 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
     private Button inputBtn;
     private int productId;
     private Integer productCountId;
+    private double currentCount;
     private GoogleApiClient mGoogleApiClient;
 
     public CustomFragment()
@@ -68,6 +69,7 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
         //here is your list array
         productId=bundle.getInt("productId");
         productCountId = bundle.getInt("productCountId");
+        currentCount = bundle.getDouble("prodCurrentCount");
 
         inputBtn = (Button) fragmentRootView.findViewById(R.id.input_button);
         inputBtn.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +116,8 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
                 dataMap.putDouble("prodQuantity", quantity);
 
                 new SendToDataLayerThread(ListenerService.WEARABLE_DATA_PATH, dataMap).start();
+
+                currentCount = quantity;
             }
             catch (Exception ex)
             {
@@ -150,6 +154,16 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
     public void onPause() {
         super.onPause();
         mGoogleApiClient.disconnect();
+    }
+
+    public double getCurrentCount()
+    {
+        return currentCount;
+    }
+
+    public int getProductId()
+    {
+        return productId;
     }
 
     class SendToDataLayerThread extends Thread {

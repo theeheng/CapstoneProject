@@ -10,6 +10,7 @@ import android.speech.RecognizerIntent;
 import android.support.wearable.view.DotsPageIndicator;
 import android.support.wearable.view.GridViewPager;
 import android.support.wearable.view.WatchViewStub;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.TextView;
@@ -22,7 +23,8 @@ public class DetailActivity extends Activity {
     private Resources res;
     private GridViewPager pager;
     public static final int SPEECH_REQUEST_CODE = 0;
-
+    private ProductDetailGridPagerAdapter gridPagerAdapter;
+    private CustomFragment customFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public class DetailActivity extends Activity {
 
         res = getResources();
         pager = (GridViewPager) findViewById(R.id.pager);
+        customFragment = new CustomFragment();
 
         Intent intent = getIntent();
 
@@ -69,10 +72,23 @@ public class DetailActivity extends Activity {
                         return insets;
                     }
                 });
-                pager.setAdapter(new ProductDetailGridPagerAdapter(DetailActivity.this, getFragmentManager(), prodId, prodName, prodAdditionalInfo,  prodCountId, currentCount, prodImage));
+
+                gridPagerAdapter = new ProductDetailGridPagerAdapter(DetailActivity.this, getFragmentManager(), customFragment, prodId, prodName, prodAdditionalInfo,  prodCountId, currentCount, prodImage);
+
+                pager.setAdapter(gridPagerAdapter);
                 DotsPageIndicator dotsPageIndicator = (DotsPageIndicator) findViewById(R.id.page_indicator);
                 dotsPageIndicator.setPager(pager);
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+
+        if(gridPagerAdapter != null && customFragment != null) {
+            gridPagerAdapter.UpdateQuantity(customFragment.getProductId(), customFragment.getCurrentCount());
+        }
+
+        super.onResume();
     }
 }

@@ -48,7 +48,8 @@ public class WearListenerService extends com.google.android.gms.wearable.Wearabl
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 String path = event.getDataItem().getUri().getPath();
                 if (ProductWearService.WEARABLE_DATA_PATH.equals(path)) {
-                    DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
+                    DataMapItem dataMapItem = DataMapItem
+                            .fromDataItem(event.getDataItem());
 
                     DataMap dataMap = dataMapItem.getDataMap().getDataMap("stockCountDataMap");
                     int prodId = dataMap.getInt("prodId");
@@ -61,7 +62,12 @@ public class WearListenerService extends com.google.android.gms.wearable.Wearabl
                     DBAsyncTask saveProductAsyncTask = new DBAsyncTask(getContentResolver(), DBAsyncTask.ObjectType.PRODUCT_COUNT_ONLY, DBAsyncTask.OperationType.SAVE, this);
 
                     ProductCount mProductCount = new ProductCount();
-                    mProductCount.setProductCountId(productCountId);
+
+                    if(productCountId != 0)
+                    {
+                        mProductCount.setProductCountId(productCountId);
+                    }
+
                     mProductCount.setStockPeriodId(currentStockPeriod.getStockPeriodId());
                     mProductCount.setProductId(prodId);
                     mProductCount.setQuantity(quantity);

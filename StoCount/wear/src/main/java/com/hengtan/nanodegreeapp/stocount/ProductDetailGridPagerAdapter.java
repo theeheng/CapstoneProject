@@ -50,27 +50,31 @@ public class ProductDetailGridPagerAdapter extends FragmentGridPagerAdapter {
 
     private final Context mContext;
     private List<Row> mRows;
+    private Row row;
     private ColorDrawable mDefaultBg;
     private ColorDrawable mClearBg;
 
     private int mProductId;
     private String mProductName;
     private Integer mProductCountId;
-    private Double mCurrentCount;
+    private String mAdditionalInfo;
+    private double mCurrentCount;
     private Bitmap mThumbnail;
+    private CustomFragment customeFrag;
+    CardFragment cardFragment;
 
-
-    public ProductDetailGridPagerAdapter(Context ctx, FragmentManager fm, int id, String name, String additionalInfo, Integer prodCountId, Double count, Bitmap image) {
+    public ProductDetailGridPagerAdapter(Context ctx, FragmentManager fm, CustomFragment cf, int id, String name, String additionalInfo, Integer prodCountId, double count, Bitmap image) {
         super(fm);
         mContext = ctx;
         mProductId = id;
         mProductName = name;
+        mAdditionalInfo = additionalInfo;
         mProductCountId = prodCountId;
         mCurrentCount = count;
         mThumbnail = image;
         mRows = new ArrayList<Row>();
 
-        CustomFragment customeFrag = new CustomFragment();
+        customeFrag = cf;
 
         Bundle bundle = new Bundle();
         bundle.putInt("productId", mProductId);
@@ -78,7 +82,10 @@ public class ProductDetailGridPagerAdapter extends FragmentGridPagerAdapter {
 
         customeFrag.setArguments(bundle);
 
-        mRows.add(new Row(cardFragment(mProductName, additionalInfo+"\n StoCount : "+Double.toString(mCurrentCount)), customeFrag));
+        CreateCardFragment(mProductName, GetCardFragmentDescription());
+
+        row = new Row(cardFragment, customeFrag);
+        mRows.add(row);
 
         /*
         mRows.add(new Row(cardFragment(R.string.welcome_title, R.string.welcome_text)));
@@ -143,14 +150,17 @@ public class ProductDetailGridPagerAdapter extends FragmentGridPagerAdapter {
         }
     };
 
-    private Fragment cardFragment(String titleRes, String textRes) {
+    private String GetCardFragmentDescription()
+    {
+        return mAdditionalInfo+"\n StoCount : "+Double.toString(mCurrentCount);
+    }
+
+    private void CreateCardFragment(String titleRes, String textRes) {
         Resources res = mContext.getResources();
-        CardFragment fragment =
-                CardFragment.create(titleRes, textRes);
+        cardFragment = CardFragment.create(titleRes, textRes);
         // Add some extra bottom margin to leave room for the page indicator
-        fragment.setCardMarginBottom(
+        cardFragment.setCardMarginBottom(
                 res.getDimensionPixelSize(R.dimen.card_margin_bottom));
-        return fragment;
     }
 
     /*static final int[] BG_IMAGES = new int[] {
@@ -218,6 +228,22 @@ public class ProductDetailGridPagerAdapter extends FragmentGridPagerAdapter {
         return mRows.get(rowNum).getColumnCount();
     }
 
+
+    public void UpdateQuantity(int pid , double quantity)
+    {
+        if(this.mProductId == pid && this.mCurrentCount != quantity)
+        {
+            this.mCurrentCount = quantity;
+
+            CreateCardFragment(mProductName, GetCardFragmentDescription());
+
+            row = new Row(cardFragment, customeFrag);
+
+            mRows.set(0, row);
+
+            notifyDataSetChanged();
+        }
+    }
     class DrawableLoadingTask extends AsyncTask<Integer, Void, Drawable> {
         private static final String TAG = "Loader";
         private Context context;

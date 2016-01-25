@@ -61,7 +61,7 @@ public class ProductWearService extends IntentService implements
 
     GoogleApiClient googleClient;
 
-    private static final String WEARABLE_DATA_PATH = "/stocount-wearable-data-path";
+    public static final String WEARABLE_DATA_PATH = "/stocount-wearable-data-path";
 
     /*private static final String[] FORECAST_COLUMNS = {
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
@@ -76,6 +76,7 @@ public class ProductWearService extends IntentService implements
     private static final int INDEX_SHORT_DESC = 1;
     private static final int INDEX_MAX_TEMP = 2;
     private static final int INDEX_MIN_TEMP = 3;
+    private static final int IMAGE_LIMIT_SIZE = 240;
 
     private boolean isConnected = false;
 
@@ -135,11 +136,12 @@ public class ProductWearService extends IntentService implements
                 Product prod = new Product(data);
                 ProductCount prodCount = new ProductCount(data);
 
-                String imagePath = prod.getThumbnailImage();
+                String imagePath = prod.getLargeImage();
 
                 DataMap dataMap = new DataMap();
 
                 dataMap.putInt("prodIndex", index);
+                dataMap.putInt("prodId", prod.getProductId());
                 dataMap.putString("prodName", prod.getName());
                 dataMap.putString("prodInfo", prod.getAdditionalInfo());
 
@@ -158,8 +160,21 @@ public class ProductWearService extends IntentService implements
                     } else if (imagePath != null && (!imagePath.isEmpty())) {
                         Uri url = Uri.fromFile(new File(imagePath));
                         Bitmap bmp = BitmapFactory.decodeStream(getContentResolver().openInputStream(url));
-                        Asset asset = createAssetFromBitmap(bmp);
-                        dataMap.putAsset("prodImage", asset);
+
+                        if(bmp.getHeight() > IMAGE_LIMIT_SIZE && bmp.getWidth() > IMAGE_LIMIT_SIZE)
+                        {
+                            int scaleWidth = bmp.getWidth()/ IMAGE_LIMIT_SIZE ;
+                            int scaleHeight = bmp.getWidth()/ IMAGE_LIMIT_SIZE ;
+                            Bitmap newBitmap = Bitmap.createScaledBitmap( bmp, bmp.getWidth() / scaleWidth, bmp.getHeight() / scaleHeight , true);
+                            Asset asset = createAssetFromBitmap(newBitmap);
+                            dataMap.putAsset("prodImage", asset);
+                        }
+                        else
+                        {
+                            Asset asset = createAssetFromBitmap(bmp);
+                            dataMap.putAsset("prodImage", asset);
+                        }
+
                         arrayListDataMap.add(dataMap);
                     }
 
@@ -251,12 +266,12 @@ public class ProductWearService extends IntentService implements
     }
 
 
-    class SendMessageToDataLayerThread extends Thread {
+    class SendToMessageLayerThread extends Thread {
         String path;
         String message;
 
         // Constructor to send a message to the data layer
-        SendMessageToDataLayerThread(String p, String msg) {
+        SendToMessageLayerThread(String p, String msg) {
             path = p;
             message = msg;
         }
@@ -298,8 +313,23 @@ public class ProductWearService extends IntentService implements
         @Override
         public void onResourceReady (Bitmap resource, GlideAnimation < ? super Bitmap > glideAnimation)
         {
-            Asset asset = createAssetFromBitmap((android.graphics.Bitmap) resource);
-            dataMap.putAsset("prodImage", asset);
+            android.graphics.Bitmap original = (android.graphics.Bitmap) resource;
+
+            if(original.getHeight() > IMAGE_LIMIT_SIZE && original.getWidth() > IMAGE_LIMIT_SIZE)
+            {
+                int scaleWidth = original.getWidth()/ IMAGE_LIMIT_SIZE ;
+                int scaleHeight = original.getWidth()/ IMAGE_LIMIT_SIZE ;
+
+                android.graphics.Bitmap newBitmap = android.graphics.Bitmap.createScaledBitmap(original, original.getWidth() / scaleWidth, original.getHeight() / scaleHeight, true);
+                Asset asset = createAssetFromBitmap(newBitmap);
+                dataMap.putAsset("prodImage", asset);
+            }
+            else
+            {
+                Asset asset = createAssetFromBitmap(original);
+                dataMap.putAsset("prodImage", asset);
+            }
+
             this.arrayListDataMap.add(dataMap);
 
 

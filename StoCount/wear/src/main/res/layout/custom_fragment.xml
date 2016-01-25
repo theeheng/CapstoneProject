@@ -20,7 +20,7 @@
 
     <!-- Button to trigger presentation of delayed confirmation view -->
     <Button
-        android:id="@+id/trigger_button"
+        android:id="@+id/input_button"
         android:layout_width="@dimen/trigger_button_size"
         android:layout_height="@dimen/trigger_button_size"
         android:layout_gravity="center"

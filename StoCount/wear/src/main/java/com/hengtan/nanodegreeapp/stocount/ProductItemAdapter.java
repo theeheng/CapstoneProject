@@ -44,13 +44,14 @@ public class ProductItemAdapter extends WearableListView.Adapter {
         // Get item
         MainActivity.ProductItem item = mData.get(position);
 
-        // Update TextView
-        ItemViewHolder itemViewHolder = (ItemViewHolder) viewHolder;
-        itemViewHolder.text.setText(item.getName());
+        if(item != null) {
+            // Update TextView
+            ItemViewHolder itemViewHolder = (ItemViewHolder) viewHolder;
+            itemViewHolder.text.setText(item.getName());
 
-        if(item.getThumbnail() != null)
-        {
-            itemViewHolder.thumbnail.setImageBitmap(item.getThumbnail());
+            if (item.getThumbnail() != null) {
+                itemViewHolder.thumbnail.setImageBitmap(item.getThumbnail());
+            }
         }
     }
 

@@ -27,6 +27,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.util.LruCache;
 import android.support.wearable.view.CardFragment;
 import android.support.wearable.view.FragmentGridPagerAdapter;
@@ -52,20 +53,32 @@ public class ProductDetailGridPagerAdapter extends FragmentGridPagerAdapter {
     private ColorDrawable mDefaultBg;
     private ColorDrawable mClearBg;
 
+    private int mProductId;
     private String mProductName;
+    private Integer mProductCountId;
     private Double mCurrentCount;
     private Bitmap mThumbnail;
 
 
-    public ProductDetailGridPagerAdapter(Context ctx, FragmentManager fm, String name, String additionalInfo, Double count, Bitmap image) {
+    public ProductDetailGridPagerAdapter(Context ctx, FragmentManager fm, int id, String name, String additionalInfo, Integer prodCountId, Double count, Bitmap image) {
         super(fm);
         mContext = ctx;
+        mProductId = id;
         mProductName = name;
+        mProductCountId = prodCountId;
         mCurrentCount = count;
         mThumbnail = image;
         mRows = new ArrayList<Row>();
 
-        mRows.add(new Row(cardFragment(mProductName, additionalInfo+"\n StoCount : "+Double.toString(mCurrentCount)),new CustomFragment()));
+        CustomFragment customeFrag = new CustomFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("productId", mProductId);
+        bundle.putInt("productCountId", mProductCountId);
+
+        customeFrag.setArguments(bundle);
+
+        mRows.add(new Row(cardFragment(mProductName, additionalInfo+"\n StoCount : "+Double.toString(mCurrentCount)), customeFrag));
 
         /*
         mRows.add(new Row(cardFragment(R.string.welcome_title, R.string.welcome_text)));

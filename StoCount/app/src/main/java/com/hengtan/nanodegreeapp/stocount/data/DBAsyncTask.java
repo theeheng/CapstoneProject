@@ -33,7 +33,7 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
 
     public enum ObjectType
     {
-        PRODUCT(0), USER(1), STOCK_PERIOD(2), PRODUCT_COUNT(3), CLOSE_STOCK_PERIOD(4);
+        PRODUCT(0), USER(1), STOCK_PERIOD(2), PRODUCT_COUNT(3), CLOSE_STOCK_PERIOD(4), PRODUCT_COUNT_ONLY(5);
 
         private int value;
 
@@ -91,6 +91,8 @@ public class DBAsyncTask extends AsyncTask<Object,  Integer,  Integer> {
                 else if (mObjectType == ObjectType.CLOSE_STOCK_PERIOD) {
                     ((StockPeriod) params[0]).SaveStockPeriod(mContentResolver);
                     ((StockPeriod) params[1]).SaveStockPeriod(mContentResolver);
+                }else if (mObjectType == ObjectType.PRODUCT_COUNT_ONLY) {
+                    ((ProductCount) params[0]).SaveProductCount(mContentResolver);
                 }
             }
             else if(mOperationType == OperationType.DELETE)

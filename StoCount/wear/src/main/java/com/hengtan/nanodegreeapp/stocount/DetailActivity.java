@@ -4,18 +4,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.wearable.view.DotsPageIndicator;
 import android.support.wearable.view.GridViewPager;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 public class DetailActivity extends Activity {
 
     private Resources res;
     private GridViewPager pager;
+    public static final int SPEECH_REQUEST_CODE = 0;
 
 
     @Override
@@ -28,13 +34,16 @@ public class DetailActivity extends Activity {
 
         Intent intent = getIntent();
 
+        final int prodId = intent.getIntExtra("prodId", 0);
         final String prodName = intent.getStringExtra("prodName");
         final String prodAdditionalInfo = intent.getStringExtra("prodInfo");
+        final int prodCountId = intent.getIntExtra("prodCountId", 0);
         final Double currentCount = intent.getDoubleExtra("prodCurrentCount", 0);
 
-        Bundle b = intent.getBundleExtra("prodImage");
+        byte[] bytes = intent.getByteArrayExtra("prodImage");
+        final Bitmap prodImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
-        final Bitmap prodImage = (Bitmap) b.get("prodImage");
+        //final Bitmap prodImage = (Bitmap) intent.getParcelableExtra("prodImage");
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
@@ -60,7 +69,7 @@ public class DetailActivity extends Activity {
                         return insets;
                     }
                 });
-                pager.setAdapter(new ProductDetailGridPagerAdapter(DetailActivity.this, getFragmentManager(), prodName, prodAdditionalInfo, currentCount, prodImage));
+                pager.setAdapter(new ProductDetailGridPagerAdapter(DetailActivity.this, getFragmentManager(), prodId, prodName, prodAdditionalInfo,  prodCountId, currentCount, prodImage));
                 DotsPageIndicator dotsPageIndicator = (DotsPageIndicator) findViewById(R.id.page_indicator);
                 dotsPageIndicator.setPager(pager);
             }

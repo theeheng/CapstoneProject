@@ -23,6 +23,7 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,6 @@ public class MainActivity extends Activity implements WearableListView.ClickList
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-
     }
 
 
@@ -69,9 +69,10 @@ public class MainActivity extends Activity implements WearableListView.ClickList
     public void onClick(WearableListView.ViewHolder viewHolder) {
         ProductItem item = mData.get(viewHolder.getPosition());
         Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("prodId", item.getId());
         intent.putExtra("prodName", item.getName());
         intent.putExtra("prodInfo", item.getAdditionalInfo());
-
+        intent.putExtra("prodCountId", item.getProductCountId());
         Double currentCount = 0.0;
 
         if(item.getQuantity() != null)
@@ -81,9 +82,16 @@ public class MainActivity extends Activity implements WearableListView.ClickList
 
         intent.putExtra("prodCurrentCount", currentCount);
 
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("prodImage", item.getThumbnail());
-        intent.putExtra("prodImage", bundle);
+        //Bundle bundle = new Bundle();
+
+        //bundle.putParcelable("prodImage", item.getThumbnail());
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        item.getThumbnail().compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] bytes = stream.toByteArray();
+        intent.putExtra("prodImage",bytes);
+
+        //intent.putExtra("prodImage", item.getThumbnail());
 
         startActivity(intent);
     }
@@ -125,8 +133,7 @@ public class MainActivity extends Activity implements WearableListView.ClickList
         Wearable.NodeApi.addListener(mGoogleApiClient, this);
 
         String messagePhone = "Hello phone\n Via the data layer";
-        new SendToDataLayerThread("/stocount-wearable-message-path", messagePhone).start();
-
+        new SendToMessageLayerThread("/stocount-wearable-message-path", messagePhone).start();
     }
 
     @Override
@@ -170,7 +177,7 @@ public class MainActivity extends Activity implements WearableListView.ClickList
 
                             Bitmap thumbnail = loadBitmapFromAsset(mGoogleApiClient, imgAsset);
 
-                            mData.set(index, new ProductItem(dm.getString("prodName"), dm.getString("prodInfo"), thumbnail, dm.getInt("prodCountId"), dm.getDouble("prodQuantity")));
+                            mData.set(index, new ProductItem(dm.getInt("prodId"), dm.getString("prodName"), dm.getString("prodInfo"), thumbnail, dm.getInt("prodCountId"), dm.getDouble("prodQuantity")));
 
                         }
 
@@ -220,12 +227,12 @@ public class MainActivity extends Activity implements WearableListView.ClickList
     }
 
 
-    class SendToDataLayerThread extends Thread {
+    class SendToMessageLayerThread extends Thread {
         String path;
         String message;
 
         // Constructor to send a message to the data layer
-        SendToDataLayerThread(String p, String msg) {
+        SendToMessageLayerThread(String p, String msg) {
             path = p;
             message = msg;
         }
@@ -246,19 +253,23 @@ public class MainActivity extends Activity implements WearableListView.ClickList
     }
 
     public static class ProductItem {
+        private int mId;
         private String mName;
         private Integer mProductCountId;
         private Double mQuantity;
         private Bitmap mThumbnail;
         private String mAdditionalInfo;
 
-        public ProductItem(String name, String additionalInfo, Bitmap thumbnail, Integer productCountId, Double quantity) {
+        public ProductItem(int prodId, String name, String additionalInfo, Bitmap thumbnail, Integer productCountId, Double quantity) {
+            mId = prodId;
             mName = name;
             mAdditionalInfo = additionalInfo;
             mThumbnail = thumbnail;
             mProductCountId = productCountId;
             mQuantity = quantity;
         }
+
+        public int getId() { return mId; }
 
         public String getName() {
             return mName;

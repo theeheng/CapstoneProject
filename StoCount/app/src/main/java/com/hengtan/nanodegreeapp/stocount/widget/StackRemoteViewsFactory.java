@@ -124,7 +124,6 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
                 if(bmp != null) {
                     rv.setImageViewBitmap(R.id.img_data, bmp);
                 }
-
             }
             catch (Exception ex)
             {

@@ -15,7 +15,7 @@ StoCount is perfect for independent shopkeeper, small restaurant or home user wh
 to keep track of store inventory electronically on a portable device such as mobile phone ,
 tablet , as well as android wear device.
 
-[![ScreenShot4](https://raw.githubusercontent.com/theeheng/CapstoneProject/master/demo4.gif)](https://www.youtube.com/watch?v=CwHSMMj_XHY)
+[![ScreenShot4](https://raw.githubusercontent.com/theeheng/CapstoneProject/master/demo4.gif)](https://www.youtube.com/watch?v=PMgvn8dESqk)
 
 Features
 ---------

@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class ListenerService extends com.google.android.gms.wearable.WearableListenerService {
     public static final String WEARABLE_MESSAGE_PATH = "/stocount-wearable-message-path";
     public static final String WEARABLE_DATA_PATH = "/stocount-wearable-data-path";
+    public static final String DEVICE_DATA_PATH = "/stocount-device-data-path";
     private static final String TAG = "ListenerService";
     private static long TIMEOUT_MS = 60000;
 

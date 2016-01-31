@@ -62,6 +62,7 @@ public class ProductWearService extends IntentService implements
     GoogleApiClient googleClient;
 
     public static final String WEARABLE_DATA_PATH = "/stocount-wearable-data-path";
+    public static final String DEVICE_DATA_PATH = "/stocount-device-data-path";
 
     /*private static final String[] FORECAST_COLUMNS = {
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,

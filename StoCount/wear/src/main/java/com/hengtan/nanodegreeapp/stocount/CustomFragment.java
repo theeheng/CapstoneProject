@@ -48,6 +48,7 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
     private Integer productCountId;
     private double currentCount;
     private GoogleApiClient mGoogleApiClient;
+    DataMap mSendDataMap;
 
     public CustomFragment()
     {
@@ -63,6 +64,8 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
+        mGoogleApiClient.connect();
 
         Bundle bundle=getArguments();
 
@@ -102,22 +105,23 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
         if (requestCode == DetailActivity.SPEECH_REQUEST_CODE && resultCode == DetailActivity.RESULT_OK) {
             List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
-            String spokenText = results.get(0);
+            String spokenText = results.get(0).replace(" ","");
 
             try {
 
                 Double quantity = Double.parseDouble(spokenText);
 
-                Toast.makeText(getActivity(), spokenText, Toast.LENGTH_SHORT).show();
+                mSendDataMap = new DataMap();
+                mSendDataMap.putInt("prodId", productId);
+                mSendDataMap.putInt("prodCountId", productCountId);
+                mSendDataMap.putDouble("prodQuantity", quantity);
 
-                DataMap dataMap = new DataMap();
-                dataMap.putInt("prodId", productId);
-                dataMap.putInt("prodCountId", productCountId);
-                dataMap.putDouble("prodQuantity", quantity);
+                Log.v(TAG, "calling : SendToDataLayerThread");
 
-                new SendToDataLayerThread(ListenerService.WEARABLE_DATA_PATH, dataMap).start();
+                new SendToDataLayerThread(ListenerService.DEVICE_DATA_PATH, mSendDataMap).start();
 
                 currentCount = quantity;
+
             }
             catch (Exception ex)
             {
@@ -147,13 +151,13 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume : ");
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mGoogleApiClient.disconnect();
+        //mGoogleApiClient.disconnect();
     }
 
     public double getCurrentCount()
@@ -178,6 +182,7 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
 
         public void run() {
 
+            Log.v(TAG, "SendToDataLayerThread run DataMap: " + dataMap);
             PutDataMapRequest dataMapRequest = PutDataMapRequest.create(path);
             dataMapRequest.getDataMap().putDataMap("stockCountDataMap", dataMap);
             dataMapRequest.getDataMap().putLong("time", new Date().getTime());
@@ -186,10 +191,10 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
             DataApi.DataItemResult result = Wearable.DataApi.putDataItem(mGoogleApiClient, request).await();
 
             if (result.getStatus().isSuccess()) {
-                Log.v("myTag", "DataMap: " + dataMap + " sent successful");
+                Log.v(TAG, "DataMap: " + dataMap + " sent successful");
             } else {
                 // Log an error
-                Log.v("myTag", "ERROR: failed to send DataMap");
+                Log.v(TAG, "ERROR: failed to send DataMap");
             }
         }
     }

@@ -47,33 +47,41 @@ public class WearListenerService extends com.google.android.gms.wearable.Wearabl
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 String path = event.getDataItem().getUri().getPath();
-                if (ProductWearService.WEARABLE_DATA_PATH.equals(path)) {
+                if (ProductWearService.DEVICE_DATA_PATH.equals(path)) {
                     DataMapItem dataMapItem = DataMapItem
                             .fromDataItem(event.getDataItem());
 
                     DataMap dataMap = dataMapItem.getDataMap().getDataMap("stockCountDataMap");
-                    int prodId = dataMap.getInt("prodId");
+
+                    Log.v(TAG, "DataMap: " + dataMap + " received successful");
+
+
+                    Integer prodId = dataMap.getInt("prodId");
                     Integer productCountId = dataMap.getInt("prodCountId");
                     Double quantity = dataMap.getDouble("prodQuantity");
-                    Log.d(TAG, "DataMap :  " + prodId + " , " + productCountId + " , " + quantity);
 
-                    StockPeriod currentStockPeriod = Application.getCurrentStockPeriod();
 
-                    DBAsyncTask saveProductAsyncTask = new DBAsyncTask(getContentResolver(), DBAsyncTask.ObjectType.PRODUCT_COUNT_ONLY, DBAsyncTask.OperationType.SAVE, this);
+                    if(prodId != null) {
 
-                    ProductCount mProductCount = new ProductCount();
+                        Log.d(TAG, "Update stock count product id :  " + prodId + " , product count id : " + productCountId + " , quantity : " + quantity);
 
-                    if(productCountId != 0)
-                    {
-                        mProductCount.setProductCountId(productCountId);
+                        StockPeriod currentStockPeriod = Application.getCurrentStockPeriod();
+
+                        DBAsyncTask saveProductAsyncTask = new DBAsyncTask(getContentResolver(), DBAsyncTask.ObjectType.PRODUCT_COUNT_ONLY, DBAsyncTask.OperationType.SAVE, this);
+
+                        ProductCount mProductCount = new ProductCount();
+
+                        if (productCountId != 0) {
+                            mProductCount.setProductCountId(productCountId);
+                        }
+
+                        mProductCount.setStockPeriodId(currentStockPeriod.getStockPeriodId());
+                        mProductCount.setProductId(prodId);
+                        mProductCount.setQuantity(quantity);
+                        mProductCount.setCountDate(new Date());
+
+                        saveProductAsyncTask.execute(mProductCount);
                     }
-
-                    mProductCount.setStockPeriodId(currentStockPeriod.getStockPeriodId());
-                    mProductCount.setProductId(prodId);
-                    mProductCount.setQuantity(quantity);
-                    mProductCount.setCountDate(new Date());
-
-                    saveProductAsyncTask.execute(mProductCount);
 
                 }
 

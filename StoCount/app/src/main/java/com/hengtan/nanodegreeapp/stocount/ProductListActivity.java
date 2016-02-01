@@ -22,6 +22,7 @@ import android.print.PrintJob;
 import android.print.PrintManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.internal.view.menu.ActionMenuItemView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -81,7 +82,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-public class ProductListActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener {
+public class ProductListActivity extends AppCompatActivity implements SearchView.OnSuggestionListener, LoaderManager.LoaderCallbacks<Cursor>, GoogleApiClient.OnConnectionFailedListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = ProductListActivity.class.getSimpleName();
 
@@ -105,6 +106,9 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
     @InjectView(R.id.progressBarHolder)
     protected FrameLayout mProgressBarHolder;
+
+    @InjectView(R.id.swipe_refresh_layout)
+    protected SwipeRefreshLayout swipeRefreshLayout;
 
     private WebView mWebView;
 
@@ -146,6 +150,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     private boolean mShowSearchItem = false;
     private int mPreviousSelectedStockPeriodPosition = -1;
     private int mSavedSelectedStockPeriodPosition = -1;
+
+    private boolean mIsSwipeRefresh = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -477,6 +483,8 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 // Do nothing.
             }
         });
+
+        swipeRefreshLayout.setOnRefreshListener(this);
     }
 
     private void removeRecyclerViewTouchListener()
@@ -612,6 +620,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                     setRecyclerViewTouchListener();
                 }
 
+                if(this.mIsSwipeRefresh)
+                {
+                    swipeRefreshLayout.setRefreshing(false);
+                    this.mIsSwipeRefresh = false;
+                }
+
                 adapter.swapCursor(data, mSelectedStockPeriod);
                 adapter.notifyDataSetChanged();
 
@@ -684,6 +698,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             outState.putInt(SELECTED_STOCKPERIOD_KEY, mPreviousSelectedStockPeriodPosition);
         }
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onRefresh() {
+        getLoaderManager().restartLoader(PRODUCT_LOADER, null, ProductListActivity.this);
+        this.mIsSwipeRefresh = true;
     }
 
     static class ProductListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

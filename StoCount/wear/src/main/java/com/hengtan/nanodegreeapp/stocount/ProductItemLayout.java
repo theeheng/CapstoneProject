@@ -41,7 +41,7 @@ public class ProductItemLayout extends LinearLayout implements WearableListView.
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.view_product_item_layout_content, this, true);
         mThumbnail = (ImageView) findViewById(R.id.thumbnail);
-        mText = (TextView) findViewById(R.id.name);
+        mText = (TextView) findViewById(R.id.productname);
         mColorBlue = getResources().getColor(R.color.demo_blue);
         mColorGreen = getResources().getColor(R.color.demo_green);
 

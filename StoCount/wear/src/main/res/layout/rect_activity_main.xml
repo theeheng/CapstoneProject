@@ -8,18 +8,29 @@
     tools:context=".MainActivity"
     tools:deviceIds="wear_square">
 
-    <android.support.wearable.view.GridViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
+    <android.support.wearable.view.WearableListView
+        android:id="@+id/wearable_list"
         android:layout_height="match_parent"
-        android:keepScreenOn="true" />
+        android:layout_width="match_parent"
+        app:layout_box="left|right"/>
 
-    <android.support.wearable.view.DotsPageIndicator
-        android:id="@+id/page_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom">
-    </android.support.wearable.view.DotsPageIndicator>
+    <FrameLayout
+        android:id="@+id/progressBarHolder"
+        android:animateLayoutChanges="true"
+        android:visibility="invisible"
+        android:alpha="0.4"
+        android:background="#000000"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_gravity="center" />
+    </FrameLayout>
     </LinearLayout>
 
 

@@ -105,7 +105,7 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
         if (requestCode == DetailActivity.SPEECH_REQUEST_CODE && resultCode == DetailActivity.RESULT_OK) {
             List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
-            String spokenText = results.get(0).replace(" ","");
+            String spokenText = results.get(0).replace(" ", "");
 
             try {
 
@@ -191,9 +191,23 @@ public class CustomFragment extends Fragment implements GoogleApiClient.OnConnec
             DataApi.DataItemResult result = Wearable.DataApi.putDataItem(mGoogleApiClient, request).await();
 
             if (result.getStatus().isSuccess()) {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getActivity(), "Sucessfully updated!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 Log.v(TAG, "DataMap: " + dataMap + " sent successful");
             } else {
                 // Log an error
+
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getActivity(), "Unable update stocount on device!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 Log.v(TAG, "ERROR: failed to send DataMap");
             }
         }

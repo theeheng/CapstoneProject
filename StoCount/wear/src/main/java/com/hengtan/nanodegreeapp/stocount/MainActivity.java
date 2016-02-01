@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.wearable.view.WatchViewStub;
 import android.support.wearable.view.WearableListView;
 import android.util.Log;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,7 +38,7 @@ public class MainActivity extends Activity implements WearableListView.ClickList
     private WearableListView mListView;
     private GoogleApiClient mGoogleApiClient;
     private Handler mHandler;
-
+    private FrameLayout progressBarHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,10 @@ public class MainActivity extends Activity implements WearableListView.ClickList
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
                 mListView = (WearableListView) stub.findViewById(R.id.wearable_list);
+                progressBarHolder = (FrameLayout) stub.findViewById(R.id.progressBarHolder);
+
+                ProgressBarHelper.ShowProgressBar(progressBarHolder);
+
                 setupListView();
             }
         });
@@ -184,6 +189,9 @@ public class MainActivity extends Activity implements WearableListView.ClickList
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
+
+                                ProgressBarHelper.HideProgressBar(progressBarHolder);
+
                                 mAdapter.swapItem(mData);
                                 mAdapter.notifyDataSetChanged();
                             }

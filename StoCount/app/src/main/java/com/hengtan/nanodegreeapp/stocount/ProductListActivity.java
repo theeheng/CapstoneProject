@@ -397,11 +397,11 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
         hideShowFab();
         RefreshApiPreference();
+
         ProgressBarHelper.HideProgressBar(this.mProgressBarHolder);
 
         if(mSelectedStockPeriod != null && mSelectedStockPeriod.getStockPeriodId() == mCurrentStockPeriod.getStockPeriodId()) {
@@ -462,13 +462,16 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
                 if (mSelectedStockPeriod != null) {
                     if (mSelectedStockPeriod.getStockPeriodId() == mCurrentStockPeriod.getStockPeriodId()) {
                         famProductListButton.setVisibility(View.VISIBLE);
+                        swipeRefreshLayout.setEnabled(true);
                     } else {
+
                         if (mShowSearchItem) {
                             mShowSearchItem = false;
                             invalidateOptionsMenu();
                         }
 
                         famProductListButton.setVisibility(View.GONE);
+                        swipeRefreshLayout.setEnabled(false);
                     }
 
                     if (mPreviousSelectedStockPeriodPosition != pos) {

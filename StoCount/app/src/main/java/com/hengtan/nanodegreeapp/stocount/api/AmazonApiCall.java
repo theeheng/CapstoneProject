@@ -12,7 +12,11 @@ import com.amazon.webservices.awsecommerceservice.ImageSet;
 import com.amazon.webservices.awsecommerceservice.ItemLookup;
 import com.amazon.webservices.awsecommerceservice.ItemLookupRequest;
 import com.amazon.webservices.awsecommerceservice.ItemLookupResponse;
+import com.amazon.webservices.awsecommerceservice.ItemSearch;
+import com.amazon.webservices.awsecommerceservice.ItemSearchRequest;
+import com.amazon.webservices.awsecommerceservice.ItemSearchResponse;
 import com.amazon.webservices.awsecommerceservice.Items;
+import com.amazon.webservices.awsecommerceservice.Item;
 import com.amazon.webservices.awsecommerceservice.client.AWSECommerceServicePortType_SOAPClient;
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
 import com.hengtan.nanodegreeapp.stocount.R;
@@ -23,13 +27,113 @@ import com.leansoft.nano.ws.SOAPServiceCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by htan on 30/11/2015.
  */
 public class AmazonApiCall implements ApiCall {
     @Override
-    public List<SearchSuggestion> GetSuggestedItemName(String query, Context ctx) {
-        return null;
+    public List<SearchSuggestion> GetSuggestedItemName(String query, final Context ctx) {
+        Resources res = ctx.getResources();
+
+        // Get shared client
+        AWSECommerceServicePortType_SOAPClient client = AWSECommerceClient.getSharedClient(res.getString(R.string.aws_accesskeyid), res.getString(R.string.aws_securekeyid));
+
+        client.setDebug(true);
+
+        // Build request
+        ItemSearch request = new ItemSearch();
+        request.associateTag = "tag"; // seems any tag is ok
+        request.shared = new ItemSearchRequest();
+        request.shared.searchIndex = "All";
+        request.shared.responseGroup = new ArrayList<String>();
+        request.shared.responseGroup.add("Images");
+        request.shared.responseGroup.add("ItemAttributes");
+        request.shared.responseGroup.add("EditorialReview");
+        request.shared.keywords = query;
+
+        // authenticate the request
+        // http://docs.aws.amazon.com/AWSECommerceService/latest/DG/NotUsingWSSecurity.html
+        AWSECommerceClient.authenticateRequest("ItemSearch");
+
+        final List<SearchSuggestion> searchResult = new ArrayList<SearchSuggestion>();
+
+        // make API call
+        client.itemSearch(request, new SOAPServiceCallback<ItemSearchResponse>() {
+
+            @Override
+            public void onSuccess(ItemSearchResponse responseObject) { // handle successful response
+
+                // success handling logic
+                if (responseObject.items != null && responseObject.items.size() > 0) {
+                    Items items = responseObject.items.get(0);
+                    if (items.item != null && items.item.size() > 0) {
+
+                        /*Product prod = new Product(items.item.get(0));
+
+                        prod.setBarcode(barcodeScanResult);
+                        prod.setBarcodeFormat(barcodeFormatName);
+
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable(DetailActivity.PRODUCT_PARCELABLE, prod);
+                        Intent intent = new Intent(ctx, DetailActivity.class);
+                        intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
+                        ctx.startActivity(intent);
+                        */
+
+                        int i = 0;
+
+                        for (Item s : items.item) {
+
+                            SearchSuggestion ss = new SearchSuggestion();
+                            ss.id = i;
+                            ss.name = s.itemAttributes.title;
+                            ss.additionalInfo = s.asin;
+
+                            searchResult.add(ss);
+                            i++;
+
+                        }
+
+                    } else {
+                        Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                    }
+                } else { // response resident error
+                    if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
+                        Errors errors = responseObject.operationRequest.errors;
+                        if (errors.error != null && errors.error.size() > 0) {
+                            com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
+                            Toast.makeText(ctx, error.message, Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable error, String errorMessage) { // HTTP or parsing error
+
+                //ALog.e(TAG, errorMessage);
+                Toast.makeText(ctx, errorMessage, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSOAPFault(Object soapFault) { // soap fault
+
+                com.leansoft.nano.soap11.Fault fault = (com.leansoft.nano.soap11.Fault) soapFault;
+
+                //ALog.e(TAG, fault.faultstring);
+
+                Toast.makeText(ctx, fault.faultstring, Toast.LENGTH_LONG).show();
+
+            }
+
+        });
+
+        return searchResult;
     }
 
     @Override
@@ -46,19 +150,30 @@ public class AmazonApiCall implements ApiCall {
         ItemLookup request = new ItemLookup();
         request.associateTag = "tag"; // seems any tag is ok
         request.shared = new ItemLookupRequest();
-        request.shared.searchIndex = "All";
         request.shared.responseGroup = new ArrayList<String>();
         request.shared.responseGroup.add("Images");
         request.shared.responseGroup.add("ItemAttributes");
         request.shared.responseGroup.add("EditorialReview");
         List<String> itemLookup = new ArrayList<String>();
-        itemLookup.add(barcodeScanResult);
-        request.shared.itemId = itemLookup;
 
-        if(barcodeFormatName.indexOf("EAN")> -1) {
-            request.shared.idType = "EAN";
-        }else if(barcodeFormatName.indexOf("UPC")> -1) {
-            request.shared.idType = "UPC";
+        if(barcodeScanResult != null && (!barcodeScanResult.isEmpty()))
+        {
+            itemLookup.add(barcodeScanResult);
+            request.shared.itemId = itemLookup;
+
+            if (barcodeFormatName.indexOf("EAN") > -1) {
+                request.shared.idType = "EAN";
+            } else if (barcodeFormatName.indexOf("UPC") > -1) {
+                request.shared.idType = "UPC";
+            }
+
+            request.shared.searchIndex = "All";
+        }
+        else if (itemId != null && (!itemId.isEmpty())) {
+            itemLookup.add(itemId);
+            request.shared.itemId = itemLookup;
+            request.shared.idType = "ASIN";
+            request.shared.searchIndex = "";
         }
 
         // authenticate the request

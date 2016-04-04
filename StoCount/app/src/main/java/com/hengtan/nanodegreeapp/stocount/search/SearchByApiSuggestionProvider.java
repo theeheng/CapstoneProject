@@ -154,9 +154,20 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
 
     private Object[] createRow(SearchSuggestion suggestion)
     {
+        String uriString;
+
+        if(Application.GetApiCodeFromPreference().equals("AMAZON"))
+        {
+            uriString = "http://com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider/" + suggestion.additionalInfo;
+        }
+        else
+        {
+            uriString = "http://com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider/" + suggestion.id;
+        }
+
         return columnValuesOfQuery(suggestion.id, //suggestion.SiteItemId,
                 "android.intent.action.VIEW",
-                "http://com.hengtan.nanodegreeapp.stocount.SearchByNameSuggestionProvider/" +suggestion.id, //suggestion.SiteItemId,
+                uriString , //suggestion.SiteItemId,
                 suggestion.name,
                 suggestion.additionalInfo);
     }

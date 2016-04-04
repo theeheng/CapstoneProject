@@ -76,6 +76,7 @@ import butterknife.OnClick;
 
 import android.app.LoaderManager;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -676,10 +677,12 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
 
             Cursor cur = c.getCursor();
             cur.moveToPosition(position);
-            int suggestionItemId = cur.getInt(0);
 
-            mApiCall.SearchProduct(null, null, Integer.toString(suggestionItemId), this);
-            //SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
+            Uri selectedUri = Uri.parse(cur.getString(2));
+
+                mApiCall.SearchProduct(null, null, selectedUri.getLastPathSegment(), this);
+                //SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));
+
 
             return true;
         }

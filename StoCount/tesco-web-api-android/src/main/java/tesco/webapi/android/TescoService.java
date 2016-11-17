@@ -36,7 +36,7 @@ public interface TescoService {
      * @see <a href="https://secure.techfortesco.com/tescoapiweb/wiki/productsearch.html">PRODUCT SEARCH</a>
      */
 
-    @GET("/groceryapi/RESTService.aspx?command=PRODUCTSEARCH&ExtendedInfo=Y&version=2.0&isanonymous=Y")
+    @GET("/groceryapi/RESTService.aspx?command=PRODUCTSEARCH&version=2.0&isanonymous=Y")
     void productSearch(@Query("searchText") String searchText, Callback<TescoProductSearch> callback);
 
     @GET("/groceryapi/RESTService.aspx?command=PRODUCTSEARCH&version=2.0&isanonymous=Y")

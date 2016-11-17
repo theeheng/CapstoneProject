@@ -678,7 +678,16 @@ public class ProductListActivity extends AppCompatActivity implements SearchView
             Cursor cur = c.getCursor();
             cur.moveToPosition(position);
 
-            Uri selectedUri = Uri.parse(cur.getString(2));
+            Uri selectedUri = null;
+
+            if(Application.GetApiCodeFromPreference().equals("AMAZON"))
+            {
+                selectedUri = Uri.parse(cur.getString(2));
+            }
+            else
+            {
+                selectedUri = Uri.parse(cur.getString(0));
+            }
 
                 mApiCall.SearchProduct(null, null, selectedUri.getLastPathSegment(), this);
                 //SearchProductFromWalmartAPI(null, Integer.toString(suggestionItemId));

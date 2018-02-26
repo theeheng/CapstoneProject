@@ -280,6 +280,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     Application.setCurrentStockPeriod(mStockPeriod);
 
                     Intent intent = new Intent(this, HomeActivity.class);
+                    hideProgressDialog();
                     this.startActivity(intent);
 
                 } else if (mUser != null) {
@@ -287,6 +288,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     Application.setCurrentLoginUser(mUser);
 
                     Intent intent = new Intent(this, StockPeriodActivity.class);
+                    hideProgressDialog();
                     this.startActivity(intent);
                 }
                 else

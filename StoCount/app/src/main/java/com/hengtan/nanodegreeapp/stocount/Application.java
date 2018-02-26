@@ -118,6 +118,12 @@ public class Application extends android.app.Application {
                         @Override
                         public void onResult(Status status) {
                             mCurrentLoginUser = null;
+
+                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.remove(LAST_GOOGLE_SIGN_IN_KEY);
+                            editor.commit();
+
                             Intent intent = new Intent(activity, LoginActivity.class);
                             activity.startActivity(intent);
                         }

@@ -163,6 +163,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 mIsOffline = true;
                 getLoaderManager().restartLoader(OFFLINE_USER_LOADER, null, this);
             }
+            else
+            {
+                hideProgressDialog();
+            }
         }
         else
         {

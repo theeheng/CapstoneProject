@@ -36,6 +36,7 @@ public class Application extends android.app.Application {
     private static User mCurrentLoginUser;
     private static StockPeriod mCurrentStockPeriod;
     private static String mDefaultApiCode = "TESCO";
+    private static String LAST_GOOGLE_SIGN_IN_KEY = "LastGoogleSignIn";
 
     @Override
     public void onCreate() {
@@ -163,5 +164,27 @@ public class Application extends android.app.Application {
     public static String GetPackageName()
     {
         return context.getPackageName();
+    }
+
+    public static String GetLastGoogleSignIn()
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String lastGoogleSignIn = preferences.getString(LAST_GOOGLE_SIGN_IN_KEY, "");
+
+        return lastGoogleSignIn;
+
+    }
+
+    public static void SetLastGoogleSignIn(String lastGoogleSignIn)
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String initialValue = preferences.getString(LAST_GOOGLE_SIGN_IN_KEY, "");
+
+        if(initialValue == null || (initialValue != null && initialValue.isEmpty()))
+        {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(LAST_GOOGLE_SIGN_IN_KEY, lastGoogleSignIn);
+            editor.commit();
+        }
     }
 }

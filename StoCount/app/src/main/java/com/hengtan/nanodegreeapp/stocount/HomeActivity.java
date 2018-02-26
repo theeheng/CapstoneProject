@@ -398,6 +398,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
             quantityVoice = voiceResult[1];
         }
 
+        //Update stock count quantity
     }
 
     void showToastMessage(String message){

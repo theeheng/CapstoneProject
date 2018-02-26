@@ -97,32 +97,37 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onStart() {
         super.onStart();
 
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (opr.isDone()) {
-            showProgressDialog();
-            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-            // and the GoogleSignInResult will be available instantly.
-            Log.d(TAG, "Got cached sign-in");
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
-        } else {
-            // If the user has not previously signed in on this device or the sign-in has expired,
-            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
-            // single sign-on will occur in this branch.
-            showProgressDialog();
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
-                    handleSignInResult(googleSignInResult);
-                    hideProgressDialog();
-                }
-            }, 15, TimeUnit.SECONDS);
+        String lastGoogleSignInUser = Application.GetLastGoogleSignIn();
 
+        if(lastGoogleSignInUser != null && !lastGoogleSignInUser.isEmpty()) {
+
+            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+            if (opr.isDone()) {
+                showProgressDialog();
+                // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+                // and the GoogleSignInResult will be available instantly.
+                Log.d(TAG, "Got cached sign-in");
+                GoogleSignInResult result = opr.get();
+                handleSignInResult(result);
+            } else {
+                // If the user has not previously signed in on this device or the sign-in has expired,
+                // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+                // single sign-on will occur in this branch.
+                showProgressDialog();
+                opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                    @Override
+                    public void onResult(GoogleSignInResult googleSignInResult) {
+                        handleSignInResult(googleSignInResult);
+                    }
+                }, 15, TimeUnit.SECONDS);
+
+            }
         }
     }
 
     @OnClick(R.id.sign_in_button)
     protected void signIn() {
+        showProgressDialog();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -147,6 +152,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             // Signed in successfully, show authenticated UI.
             mAccount = result.getSignInAccount();
 
+            Application.SetLastGoogleSignIn(mAccount.getId());
+
             getLoaderManager().restartLoader(USER_LOADER, null, this);
         }
         else if (result.getStatus().getStatusCode() == UNKNOWN_LOGN_STATUS || result.getStatus().getStatusCode() == ConnectionResult.INTERRUPTED  || result.getStatus().getStatusCode() == ConnectionResult.TIMEOUT || result.getStatus().getStatusCode() == ConnectionResult.NETWORK_ERROR)
@@ -156,6 +163,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 mIsOffline = true;
                 getLoaderManager().restartLoader(OFFLINE_USER_LOADER, null, this);
             }
+        }
+        else
+        {
+            hideProgressDialog();
         }
     }
 
@@ -243,6 +254,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 } else if (mIsOffline){
                     Resources res = getResources();
                     Toast.makeText(this, res.getString(R.string.offline_firstime_text) , Toast.LENGTH_SHORT).show();
+                    hideProgressDialog();
 
                 } else {
                     mUser = new User(mAccount);
@@ -273,6 +285,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     Intent intent = new Intent(this, StockPeriodActivity.class);
                     this.startActivity(intent);
                 }
+                else
+                {
+                    DisplayIntialiseUserError();
+                }
 
                 break;
         }
@@ -282,5 +298,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    private void DisplayIntialiseUserError()
+    {
+        Resources res = getResources();
+        Toast.makeText(this, res.getString(R.string.error_initialise_user) , Toast.LENGTH_SHORT).show();
+        hideProgressDialog();
     }
 }

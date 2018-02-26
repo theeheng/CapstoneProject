@@ -26,7 +26,7 @@ import walmart.webapi.android.WalmartService;
 /**
  * Created by htan on 30/11/2015.
  */
-public class WalmartApiCall implements ApiCall {
+public class WalmartApiCall extends BaseApiCall implements ApiCall {
 
     public List<SearchSuggestion> GetSuggestedItemName(String query, Context ctx)
     {
@@ -61,7 +61,7 @@ public class WalmartApiCall implements ApiCall {
                 return searchResult;
 
             } else {
-                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
+                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_SHORT).show();
             }
         }
         catch(Exception ex)
@@ -110,7 +110,7 @@ public class WalmartApiCall implements ApiCall {
 
                 } else {
                     Resources res = ctx.getResources();
-                    Toast.makeText(ctx, res.getText(R.string.product_not_found_toast_text) + searchCriteria, Toast.LENGTH_LONG).show();
+                    DisplayToast(ctx, res.getText(R.string.product_not_found_toast_text) + searchCriteria);
                 }
             }
 
@@ -118,7 +118,7 @@ public class WalmartApiCall implements ApiCall {
             public void failure(final RetrofitError error) {
 
                 String msg = error.getMessage();
-                Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show();
+                DisplayToast(ctx, msg);
             }
         });
     }

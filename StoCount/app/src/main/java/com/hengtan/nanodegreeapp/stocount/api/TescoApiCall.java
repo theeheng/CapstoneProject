@@ -3,7 +3,6 @@ package com.hengtan.nanodegreeapp.stocount.api;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
@@ -27,7 +26,7 @@ import tesco.webapi.android.TescoService;
 /**
  * Created by htan on 30/11/2015.
  */
-public class TescoApiCall implements ApiCall {
+public class TescoApiCall extends BaseApiCall implements ApiCall {
 
     public List<SearchSuggestion> GetSuggestedItemName(String query, Context ctx)
     {
@@ -59,7 +58,7 @@ public class TescoApiCall implements ApiCall {
                 return searchResult;
 
             } else {
-                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_LONG).show();
+                //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_SHORT).show();
             }
         }
         catch(Exception ex)
@@ -123,12 +122,12 @@ public class TescoApiCall implements ApiCall {
                         public void failure(final RetrofitError error) {
 
                                     String msg = error.getMessage();
-                                    Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show();
+                                    DisplayToast(ctx, msg);
                         }
                     });
 
                 } else {
-                    Toast.makeText(ctx, "Product not found for : " + searchText, Toast.LENGTH_LONG).show();
+                    DisplayToast(ctx, "Product not found for : " + searchText);
                 }
             }
 
@@ -136,7 +135,7 @@ public class TescoApiCall implements ApiCall {
             public void failure(final RetrofitError error) {
 
                         String msg = error.getMessage();
-                        Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show();
+                        DisplayToast(ctx, msg);
             }
         });
     }

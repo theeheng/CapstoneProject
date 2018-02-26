@@ -17,8 +17,8 @@ public class ItemSearch implements Serializable {
 	
 	@Element(name = "AWSAccessKeyId")
 	@Order(value=1)
-	public String awsAccessKeyId;	
-	
+	public String awsAccessKeyId;
+
 	@Element(name = "AssociateTag")
 	@Order(value=2)
 	public String associateTag;	
@@ -37,7 +37,13 @@ public class ItemSearch implements Serializable {
 	
 	@Element(name = "Request")
 	@Order(value=6)
-	public List<ItemSearchRequest> request;	
-	
-    
+	public List<ItemSearchRequest> request;
+
+	@Element(name = "Signature")
+	@Order(value=7)
+	public String Signature;
+
+	@Element(name = "Timestamp")
+	@Order(value=8)
+	public String Timestamp;
 }

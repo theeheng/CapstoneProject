@@ -37,7 +37,13 @@ public class ItemLookup implements Serializable {
 	
 	@Element(name = "Request")
 	@Order(value=6)
-	public List<ItemLookupRequest> request;	
-	
-    
+	public List<ItemLookupRequest> request;
+
+	@Element(name = "Signature")
+	@Order(value=7)
+	public String Signature;
+
+	@Element(name = "Timestamp")
+	@Order(value=8)
+	public String Timestamp;
 }

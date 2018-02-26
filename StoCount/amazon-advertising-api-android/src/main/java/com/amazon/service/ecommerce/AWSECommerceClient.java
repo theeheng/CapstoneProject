@@ -3,6 +3,7 @@ package com.amazon.service.ecommerce;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,7 +28,7 @@ public class AWSECommerceClient {
 	    Update url according to your local location, see a list of supported location at the end of the wsdl:
 	    http://webservices.amazon.com/AWSECommerceService/AWSECommerceService.wsdl
 	*/
-	public static String AWSCEServiceURLString = "https://webservices.amazon.com/onca/soap?Service=AWSECommerceService";
+	public static String AWSCEServiceURLString = "https://webservices.amazon.co.uk/onca/soap?Service=AWSECommerceService";
 	
     /** Use this to specify the AWS Access Key ID */
 	public static String AWSAccessKeyId = "";
@@ -35,10 +36,13 @@ public class AWSECommerceClient {
 	public static String AWSSecureKeyId = "";
 	
     /** Namespace for all AWS Security elements */
-	public static final String AuthHeaderNS = "http://security.amazonaws.com/doc/2007-01-01/";
+	public static final String AuthHeaderNS = "http://security.amazonaws.co.uk/doc/2007-01-01/";
 	
-	private static AWSECommerceServicePortType_SOAPClient client = null;
-	
+	public static AWSECommerceServicePortType_SOAPClient Client = null;
+
+	private static String Signature = null;
+	private static String Timestamp = null;
+
     /** Algorithm used to calculate string hashes */
     private static final String SIGNATURE_ALGORITHM = "HmacSHA256";
     
@@ -49,11 +53,11 @@ public class AWSECommerceClient {
 		AWSAccessKeyId = accessKeyId;
 		AWSSecureKeyId = secureKeyId;
 
-		if (client == null) {
+		if (Client == null) {
 			synchronized(AWSECommerceClient.class) {
-				if (client == null) {
-					client = new AWSECommerceServicePortType_SOAPClient();
-					client.setEndpointUrl(AWSCEServiceURLString);
+				if (Client == null) {
+					Client = new AWSECommerceServicePortType_SOAPClient();
+					Client.setEndpointUrl(AWSCEServiceURLString);
 					
 					// init security
 					try {
@@ -72,7 +76,7 @@ public class AWSECommerceClient {
 				}
 			}
 		}
-		return client;
+		return Client;
 	}
 	
 
@@ -98,8 +102,10 @@ public class AWSECommerceClient {
 		signatureElement.appendChild(document.createTextNode(signature));
 		securityHeaders.add(signatureElement);
 		
-		client.setCustomSOAPHeaders(securityHeaders);
+		Client.setCustomSOAPHeaders(securityHeaders);
 	}
+
+
 	
     /**
      * Calculates a time stamp from "now" in UTC and returns it in ISO8601 string
@@ -116,7 +122,8 @@ public class AWSECommerceClient {
         SimpleDateFormat is08601   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
         is08601.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return is08601.format(calendar.getTime());
+        Timestamp = is08601.format(calendar.getTime());
+        return Timestamp;
     }
 	
     /**
@@ -134,7 +141,8 @@ public class AWSECommerceClient {
         String toSign = (action + timestamp);
 
         byte[] sigBytes = mac.doFinal(toSign.getBytes());
-        return new String(Base64.encode(sigBytes));
+		Signature =  new String(Base64.encode(sigBytes));
+		return Signature;
     }
     
     
@@ -156,4 +164,14 @@ public class AWSECommerceClient {
 					"Failed to create DocumentBuilder!", e);
 		}
     }
+
+    public static String GetSignature()
+	{
+		return Signature;
+	}
+
+	public static String GetTimestamp()
+	{
+		return Timestamp;
+	}
 }

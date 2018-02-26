@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.amazon.service.ecommerce.AWSECommerceClient;
 import com.amazon.webservices.awsecommerceservice.Errors;
@@ -31,18 +30,24 @@ import java.util.List;
 /**
  * Created by htan on 30/11/2015.
  */
-public class AmazonApiCall implements ApiCall {
+public class AmazonApiCall extends BaseApiCall implements ApiCall {
+
+    private String errorString;
+    private List<SearchSuggestion> searchResult = new ArrayList<SearchSuggestion>();
+
     @Override
     public List<SearchSuggestion> GetSuggestedItemName(String query, final Context ctx) {
         Resources res = ctx.getResources();
+        this.errorString = res.getString(R.string.api_search_error);
 
         // Get shared client
         AWSECommerceServicePortType_SOAPClient client = AWSECommerceClient.getSharedClient(res.getString(R.string.aws_accesskeyid), res.getString(R.string.aws_securekeyid));
 
-        client.setDebug(true);
+        AWSECommerceClient.Client.setDebug(true);
 
         // Build request
         ItemSearch request = new ItemSearch();
+        request.awsAccessKeyId = res.getString(R.string.aws_accesskeyid);
         request.associateTag = "tag"; // seems any tag is ok
         request.shared = new ItemSearchRequest();
         request.shared.searchIndex = "All";
@@ -55,11 +60,13 @@ public class AmazonApiCall implements ApiCall {
         // authenticate the request
         // http://docs.aws.amazon.com/AWSECommerceService/latest/DG/NotUsingWSSecurity.html
         AWSECommerceClient.authenticateRequest("ItemSearch");
+        request.Signature = AWSECommerceClient.GetSignature();
+        request.Timestamp = AWSECommerceClient.GetTimestamp();
 
-        final List<SearchSuggestion> searchResult = new ArrayList<SearchSuggestion>();
+
 
         // make API call
-        client.itemSearch(request, new SOAPServiceCallback<ItemSearchResponse>() {
+        AWSECommerceClient.Client.itemSearch(request, new SOAPServiceCallback<ItemSearchResponse>() {
 
             @Override
             public void onSuccess(ItemSearchResponse responseObject) { // handle successful response
@@ -83,6 +90,8 @@ public class AmazonApiCall implements ApiCall {
 
                         int i = 0;
 
+                        searchResult.clear();
+
                         for (Item s : items.item) {
 
                             SearchSuggestion ss = new SearchSuggestion();
@@ -96,19 +105,19 @@ public class AmazonApiCall implements ApiCall {
                         }
 
                     } else {
-                        Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                        DisplayToast(ctx, "No result");
                     }
                 } else { // response resident error
                     if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
                         Errors errors = responseObject.operationRequest.errors;
                         if (errors.error != null && errors.error.size() > 0) {
                             com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
-                            Toast.makeText(ctx, error.message, Toast.LENGTH_LONG).show();
+                            DisplayToast(ctx, error.message);
                         } else {
-                            Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                            DisplayToast(ctx, "No result");
                         }
                     } else {
-                        Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                        DisplayToast(ctx, "No result");
                     }
                 }
             }
@@ -117,7 +126,7 @@ public class AmazonApiCall implements ApiCall {
             public void onFailure(Throwable error, String errorMessage) { // HTTP or parsing error
 
                 //ALog.e(TAG, errorMessage);
-                Toast.makeText(ctx, errorMessage, Toast.LENGTH_LONG).show();
+                DisplayToast(ctx, errorString);
             }
 
             @Override
@@ -126,8 +135,7 @@ public class AmazonApiCall implements ApiCall {
                 com.leansoft.nano.soap11.Fault fault = (com.leansoft.nano.soap11.Fault) soapFault;
 
                 //ALog.e(TAG, fault.faultstring);
-
-                Toast.makeText(ctx, fault.faultstring, Toast.LENGTH_LONG).show();
+                DisplayToast(ctx, errorString);
 
             }
 
@@ -142,12 +150,13 @@ public class AmazonApiCall implements ApiCall {
         Resources res = ctx.getResources();
 
         // Get shared client
-        AWSECommerceServicePortType_SOAPClient client = AWSECommerceClient.getSharedClient(res.getString(R.string.aws_accesskeyid), res.getString(R.string.aws_securekeyid));
+        AWSECommerceClient.getSharedClient(res.getString(R.string.aws_accesskeyid), res.getString(R.string.aws_securekeyid));
 
-        client.setDebug(true);
+        AWSECommerceClient.Client.setDebug(true);
 
         // Build request
         ItemLookup request = new ItemLookup();
+        request.awsAccessKeyId = res.getString(R.string.aws_accesskeyid);
         request.associateTag = "tag"; // seems any tag is ok
         request.shared = new ItemLookupRequest();
         request.shared.responseGroup = new ArrayList<String>();
@@ -179,9 +188,11 @@ public class AmazonApiCall implements ApiCall {
         // authenticate the request
         // http://docs.aws.amazon.com/AWSECommerceService/latest/DG/NotUsingWSSecurity.html
         AWSECommerceClient.authenticateRequest("ItemLookup");
+        request.Signature = AWSECommerceClient.GetSignature();
+        request.Timestamp = AWSECommerceClient.GetTimestamp();
 
         // make API call
-        client.itemLookup(request, new SOAPServiceCallback<ItemLookupResponse>() {
+        AWSECommerceClient.Client.itemLookup(request, new SOAPServiceCallback<ItemLookupResponse>() {
 
             @Override
             public void onSuccess(ItemLookupResponse responseObject) { // handle successful response
@@ -203,19 +214,19 @@ public class AmazonApiCall implements ApiCall {
                         ctx.startActivity(intent);
 
                     } else {
-                        Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                        DisplayToast(ctx, "No result");
                     }
                 } else { // response resident error
                     if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
                         Errors errors = responseObject.operationRequest.errors;
                         if (errors.error != null && errors.error.size() > 0) {
                             com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
-                            Toast.makeText(ctx, error.message, Toast.LENGTH_LONG).show();
+                            DisplayToast(ctx, error.message);
                         } else {
-                            Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                            DisplayToast(ctx, "No result");
                         }
                     } else {
-                        Toast.makeText(ctx, "No result", Toast.LENGTH_LONG).show();
+                        DisplayToast(ctx, "No result");
                     }
                 }
             }
@@ -224,7 +235,7 @@ public class AmazonApiCall implements ApiCall {
             public void onFailure(Throwable error, String errorMessage) { // HTTP or parsing error
 
                 //ALog.e(TAG, errorMessage);
-                Toast.makeText(ctx, errorMessage, Toast.LENGTH_LONG).show();
+                DisplayToast(ctx, errorString);
             }
 
             @Override
@@ -234,7 +245,7 @@ public class AmazonApiCall implements ApiCall {
 
                 //ALog.e(TAG, fault.faultstring);
 
-                Toast.makeText(ctx, fault.faultstring, Toast.LENGTH_LONG).show();
+                DisplayToast(ctx, errorString);
 
             }
 

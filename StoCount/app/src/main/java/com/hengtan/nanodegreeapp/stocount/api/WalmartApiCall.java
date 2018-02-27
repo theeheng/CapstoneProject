@@ -74,13 +74,15 @@ public class WalmartApiCall extends BaseApiCall implements ApiCall {
 
     public void SearchProduct(String barcodeScanResult, String barcodeFormatName, String itemId, final Context ctx)
     {
+        Resources res = ctx.getResources();
+        final String noBarcodeMatch = res.getString(R.string.api_search_no_product_found_barcode);
+
+
         WalmartApi testApi = new WalmartApi();
 
         WalmartService testService = testApi.getService();
 
         Map<String, Object> params = new HashMap<String, Object>();
-
-        Resources res = ctx.getResources();
 
         params.put("apiKey", res.getString(R.string.walmart_apiKey));
 
@@ -110,7 +112,7 @@ public class WalmartApiCall extends BaseApiCall implements ApiCall {
 
                 } else {
                     Resources res = ctx.getResources();
-                    DisplayToast(ctx, res.getText(R.string.product_not_found_toast_text) + searchCriteria);
+                    DisplayToast(ctx, res.getText(R.string.api_search_no_product_found_barcode) + searchCriteria);
                 }
             }
 

@@ -4,8 +4,9 @@
     <!-- login activity -->
     <string name="login_btn_text">Sign in with Google</string>
     <string name="loading">Loading......</string>
-    <string name="error_initialise_user">Unable to intial the user. Please try to sign with google again.</string>
+    <string name="error_initialise_user">Unable to intialise the user. Please try to sign with google again.</string>
     <string name="offline_firstime_text">You are required to have internet connection to login when first using the application.</string>
+    <string name="google_api_signin_error">Unable to signin with your google account. Please try again later.</string>
 
     <!-- Stock Period activity -->
     <string name="cd_user_photo">User Photo from Google Profile</string>
@@ -54,6 +55,8 @@
     <string name="unable_delete_previous_stock_toast">Unable delete product for previous stock period.</string>
     <string name="preivous_stock_period_spinner_item_text">From %1$s To %2$s</string>
     <string name="current_stock_period_spinner_item_text">Current Period From</string>
+    <string name="api_search_no_product_found_barcode">Sorry, unable to find a product matches the barcode : </string>
+    <string name="api_search_no_product_found_name">Sorry, unable to find a product for : </string>
     <string name="api_search_error">There\'s an issue with product search. Please try again later.</string>
 
     <!-- Detail Activity -->

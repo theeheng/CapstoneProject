@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     public void onResult(GoogleSignInResult googleSignInResult) {
                         handleSignInResult(googleSignInResult);
                     }
-                }, 15, TimeUnit.SECONDS);
+                }, 10, TimeUnit.SECONDS);
 
             }
         }
@@ -156,20 +156,27 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             getLoaderManager().restartLoader(USER_LOADER, null, this);
         }
-        else if (result.getStatus().getStatusCode() == UNKNOWN_LOGN_STATUS || result.getStatus().getStatusCode() == ConnectionResult.INTERRUPTED  || result.getStatus().getStatusCode() == ConnectionResult.TIMEOUT || result.getStatus().getStatusCode() == ConnectionResult.NETWORK_ERROR)
+        //else if (result.getStatus().getStatusCode() == UNKNOWN_LOGN_STATUS || result.getStatus().getStatusCode() == ConnectionResult.INTERRUPTED  || result.getStatus().getStatusCode() == ConnectionResult.TIMEOUT || result.getStatus().getStatusCode() == ConnectionResult.NETWORK_ERROR)
+        //{
+        //    CheckIfOfflineOption();
+        //}
+        else
         {
-            if(!Utilities.IsConnectedToInternet(this))
-            {
-                mIsOffline = true;
-                getLoaderManager().restartLoader(OFFLINE_USER_LOADER, null, this);
-            }
-            else
-            {
-                hideProgressDialog();
-            }
+            CheckIfOfflineOption();
+        }
+    }
+
+    private void CheckIfOfflineOption()
+    {
+        if(!Utilities.IsConnectedToInternet(this))
+        {
+            mIsOffline = true;
+            getLoaderManager().restartLoader(OFFLINE_USER_LOADER, null, this);
         }
         else
         {
+            Resources res = getResources();
+            Toast.makeText(this, res.getString(R.string.google_api_signin_error) ,Toast.LENGTH_SHORT).show();
             hideProgressDialog();
         }
     }
@@ -178,7 +185,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Toast.makeText(this,"onConnectionFailed:" + connectionResult ,Toast.LENGTH_SHORT);
+        Toast.makeText(this,"onConnectionFailed:" + connectionResult ,Toast.LENGTH_SHORT).show();
 
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }

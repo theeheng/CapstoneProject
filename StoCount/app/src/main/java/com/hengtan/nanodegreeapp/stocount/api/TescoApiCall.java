@@ -2,9 +2,11 @@ package com.hengtan.nanodegreeapp.stocount.api;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
+import com.hengtan.nanodegreeapp.stocount.R;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.search.SearchSuggestion;
 
@@ -72,6 +74,9 @@ public class TescoApiCall extends BaseApiCall implements ApiCall {
 
     public void SearchProduct(String barcodeScanResult, String barcodeFormatName, String itemId, final Context ctx)
     {
+        Resources res = ctx.getResources();
+        final String noBarcodeMatch = res.getString(R.string.api_search_no_product_found_barcode);
+
         TescoApi testApi = new TescoApi();
 
         final TescoService testService = testApi.getService();
@@ -127,7 +132,7 @@ public class TescoApiCall extends BaseApiCall implements ApiCall {
                     });
 
                 } else {
-                    DisplayToast(ctx, "Product not found for : " + searchText);
+                    DisplayToast(ctx, noBarcodeMatch + searchText);
                 }
             }
 

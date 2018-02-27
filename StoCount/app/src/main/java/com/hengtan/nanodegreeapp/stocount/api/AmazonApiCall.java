@@ -33,13 +33,15 @@ import java.util.List;
 public class AmazonApiCall extends BaseApiCall implements ApiCall {
 
     private String errorString;
+    private String noBarcodeMatch;
+    private String noNameMatch;
     private List<SearchSuggestion> searchResult = new ArrayList<SearchSuggestion>();
 
     @Override
-    public List<SearchSuggestion> GetSuggestedItemName(String query, final Context ctx) {
+    public List<SearchSuggestion> GetSuggestedItemName(final String query, final Context ctx) {
         Resources res = ctx.getResources();
         this.errorString = res.getString(R.string.api_search_error);
-
+        this.noNameMatch = res.getString(R.string.api_search_no_product_found_name);
         // Get shared client
         AWSECommerceServicePortType_SOAPClient client = AWSECommerceClient.getSharedClient(res.getString(R.string.aws_accesskeyid), res.getString(R.string.aws_securekeyid));
 
@@ -105,7 +107,7 @@ public class AmazonApiCall extends BaseApiCall implements ApiCall {
                         }
 
                     } else {
-                        DisplayToast(ctx, "No result");
+                        DisplayToast(ctx, noNameMatch+query);
                     }
                 } else { // response resident error
                     if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
@@ -114,10 +116,10 @@ public class AmazonApiCall extends BaseApiCall implements ApiCall {
                             com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
                             DisplayToast(ctx, error.message);
                         } else {
-                            DisplayToast(ctx, "No result");
+                            DisplayToast(ctx, noNameMatch+query);
                         }
                     } else {
-                        DisplayToast(ctx, "No result");
+                        DisplayToast(ctx, noNameMatch+query);
                     }
                 }
             }
@@ -148,6 +150,8 @@ public class AmazonApiCall extends BaseApiCall implements ApiCall {
     public void SearchProduct(final String barcodeScanResult, final String barcodeFormatName, String itemId, final Context ctx)
     {
         Resources res = ctx.getResources();
+        this.errorString = res.getString(R.string.api_search_error);
+        this.noBarcodeMatch = res.getString(R.string.api_search_no_product_found_barcode);
 
         // Get shared client
         AWSECommerceClient.getSharedClient(res.getString(R.string.aws_accesskeyid), res.getString(R.string.aws_securekeyid));
@@ -214,7 +218,7 @@ public class AmazonApiCall extends BaseApiCall implements ApiCall {
                         ctx.startActivity(intent);
 
                     } else {
-                        DisplayToast(ctx, "No result");
+                        DisplayToast(ctx, noBarcodeMatch+barcodeScanResult);
                     }
                 } else { // response resident error
                     if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
@@ -223,10 +227,10 @@ public class AmazonApiCall extends BaseApiCall implements ApiCall {
                             com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
                             DisplayToast(ctx, error.message);
                         } else {
-                            DisplayToast(ctx, "No result");
+                            DisplayToast(ctx, noBarcodeMatch+barcodeScanResult);
                         }
                     } else {
-                        DisplayToast(ctx, "No result");
+                        DisplayToast(ctx, noBarcodeMatch+barcodeScanResult);
                     }
                 }
             }

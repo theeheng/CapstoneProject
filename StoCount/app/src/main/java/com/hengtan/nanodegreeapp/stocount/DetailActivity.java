@@ -118,10 +118,12 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
     private boolean mPreivousStockPeriod = false;
     private boolean mIsEditable = false;
     private boolean mIsStockCountEntry = false;
+    private String mVoiceSearchQuantity;
     public static final String PRODUCT_PARCELABLE = "PRODUCTPARCELABLE";
     public static final String PRODUCT_COUNT_PARCELABLE = "PRODUCTCOUNTPARCELABLE";
     public static final String IS_PREVIOUS_STOCK_PERIOD = "ISPREVIOUSSTOCKPERIOD";
     public static final String IS_STOCK_ENTRY_EXTRA = "ISSTOCKENTRYEXTRA";
+    public static final String VOICE_SEARCH_QUANTITY_EXTRA = "VOICESEARCHQUANTITY";
 
     private Product mProduct;
     private ProductCount mProductCount;
@@ -187,6 +189,9 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
             mPreivousStockPeriod =  intent.getBooleanExtra(IS_PREVIOUS_STOCK_PERIOD, false);
 
             mIsStockCountEntry = intent.getBooleanExtra(IS_STOCK_ENTRY_EXTRA, false);
+            mVoiceSearchQuantity = intent.getStringExtra(VOICE_SEARCH_QUANTITY_EXTRA);
+
+
         }
 
         if(mProduct != null) {
@@ -253,6 +258,11 @@ public class DetailActivity extends AppCompatActivity implements DBAsyncCallBack
         {
             famButton.expand();
             updateUIForEditing();
+        }
+
+        if(mVoiceSearchQuantity != null && !mVoiceSearchQuantity.isEmpty())
+        {
+            productCount.setText(mVoiceSearchQuantity);
         }
 
         famButton.setOnFloatingActionsMenuUpdateListener(

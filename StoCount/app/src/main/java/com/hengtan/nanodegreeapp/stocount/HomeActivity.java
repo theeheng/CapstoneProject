@@ -87,6 +87,8 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
     private static final int STOCK_PERIOD_LOADER = 2;
 
+    private static final int VOICE_SEARCH_LOADER = 3;
+
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1001;
 
     private String mBarcodeResult;
@@ -98,12 +100,15 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
     private String mScannedBarcodeStr;
     private String mSearchCriteriaBarcodeStr;
     private String mSearchCriteriaProductIdStr;
+    private String mSearchCriteriaProductNameStr;
     private String mNoProductFoundStr;
     private String mBackupSuccessfulStr;
     private String mBackupErrorStr;
     private String mRestoreSuccessfulStr;
     private String mRestoreErrorStr;
-
+    private String mVoiceSearchProductName;
+    private String mVoiceSearchProductQuantity;
+    private String mVoiceSearchPromptStr;
     private Integer mSearchResultId;
 
     private GoogleApiClient mGoogleApiClient;
@@ -140,11 +145,13 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
         mScannedBarcodeStr = res.getString(R.string.scanned_barcode_log_text);
         mSearchCriteriaBarcodeStr = res.getString(R.string.search_criteria_barcode);
         mSearchCriteriaProductIdStr = res.getString(R.string.search_criteria_productid);
+        mSearchCriteriaProductNameStr = res.getString(R.string.search_criteria_productname);
         mNoProductFoundStr =  res.getString(R.string.no_product_found_toast_text);
         mBackupSuccessfulStr =  res.getString(R.string.backup_successful);
         mRestoreSuccessfulStr =  res.getString(R.string.restore_successful);
         mBackupErrorStr =  res.getString(R.string.backup_error);
         mRestoreErrorStr =  res.getString(R.string.restore_error);
+        mVoiceSearchPromptStr = res.getString(R.string.search_voice_prompt);
 
         if (mStockPeriod != null) {
             SetStockPeriodText(mStockPeriod);
@@ -246,22 +253,19 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         // Specify the calling package to identify your application
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass()
-                .getPackage().getName());
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
 
         // Display an hint to the user about what he should say.
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say: {Product Name} QUANTITY {Stock Count Value} UPDATE"
-                .toString());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, mVoiceSearchPromptStr);
 
         // Given an hint to the recognizer about what the user is going to say
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, Locale.getDefault());
 
         int noOfMatches = 10;
         // Specify how many results you want to receive. The results will be
         // sorted where the first result is the one with higher confidence.
 
-        //intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, noOfMatches);
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, noOfMatches);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
 
         startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
@@ -379,30 +383,34 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
     public void voiceProductSearch(String voiceText)
     {
-        String productName = voiceText.toLowerCase().replace(" qty "," quantity ").replace(" quantities "," quantity ").replace("updates","update");
-        String quantityVoice = null;
-        boolean updateVoice = false;
-
-        showToastMessage(productName);
+        String productName = voiceText.toLowerCase().replace(" qty "," quantity ").replace(" quantities "," quantity ");
+        //showToastMessage(productName);
 
         if(productName.toLowerCase().contains(" quantity "))
         {
-            if(productName.length() > 6 && productName.substring(productName.length()-6,productName.length()).toLowerCase().equals("update"))
-            {
-                updateVoice = true;
-            }
-
             String[] voiceResult = productName.toLowerCase().replace("update","").split(" quantity ");
 
-            productName = voiceResult[0];
-            quantityVoice = voiceResult[1];
+            mVoiceSearchProductName = voiceResult[0];
+            mVoiceSearchProductQuantity = voiceResult[1];
+            getLoaderManager().restartLoader(VOICE_SEARCH_LOADER, null, this);
+        }
+        else if(!productName.isEmpty())
+        {
+            mVoiceSearchProductName = productName;
+            mVoiceSearchProductQuantity = null;
+            getLoaderManager().restartLoader(VOICE_SEARCH_LOADER, null, this);
+        }
+        else
+        {
+            mVoiceSearchProductName = null;
+            mVoiceSearchProductQuantity = null;
         }
 
         //Update stock count quantity
     }
 
     void showToastMessage(String message){
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -472,6 +480,16 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                         new String[] {mSearchResultId.toString()},
                         null
                 );
+            case VOICE_SEARCH_LOADER:
+                // Returns a new CursorLoader
+                return new CursorLoader(
+                        this,
+                        StoCountContract.ProductEntry.buildCurrentProductUri(mStockPeriod.getStockPeriodId()),
+                        null,
+                        StoCountContract.ProductEntry.TABLE_NAME + "." + StoCountContract.ProductEntry.PRODUCT_NAME +" LIKE ?",
+                        new String[] { "%"+mVoiceSearchProductName+"%" },
+                        null
+                );
             case STOCK_PERIOD_LOADER:
                 // Returns a new CursorLoader
                 return new CursorLoader(
@@ -495,7 +513,7 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
 
             cursor.moveToFirst();
 
-            if(loader.getId() == PRODUCT_BARCODE_LOADER || loader.getId() == PRODUCT_ID_LOADER) {
+            if(loader.getId() == PRODUCT_BARCODE_LOADER || loader.getId() == PRODUCT_ID_LOADER || loader.getId() == VOICE_SEARCH_LOADER) {
 
                 Product prod = new Product(cursor);
                 ProductCount prodCount = new ProductCount(cursor);
@@ -509,6 +527,11 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 Intent intent = new Intent(this, DetailActivity.class);
                 intent.putExtra(DetailActivity.PRODUCT_PARCELABLE, bundle);
                 intent.putExtra(DetailActivity.IS_STOCK_ENTRY_EXTRA, true);
+
+                if(loader.getId() == VOICE_SEARCH_LOADER && mVoiceSearchProductQuantity != null && !mVoiceSearchProductQuantity.isEmpty())
+                {
+                    intent.putExtra(DetailActivity.VOICE_SEARCH_QUANTITY_EXTRA, mVoiceSearchProductQuantity);
+                }
                 this.startActivity(intent);
             }
             else if(loader.getId() == STOCK_PERIOD_LOADER )
@@ -528,6 +551,9 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                 searchCriteria = mSearchCriteriaBarcodeStr + " " +mBarcodeResult;
             else if(loader.getId() == PRODUCT_ID_LOADER)
                 searchCriteria = mSearchCriteriaProductIdStr + " " +mSearchResultId.toString();
+            else if(loader.getId() == VOICE_SEARCH_LOADER)
+                searchCriteria = mSearchCriteriaProductNameStr + " " +mVoiceSearchProductName.toString();
+
             Toast.makeText(this, mNoProductFoundStr + " " +searchCriteria, Toast.LENGTH_LONG).show();
         }
     }

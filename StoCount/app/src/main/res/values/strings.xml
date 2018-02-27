@@ -34,7 +34,8 @@
     <string name="no_product_found_toast_text">No product found for </string>
     <string name="search_criteria_barcode">barcode :</string>
     <string name="search_criteria_productid">productid :</string>
-
+    <string name="search_criteria_productname">productname :</string>
+<string name="search_voice_prompt">Say: {Product Name} QUANTITY {Stock Count Value}</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
     <!-- Product List Activity -->

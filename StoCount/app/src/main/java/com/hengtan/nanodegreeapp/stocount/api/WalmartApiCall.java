@@ -111,8 +111,7 @@ public class WalmartApiCall extends BaseApiCall implements ApiCall {
                     ctx.startActivity(intent);
 
                 } else {
-                    Resources res = ctx.getResources();
-                    DisplayToast(ctx, res.getText(R.string.api_search_no_product_found_barcode) + searchCriteria);
+                    DisplayToast(ctx, noBarcodeMatch + searchCriteria);
                 }
             }
 
@@ -120,6 +119,11 @@ public class WalmartApiCall extends BaseApiCall implements ApiCall {
             public void failure(final RetrofitError error) {
 
                 String msg = error.getMessage();
+
+                if(msg.equals("404 Not Found"))
+                {
+                    msg = noBarcodeMatch + searchCriteria;
+                }
                 DisplayToast(ctx, msg);
             }
         });

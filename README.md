@@ -77,5 +77,3 @@ OR
 OR
 - It it performs short duration, on-demand requests(such as search), app uses an AsyncTask.
 - App uses a Loader to move its data to its views.
-
-

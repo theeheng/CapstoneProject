@@ -28,7 +28,7 @@ public class TescoApi {
     /**
      * Main Tesco Web API endpoint
      */
-    public static final String TESCO_WEB_API_ENDPOINT = "http://mobile.tesco.com/";
+    public static final String TESCO_WEB_API_ENDPOINT = "https://dev.tescolabs.com/";
 
     /**
      * The request interceptor that will add the header with OAuth
@@ -38,7 +38,7 @@ public class TescoApi {
         @Override
         public void intercept(RequestFacade request) {
             if (mAccessToken != null) {
-                request.addHeader("Authorization", "Bearer " + mAccessToken);
+                request.addHeader("Ocp-Apim-Subscription-Key", mAccessToken);
             }
         }
     }

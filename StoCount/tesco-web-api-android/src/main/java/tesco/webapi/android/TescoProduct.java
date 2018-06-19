@@ -1,27 +1,32 @@
 package tesco.webapi.android;
 
+import java.util.ArrayList;
+
+import sun.security.krb5.internal.crypto.Des;
+
 /**
  * Created by htan on 17/11/2015.
  */
 public class TescoProduct {
 
     private String BaseProductId;
-    private String EANBarcode;
+    private String gtin;
     private String CheaperAlternativeProductId;
     private String CookingAndUsage;
     private String ExtendedDescription;
     private String HealthierAlternativeProductId;
-    private String ImagePath;
+    private String image;
     private Double MaximumPurchaseQuantity;
-    private String Name;
+    private String name;
+    private ArrayList<String> description;
     private String OfferPromotion;
     private String OfferValidity;
     private String OfferLabelImagePath;
     private String ShelfCategory;
     private String ShelfCategoryName;
-    private Float Price;
+    private Float price;
     private String PriceDescription;
-    private String ProductId;
+    private String id;
     private String ProductType;
     private Double Rating;
     private String StorageInfo;
@@ -53,7 +58,7 @@ public class TescoProduct {
      * The EANBarcode
      */
     public String getEANBarcode() {
-        return EANBarcode;
+        return gtin ;
     }
 
     /**
@@ -62,7 +67,7 @@ public class TescoProduct {
      * The EANBarcode
      */
     public void setEANBarcode(String EANBarcode) {
-        this.EANBarcode = EANBarcode;
+        this.gtin = EANBarcode;
     }
 
     /**
@@ -140,10 +145,10 @@ public class TescoProduct {
     /**
      *
      * @return
-     * The ImagePath
+     * The image
      */
     public String getImagePath() {
-        return ImagePath;
+        return image;
     }
 
     /**
@@ -152,7 +157,7 @@ public class TescoProduct {
      * The ImagePath
      */
     public void setImagePath(String ImagePath) {
-        this.ImagePath = ImagePath;
+        this.image = ImagePath;
     }
 
     /**
@@ -179,7 +184,7 @@ public class TescoProduct {
      * The Name
      */
     public String getName() {
-        return Name;
+        return name;
     }
 
     /**
@@ -188,7 +193,24 @@ public class TescoProduct {
      * The Name
      */
     public void setName(String Name) {
-        this.Name = Name;
+        this.name = Name;
+    }
+    /**
+     *
+     * @return
+     * The Name
+     */
+    public ArrayList<String> getDescription() {
+        return description;
+    }
+
+    /**
+     *
+     * @param Description
+     * The Name
+     */
+    public void setDescription(ArrayList<String> Description) {
+        this.description = Description;
     }
 
     /**
@@ -287,7 +309,7 @@ public class TescoProduct {
      * The Price
      */
     public Float getPrice() {
-        return Price;
+        return price;
     }
 
     /**
@@ -296,7 +318,7 @@ public class TescoProduct {
      * The Price
      */
     public void setPrice(Float Price) {
-        this.Price = Price;
+        this.price = Price;
     }
 
     /**
@@ -305,7 +327,7 @@ public class TescoProduct {
      * The PriceDescription
      */
     public String getPriceDescription() {
-        return PriceDescription;
+        return this.price.toString();
     }
 
     /**
@@ -323,7 +345,7 @@ public class TescoProduct {
      * The ProductId
      */
     public String getProductId() {
-        return ProductId;
+        return id;
     }
 
     /**
@@ -332,7 +354,7 @@ public class TescoProduct {
      * The ProductId
      */
     public void setProductId(String ProductId) {
-        this.ProductId = ProductId;
+        this.id = ProductId;
     }
 
     /**

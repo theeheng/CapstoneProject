@@ -8,120 +8,15 @@ import java.util.List;
  */
 public class TescoProductSearch {
 
-    private Integer StatusCode;
-    private String StatusInfo;
-    private Integer PageNumber;
-    private Integer TotalPageCount;
-    private Integer TotalProductCount;
-    private Integer PageProductCount;
-    private List<TescoProduct> Products = new ArrayList<TescoProduct>();
+    private TescoSeachResult uk;
+    private List<TescoBarcodeProduct> products = new ArrayList<TescoBarcodeProduct>();
 
-    /**
-     *
-     * @return
-     * The StatusCode
-     */
-    public Integer getStatusCode() {
-        return StatusCode;
+    public void setUk(TescoSeachResult value) {
+        uk = value;
     }
 
-    /**
-     *
-     * @param StatusCode
-     * The StatusCode
-     */
-    public void setStatusCode(Integer StatusCode) {
-        this.StatusCode = StatusCode;
-    }
-
-    /**
-     *
-     * @return
-     * The StatusInfo
-     */
-    public String getStatusInfo() {
-        return StatusInfo;
-    }
-
-    /**
-     *
-     * @param StatusInfo
-     * The StatusInfo
-     */
-    public void setStatusInfo(String StatusInfo) {
-        this.StatusInfo = StatusInfo;
-    }
-
-    /**
-     *
-     * @return
-     * The PageNumber
-     */
-    public Integer getPageNumber() {
-        return PageNumber;
-    }
-
-    /**
-     *
-     * @param PageNumber
-     * The PageNumber
-     */
-    public void setPageNumber(Integer PageNumber) {
-        this.PageNumber = PageNumber;
-    }
-
-    /**
-     *
-     * @return
-     * The TotalPageCount
-     */
-    public Integer getTotalPageCount() {
-        return TotalPageCount;
-    }
-
-    /**
-     *
-     * @param TotalPageCount
-     * The TotalPageCount
-     */
-    public void setTotalPageCount(Integer TotalPageCount) {
-        this.TotalPageCount = TotalPageCount;
-    }
-
-    /**
-     *
-     * @return
-     * The TotalProductCount
-     */
-    public Integer getTotalProductCount() {
-        return TotalProductCount;
-    }
-
-    /**
-     *
-     * @param TotalProductCount
-     * The TotalProductCount
-     */
-    public void setTotalProductCount(Integer TotalProductCount) {
-        this.TotalProductCount = TotalProductCount;
-    }
-
-    /**
-     *
-     * @return
-     * The PageProductCount
-     */
-    public Integer getPageProductCount() {
-        return PageProductCount;
-    }
-
-    /**
-     *
-     * @param PageProductCount
-     * The PageProductCount
-     */
-    public void setPageProductCount(Integer PageProductCount) {
-        this.PageProductCount = PageProductCount;
+    public TescoSeachResult getUk() {
+        return uk;
     }
 
     /**
@@ -130,15 +25,83 @@ public class TescoProductSearch {
      * The Products
      */
     public List<TescoProduct> getProducts() {
-        return Products;
+        if(this.uk != null && this.uk.ghs != null & this.uk.ghs.products != null)
+            return this.uk.ghs.products.results;
+        else
+            return null;
     }
 
-    /**
-     *
-     * @param Products
-     * The Products
-     */
-    public void setProducts(List<TescoProduct> Products) {
-        this.Products = Products;
+    public List<TescoBarcodeProduct> getBarcodeProduct() {
+        if(products != null)
+            return products;
+        else
+            return null;
     }
+
+
+    public class TescoProductSearchTotal{
+        private Integer all;
+
+        public void setAll(Integer value) { all = value; }
+        public Integer getAll() { return all; }
+
+    }
+
+    public class TescoSeachResult {
+        private TescoSearchResultGhs ghs;
+
+        public void setGhs(TescoSearchResultGhs value) {
+            ghs = value;
+        }
+
+        public TescoSearchResultGhs getGhs() {
+            return ghs;
+        }
+    }
+
+    public class TescoSearchResultGhs {
+        private TescoSearchResultProduct products;
+
+        public void setProducts(TescoSearchResultProduct value) {
+            products = value;
+        }
+
+        public TescoSearchResultProduct getProducts() {
+            return products;
+        }
+    }
+
+    public class TescoSearchResultProduct {
+        private TescoProductSearchTotal totals;
+        private List<TescoProduct> results = new ArrayList<TescoProduct>();
+
+        public void setTotals(TescoProductSearchTotal value) {
+            totals = value;
+        }
+
+        public TescoProductSearchTotal getTotals() {
+            return totals;
+        }
+
+        /**
+         *
+         * @return
+         * The Products
+         */
+        public List<TescoProduct> getProducts() {
+            return results;
+        }
+
+        /**
+         *
+         * @param Products
+         * The Products
+         */
+        public void setProducts(List<TescoProduct> Products) {
+            this.results = Products;
+        }
+
+    }
+
+
 }

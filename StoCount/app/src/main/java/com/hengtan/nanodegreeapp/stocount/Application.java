@@ -37,6 +37,7 @@ public class Application extends android.app.Application {
     private static StockPeriod mCurrentStockPeriod;
     private static String mDefaultApiCode = "TESCO";
     private static String LAST_GOOGLE_SIGN_IN_KEY = "LastGoogleSignIn";
+    private static boolean mAPISearchInProgress = false;
 
     @Override
     public void onCreate() {
@@ -192,5 +193,15 @@ public class Application extends android.app.Application {
             editor.putString(LAST_GOOGLE_SIGN_IN_KEY, lastGoogleSignIn);
             editor.commit();
         }
+    }
+
+    public static boolean GetAPISearchInProgress()
+    {
+        return mAPISearchInProgress;
+    }
+
+    public static void SetAPISearchInProgress(boolean value)
+    {
+        mAPISearchInProgress = value;
     }
 }

@@ -17,6 +17,7 @@ import com.amazon.webservices.awsecommerceservice.ItemSearchResponse;
 import com.amazon.webservices.awsecommerceservice.Items;
 import com.amazon.webservices.awsecommerceservice.Item;
 import com.amazon.webservices.awsecommerceservice.client.AWSECommerceServicePortType_SOAPClient;
+import com.hengtan.nanodegreeapp.stocount.Application;
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
 import com.hengtan.nanodegreeapp.stocount.R;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
@@ -39,6 +40,9 @@ public class AmazonApiCall extends BaseApiCall implements ApiCall {
 
     @Override
     public List<SearchSuggestion> GetSuggestedItemName(final String query, final Context ctx) {
+
+        Application.SetAPISearchInProgress(true);
+
         Resources res = ctx.getResources();
         this.errorString = res.getString(R.string.api_search_error);
         this.noNameMatch = res.getString(R.string.api_search_no_product_found_name);
@@ -66,17 +70,18 @@ public class AmazonApiCall extends BaseApiCall implements ApiCall {
         request.Timestamp = AWSECommerceClient.GetTimestamp();
 
 
+        try {
 
-        // make API call
-        AWSECommerceClient.Client.itemSearch(request, new SOAPServiceCallback<ItemSearchResponse>() {
+            // make API call
+            AWSECommerceClient.Client.itemSearch(request, new SOAPServiceCallback<ItemSearchResponse>() {
 
-            @Override
-            public void onSuccess(ItemSearchResponse responseObject) { // handle successful response
+                @Override
+                public void onSuccess(ItemSearchResponse responseObject) { // handle successful response
 
-                // success handling logic
-                if (responseObject.items != null && responseObject.items.size() > 0) {
-                    Items items = responseObject.items.get(0);
-                    if (items.item != null && items.item.size() > 0) {
+                    // success handling logic
+                    if (responseObject.items != null && responseObject.items.size() > 0) {
+                        Items items = responseObject.items.get(0);
+                        if (items.item != null && items.item.size() > 0) {
 
                         /*Product prod = new Product(items.item.get(0));
 
@@ -90,60 +95,69 @@ public class AmazonApiCall extends BaseApiCall implements ApiCall {
                         ctx.startActivity(intent);
                         */
 
-                        int i = 0;
+                            int i = 0;
 
-                        searchResult.clear();
+                            searchResult.clear();
 
-                        for (Item s : items.item) {
+                            for (Item s : items.item) {
 
-                            SearchSuggestion ss = new SearchSuggestion();
-                            ss.id = i;
-                            ss.name = s.itemAttributes.title;
-                            ss.additionalInfo = s.asin;
+                                SearchSuggestion ss = new SearchSuggestion();
+                                ss.id = i;
+                                ss.name = s.itemAttributes.title;
+                                ss.additionalInfo = s.asin;
 
-                            searchResult.add(ss);
-                            i++;
+                                searchResult.add(ss);
+                                i++;
 
-                        }
+                            }
 
-                    } else {
-                        DisplayToast(ctx, noNameMatch+query);
-                    }
-                } else { // response resident error
-                    if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
-                        Errors errors = responseObject.operationRequest.errors;
-                        if (errors.error != null && errors.error.size() > 0) {
-                            com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
-                            DisplayToast(ctx, error.message);
                         } else {
-                            DisplayToast(ctx, noNameMatch+query);
+                            DisplayToast(ctx, noNameMatch + query);
                         }
-                    } else {
-                        DisplayToast(ctx, noNameMatch+query);
+                    } else { // response resident error
+                        if (responseObject.operationRequest != null && responseObject.operationRequest.errors != null) {
+                            Errors errors = responseObject.operationRequest.errors;
+                            if (errors.error != null && errors.error.size() > 0) {
+                                com.amazon.webservices.awsecommerceservice.errors.Error error = errors.error.get(0);
+                                DisplayToast(ctx, error.message);
+                            } else {
+                                DisplayToast(ctx, noNameMatch + query);
+                            }
+                        } else {
+                            DisplayToast(ctx, noNameMatch + query);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Throwable error, String errorMessage) { // HTTP or parsing error
+                @Override
+                public void onFailure(Throwable error, String errorMessage) { // HTTP or parsing error
 
-                //ALog.e(TAG, errorMessage);
-                DisplayToast(ctx, errorString);
-            }
+                    //ALog.e(TAG, errorMessage);
+                    DisplayToast(ctx, errorString);
+                }
 
-            @Override
-            public void onSOAPFault(Object soapFault) { // soap fault
+                @Override
+                public void onSOAPFault(Object soapFault) { // soap fault
 
-                com.leansoft.nano.soap11.Fault fault = (com.leansoft.nano.soap11.Fault) soapFault;
+                    com.leansoft.nano.soap11.Fault fault = (com.leansoft.nano.soap11.Fault) soapFault;
 
-                //ALog.e(TAG, fault.faultstring);
-                DisplayToast(ctx, errorString);
+                    //ALog.e(TAG, fault.faultstring);
+                    DisplayToast(ctx, errorString);
 
-            }
+                }
 
-        });
+            });
 
-        return searchResult;
+            Application.SetAPISearchInProgress(false);
+            return searchResult;
+        }
+        catch(Exception ex)
+        {
+            Application.SetAPISearchInProgress(false);
+            String err = ex.getMessage();
+        }
+
+            return null;
     }
 
     @Override

@@ -18,7 +18,7 @@ public class TescoBarcodeProduct {
      * The EANBarcode
      */
     public String getEANBarcode() {
-        return (gtin.charAt(0) == '0') ? gtin.substring(1, gtin.length()) : gtin ;
+        return gtin.replaceFirst("^0+(?!$)", "") ;
     }
 
     /**

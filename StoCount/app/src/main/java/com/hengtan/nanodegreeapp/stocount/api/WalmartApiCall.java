@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.hengtan.nanodegreeapp.stocount.Application;
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
 import com.hengtan.nanodegreeapp.stocount.R;
@@ -30,6 +31,8 @@ public class WalmartApiCall extends BaseApiCall implements ApiCall {
 
     public List<SearchSuggestion> GetSuggestedItemName(String query, Context ctx)
     {
+        Application.SetAPISearchInProgress(true);
+
         WalmartApi testApi = new WalmartApi();
 
         WalmartService testService = testApi.getService();
@@ -58,14 +61,17 @@ public class WalmartApiCall extends BaseApiCall implements ApiCall {
 
                     searchResult.add(ss);
                 }
+                Application.SetAPISearchInProgress(false);
                 return searchResult;
 
             } else {
                 //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_SHORT).show();
             }
+            Application.SetAPISearchInProgress(false);
         }
         catch(Exception ex)
         {
+            Application.SetAPISearchInProgress(false);
             String err = ex.getMessage();
         }
 

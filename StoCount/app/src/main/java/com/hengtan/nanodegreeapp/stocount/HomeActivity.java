@@ -465,8 +465,10 @@ public class HomeActivity extends AppCompatActivity implements SearchView.OnSugg
                         this,
                         StoCountContract.ProductEntry.buildCurrentProductUri(mStockPeriod.getStockPeriodId()),
                         null,
-                        StoCountContract.ProductEntry.BARCODE + " = ? AND " + StoCountContract.ProductEntry.BARCODE_FORMAT + " = ? ",
-                        new String[]{mBarcodeResult, mBarcodeFormat},
+                        StoCountContract.ProductEntry.BARCODE + " = ? ", //+ StoCountContract.ProductEntry.BARCODE_FORMAT + " = ? ",
+                        new String[]{mBarcodeResult
+                                //, mBarcodeFormat
+                        },
                         null
                 );
 

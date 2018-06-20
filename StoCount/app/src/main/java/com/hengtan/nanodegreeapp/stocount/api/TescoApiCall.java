@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.hengtan.nanodegreeapp.stocount.Application;
 import com.hengtan.nanodegreeapp.stocount.DetailActivity;
 import com.hengtan.nanodegreeapp.stocount.R;
 import com.hengtan.nanodegreeapp.stocount.data.Product;
@@ -33,6 +35,7 @@ public class TescoApiCall extends BaseApiCall implements ApiCall {
 
     public List<SearchSuggestion> GetSuggestedItemName(String query, Context ctx)
     {
+        Application.SetAPISearchInProgress(true);
         //previousQuery = query;
         Resources res = ctx.getResources();
         TescoApi testApi = new TescoApi();
@@ -60,14 +63,18 @@ public class TescoApiCall extends BaseApiCall implements ApiCall {
                     searchResult.add(ss);
                 }
 
+                Application.SetAPISearchInProgress(false);
                 return searchResult;
 
             } else {
                 //Toast.makeText(LoginActivity.this, "Product not found for name: ", Toast.LENGTH_SHORT).show();
             }
+
+            Application.SetAPISearchInProgress(false);
         }
         catch(Exception ex)
         {
+            Application.SetAPISearchInProgress(false);
             String err = ex.getMessage();
         }
 
@@ -135,6 +142,7 @@ public class TescoApiCall extends BaseApiCall implements ApiCall {
                 }*/
 
                     TescoProduct temp = result.getProducts().get(0);
+                    //Toast.makeText(ctx, "code: " + prod.getEANBarcode(), Toast.LENGTH_LONG).show();
                     temp.setEANBarcode(prod.getEANBarcode());
                     temp.setExtendedDescription((temp.getDescription() != null && temp.getDescription().size() > 0) ? temp.getDescription().get(0) : "");
 

@@ -85,15 +85,21 @@ public class SearchByApiSuggestionProvider  extends ContentProvider {
         String query = selectionArgs[0];
         Log.d(tag,"query:" + query);
 
-        switch (sURIMatcher.match(uri)) {
-            case SEARCH_SUGGEST:
-                Log.d(tag,"search suggest called");
-                return getSuggestions(query);
-            case SHORTCUT_REFRESH:
-                Log.d(tag,"shortcut refresh called");
-                return null;
-            default:
-                throw new IllegalArgumentException("Unknown URL " + uri);
+        if(!Application.GetAPISearchInProgress()) {
+            switch (sURIMatcher.match(uri)) {
+                case SEARCH_SUGGEST:
+                    Log.d(tag, "search suggest called");
+                    return getSuggestions(query);
+                case SHORTCUT_REFRESH:
+                    Log.d(tag, "shortcut refresh called");
+                    return null;
+                default:
+                    throw new IllegalArgumentException("Unknown URL " + uri);
+            }
+        }
+        else
+        {
+            return null;
         }
     }
 
